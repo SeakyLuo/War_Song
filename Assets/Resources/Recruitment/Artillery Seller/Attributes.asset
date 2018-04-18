@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de93c9480db268646b3bd23023b088f0, type: 3}
+  m_Name: Attributes
+  m_EditorClassIdentifier: 
+  contractName: Artillery Seller
+  description: Artillery Seller will give you 5 Cannons and Chariots combined!
+  image: {fileID: 21300000, guid: dc49d9df21f74ac4287051537a22614c, type: 3}
+  price: 20
+  cardTypes:
+  - Chariot
+  - Cannon

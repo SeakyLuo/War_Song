@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59ce146b8e2925b49861d09c5bc69ea7, type: 3}
+  m_Name: Attributes
+  m_EditorClassIdentifier: 
+  Name: A Secret Plan
+  description: Switch the position of your two Soldiers.
+  goldCost: 0
+  oreCost: 2
+  image: {fileID: 21300000, guid: 6dbc0583f76469543a3c654af9b92ed8, type: 3}
