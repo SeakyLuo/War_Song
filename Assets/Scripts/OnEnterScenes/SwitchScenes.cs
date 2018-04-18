@@ -1,22 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using System;
 
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject playerInfoPanel, settingsPanel;
+    public GameObject playerInfoPanel, settingsPanel, optionsPanel;
+    private GameObject[] closeObjects;
 
     private Canvas parentCanvas;
-    private GameObject[] closeObjects;
 
     private void Start()
     {
         parentCanvas = gameObject.GetComponent<Canvas>();
-        closeObjects = new GameObject[] { playerInfoPanel, settingsPanel };
+        closeObjects = new GameObject[] { optionsPanel, settingsPanel, playerInfoPanel };
     }
 
     public void EnterCollection()
@@ -37,16 +33,14 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     public void ShowPlayerInfo()
     {
         playerInfoPanel.SetActive(true);
+        settingsPanel.SetActive(false);
+        settingsPanel.GetComponent<Settings>().optionsPanel.SetActive(false);
     }
 
     public void ShowSettings()
     {
+        playerInfoPanel.SetActive(false);
         settingsPanel.SetActive(true);
-    }
-
-    public void ExitGame()
-    {
-        Application.Quit();
     }
 
     public void ChangeQuest()
@@ -56,7 +50,7 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        foreach(GameObject close in closeObjects)
+        foreach (GameObject close in closeObjects)
         {
             if (close.activeSelf)
             {
@@ -64,7 +58,10 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
                 Rect rect = close.GetComponent<RectTransform>().rect;
                 // rect.x and rect.y are negative
                 if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
+                {
                     close.SetActive(false);
+                    break;
+                }
             }
         }
     }

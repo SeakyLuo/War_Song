@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class InfoLoader : MonoBehaviour {
 
     public static UserInfo user;
+    public static List<BoardAttributes> boards = new List<BoardAttributes>();
     public GameObject coinsPanel;
     public Text playerCoinsAmount;
     public static string switchSceneCaller = "Main";
@@ -30,5 +31,27 @@ public class InfoLoader : MonoBehaviour {
     // Use this for initialization
     void Start () {
         playerCoinsAmount.text = user.coins.ToString();
+        foreach (string path in Directory.GetDirectories("Assets/Resources/Board/Info"))
+            boards.Add(Resources.Load<BoardAttributes>("Board/Info/" + path.Substring(path.IndexOf("Info") + 5) + "/Attributes"));
+        boards = Sorted(boards);
+    }
+
+    // Needs Sort By Last Use
+    private List<BoardAttributes> Sorted(List<BoardAttributes> boardAttributes)
+    {
+        List<BoardAttributes> newList = boardAttributes;
+        BoardAttributes standardBoard = boardAttributes[0];
+        foreach (BoardAttributes attribute in boardAttributes)
+        {
+            if (attribute.boardName == "Standard Board")
+            {
+                standardBoard = attribute;
+                newList.Remove(attribute);
+                break;
+            }
+        }
+        newList.OrderBy(BoardAttributes => BoardAttributes.boardName);
+        newList.Insert(0, standardBoard);
+        return newList;
     }
 }
