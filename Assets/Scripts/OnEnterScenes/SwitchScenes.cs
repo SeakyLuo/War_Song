@@ -9,7 +9,6 @@ using System;
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
     public GameObject playerInfoPanel, settingsPanel;
-    public Text time;
 
     private Canvas parentCanvas;
     private GameObject[] closeObjects;
@@ -18,11 +17,6 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     {
         parentCanvas = gameObject.GetComponent<Canvas>();
         closeObjects = new GameObject[] { playerInfoPanel, settingsPanel };
-    }
-
-    private void FixedUpdate()
-    {
-        time.text = DateTime.Now.ToString("h:mm tt");
     }
 
     public void EnterCollection()
