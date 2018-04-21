@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
     public GameObject playerInfoPanel, settingsPanel, optionsPanel;
     private GameObject[] closeObjects;
+    public Text winText, loseText, drawText, percentageText;
+    public Text rank, title;
 
     private Canvas parentCanvas;
 
@@ -13,6 +17,12 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     {
         parentCanvas = gameObject.GetComponent<Canvas>();
         closeObjects = new GameObject[] { optionsPanel, settingsPanel, playerInfoPanel };
+        winText.text = InfoLoader.user.total.win.ToString();
+        loseText.text = InfoLoader.user.total.lose.ToString();
+        drawText.text = InfoLoader.user.total.draw.ToString();
+        percentageText.text = InfoLoader.user.total.percentage.ToString();
+        rank.text = InfoLoader.user.rank.ToString();
+        title.text = Range.FindTitle(InfoLoader.user.rank);
     }
 
     public void EnterCollection()
@@ -43,7 +53,7 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
         settingsPanel.SetActive(true);
     }
 
-    public void ChangeQuest()
+    public void ChangeChallenge()
     {
 
     }

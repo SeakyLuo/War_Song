@@ -9,13 +9,6 @@ public class Settings : MonoBehaviour
     public Canvas parentCanvas;
     public GameObject optionsPanel, logoutPanel;
 
-    private GameObject[] closeObjects;
-
-    private void Start()
-    {
-        closeObjects = new GameObject[] { optionsPanel, gameObject };
-    }
-
     public void OpenOptions()
     {
         optionsPanel.SetActive(true);

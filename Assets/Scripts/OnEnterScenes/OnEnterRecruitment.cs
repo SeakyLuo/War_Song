@@ -24,7 +24,7 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
         stores = new List<GameObject>() { contractStore, coinStore };
     }
 	
-    public void BackToMain()
+    public void Back()
     {
         SceneManager.LoadScene("Main");
     }

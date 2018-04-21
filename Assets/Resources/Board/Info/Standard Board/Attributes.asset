@@ -13,11 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardName: Standard Board
   available: 1
-  selfFieldImage: {fileID: 21300000, guid: 73231cb27f372cb4b9df3b45e92114e5, type: 3}
-  completeImage: {fileID: 21300000, guid: ea1a1885e078e2c4fbd0a3bfa731d300, type: 3}
+  allyFieldImage: {fileID: 21300000, guid: 73231cb27f372cb4b9df3b45e92114e5, type: 3}
+  completeImage: {fileID: 21300000, guid: 9f3116d49cc7d3a4b85bc05330dbfedc, type: 3}
   boardWidth: 9
-  boardheight: 10
-  SelfField: 4
+  boardHeight: 10
+  allyField: 4
   palaceDownLeft: {x: 3, y: 0}
   palaceUpperRight: {x: 5, y: 2}
   asloc1: {x: 0, y: 3}
