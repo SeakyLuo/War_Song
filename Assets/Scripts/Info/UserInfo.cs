@@ -12,6 +12,7 @@ public class UserInfo {
     public Stats total;
     public Dictionary<string, Stats> boardResult;
     public List<Challenge> challenges;
+    public bool newPlayer = true;
     //public Progress[] progress;
 
     public UserInfo()
@@ -34,6 +35,7 @@ public class UserInfo {
         lastLineupSelected = -1;
         total = new Stats(0,0,0);
         challenges = new List<Challenge>();
+        newPlayer = true;
     }
 }
 
@@ -123,5 +125,6 @@ public class CheatAccount:UserInfo
         rank = 9999;
         lastLineupSelected = -1;
         total = new Stats(10, 1, 1);
+        newPlayer = false;
     }
 }

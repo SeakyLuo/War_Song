@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour
 {
-    public Canvas parentCanvas;
     public GameObject optionsPanel, logoutPanel;
 
     public void OpenOptions()
@@ -21,6 +20,8 @@ public class Settings : MonoBehaviour
 
     public void ConfirmLogout()
     {
+        PlayerPrefs.SetString("email","");
+        PlayerPrefs.SetString("password","");
         SceneManager.LoadScene("Login");
     }
 
@@ -32,12 +33,5 @@ public class Settings : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
-    }
-
-    private Vector2 AdjustedMousePosition()
-    {
-        Vector2 mousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
-        return mousePosition;
     }
 }

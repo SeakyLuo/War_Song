@@ -18,18 +18,21 @@ public class Stats {
     public void Win()
     {
         win++;
+        gamesPlayed++;
         SetPercentage();
     }
 
     public void Lost()
     {
         lose++;
+        gamesPlayed++;
         SetPercentage();
     }
 
     public void Draw()
     {
         draw++;
+        gamesPlayed++;
         SetPercentage();
     }
 
