@@ -8,12 +8,12 @@ using UnityEngine.EventSystems;
 public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
 
     public static UserInfo user;
-    public GameObject contractStore, coinStore, popupInputAmountWindow;
+    public GameObject contractStore, coinStore, popupInputAmountWindow, infoPanel;
     public Text playerCoinsAmount;
 
     private Camera canvasCamera;
     private RectTransform rectTransform;
-    private List<GameObject> stores;
+    private GameObject[] closeObjects;
     private ContractsManager contractsManager;
 
 	// Use this for initialization
@@ -21,7 +21,7 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
         canvasCamera = gameObject.GetComponent<Canvas>().worldCamera;
         rectTransform = gameObject.GetComponent<RectTransform>();
         playerCoinsAmount.text = InfoLoader.user.coins.ToString();
-        stores = new List<GameObject>() { contractStore, coinStore };
+        closeObjects = new GameObject[] { infoPanel, contractStore, coinStore };
     }
 	
     public void Back()
@@ -41,16 +41,14 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        foreach(GameObject store in stores)
+        foreach(GameObject close in closeObjects)
         {
-            if (store.activeSelf)
+            if (close.activeSelf)
             {
                 Vector3 mouseposition = AdjustedMousePosition();
-                Rect rect = store.GetComponent<RectTransform>().rect;
+                Rect rect = close.GetComponent<RectTransform>().rect;
                 if (-rect.width / 2 > mouseposition.x || mouseposition.x > rect.width / 2 || -rect.height / 2 > mouseposition.y || mouseposition.y > rect.height / 2)
-                {
-                    store.SetActive(false);
-                }
+                    close.SetActive(false);
                 break;
             }
         }
