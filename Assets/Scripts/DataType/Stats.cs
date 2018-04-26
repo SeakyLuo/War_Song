@@ -41,4 +41,9 @@ public class Stats {
         if (gamesPlayed == 0) percentage = 0;
         else percentage = Math.Round(((double)win / gamesPlayed * 100), 2);
     }
+
+    public bool IsNewPlayer()
+    {
+        return gamesPlayed == 0;
+    }
 }

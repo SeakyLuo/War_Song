@@ -4,18 +4,45 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class Settings : MonoBehaviour
+public class Settings : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject optionsPanel, logoutPanel;
+    public GameObject mainSettingsPanel, optionsPanel, logoutPanel, creditsPanel;
+    public Canvas parentCanvas;
 
-    public void OpenOptions()
+    public void OnPointerClick(PointerEventData eventData)
     {
-        optionsPanel.SetActive(true);
+        if ( (logoutPanel!=null && logoutPanel.activeSelf) || creditsPanel.activeSelf) return;
+        GameObject close = mainSettingsPanel;
+        if (optionsPanel.activeSelf) close = optionsPanel;
+        Vector2 mousePosition = AdjustedMousePosition();
+        Rect rect = close.GetComponent<RectTransform>().rect;
+        // rect.x and rect.y are negative
+        if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
+        {
+            if (optionsPanel.activeSelf) close.SetActive(false);
+            else gameObject.SetActive(false);
+        }
     }
 
-    public void ShowLogout()
+    private void Update()
     {
-        logoutPanel.SetActive(true);
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            if (creditsPanel.activeSelf) creditsPanel.SetActive(false);
+            else if (optionsPanel.activeSelf) optionsPanel.SetActive(false);
+            else if (logoutPanel.activeSelf) return;
+            else gameObject.SetActive(!gameObject.activeSelf);
+        }
+    }
+
+    public void ShowSettings()
+    {
+        if (creditsPanel.activeSelf)
+        {
+            creditsPanel.SetActive(false);
+            optionsPanel.SetActive(false);            
+        }
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 
     public void ConfirmLogout()
@@ -25,13 +52,15 @@ public class Settings : MonoBehaviour
         SceneManager.LoadScene("Login");
     }
 
-    public void CancelLogout()
-    {
-        logoutPanel.SetActive(false);
-    }
-
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    private Vector2 AdjustedMousePosition()
+    {
+        Vector2 mousePosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
+        return mousePosition;
     }
 }

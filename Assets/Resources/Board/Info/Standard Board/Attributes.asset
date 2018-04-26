@@ -18,6 +18,7 @@ MonoBehaviour:
   boardWidth: 9
   boardHeight: 10
   allyField: 4
+  description: Standard Chinese Chess Board
   palaceDownLeft: {x: 3, y: 0}
   palaceUpperRight: {x: 5, y: 2}
   asloc1: {x: 0, y: 3}

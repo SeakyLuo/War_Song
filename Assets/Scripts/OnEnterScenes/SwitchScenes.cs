@@ -9,20 +9,18 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     public Text winText, loseText, drawText, percentageText;
     public Text rank, title;
 
-    private GameObject[] closeObjects;
     private Canvas parentCanvas;
 
     private void Start()
     {
         parentCanvas = gameObject.GetComponent<Canvas>();
-        closeObjects = new GameObject[] { optionsPanel, settingsPanel, playerInfoPanel };
         SetPlayerInfo();
     }
 
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Escape))
-            ShowSettings();
+            settingsPanel.SetActive(true);
     }
 
     public void EnterCollection()
@@ -54,13 +52,6 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     {
         playerInfoPanel.SetActive(true);
         SetPlayerInfo();
-        settingsPanel.SetActive(false);
-        settingsPanel.GetComponent<Settings>().optionsPanel.SetActive(false);
-    }
-
-    public void ShowSettings()
-    {
-        settingsPanel.SetActive(!settingsPanel.activeSelf);
     }
 
     public void ChangeChallenge()
@@ -70,17 +61,13 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        foreach (GameObject close in closeObjects)
+        if (playerInfoPanel.activeSelf)
         {
-            if (close.activeSelf)
-            {
-                Vector2 mousePosition = AdjustedMousePosition();
-                Rect rect = close.GetComponent<RectTransform>().rect;
-                // rect.x and rect.y are negative
-                if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
-                    close.SetActive(false);
-                break;
-            }
+            Vector2 mousePosition = AdjustedMousePosition();
+            Rect rect = playerInfoPanel.GetComponent<RectTransform>().rect;
+            // rect.x and rect.y are negative
+            if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
+                playerInfoPanel.SetActive(false);
         }
     }
 

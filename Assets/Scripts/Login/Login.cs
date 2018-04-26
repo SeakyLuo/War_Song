@@ -5,20 +5,16 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class Login : MonoBehaviour, IPointerClickHandler
+public class Login : MonoBehaviour
 {
     public InputField inputEmail, inputPassword;
     public GameObject createAccountPanel, emptyEmail, wrongPassword, emptyPassword;
-    public GameObject settingsPanel, optionsPanel, forgotPasswordPanel;
-    public Canvas parentCanvas;
-
-    private GameObject[] closeObjects;
+    public GameObject settingsPanel, forgotPasswordPanel;
 
     //support phone number
 
     // Use this for initialization
     void Start () {
-        closeObjects = new GameObject[] { optionsPanel, settingsPanel };
         // If already has an account saved
         string email = PlayerPrefs.GetString("email"),
                 password = PlayerPrefs.GetString("password");
@@ -29,7 +25,7 @@ public class Login : MonoBehaviour, IPointerClickHandler
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Escape))
-            ShowSettings();
+            settingsPanel.SetActive(true);
     }
 
     public void ConfirmLogin()
@@ -66,49 +62,5 @@ public class Login : MonoBehaviour, IPointerClickHandler
             inputPassword.text = "";
             wrongPassword.SetActive(true);
         }        
-    }
-
-    public void ForgotPassword()
-    {
-        //Send Verification code
-        forgotPasswordPanel.SetActive(true);
-    }
-
-    public void CreateNewAccount()
-    {
-        createAccountPanel.SetActive(true);
-    }
-
-    public void ShowSettings()
-    {
-        settingsPanel.SetActive(!settingsPanel.activeSelf);
-    }
-
-    public void ShowOptions()
-    {
-        optionsPanel.SetActive(!optionsPanel.activeSelf);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        foreach (GameObject close in closeObjects)
-        {
-            if (close.activeSelf)
-            {
-                Vector2 mousePosition = AdjustedMousePosition();
-                Rect rect = close.GetComponent<RectTransform>().rect;
-                // rect.x and rect.y are negative
-                if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
-                    close.SetActive(false);
-                break;
-            }
-        }
-    }
-
-    private Vector2 AdjustedMousePosition()
-    {
-        Vector2 mousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
-        return mousePosition;
     }
 }
