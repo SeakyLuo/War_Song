@@ -41,6 +41,11 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        HideInfoCard();
+    }
+
+    public void HideInfoCard()
+    {
         if (card.activeSelf) card.SetActive(false);
     }
 
