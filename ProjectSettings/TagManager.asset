@@ -12,6 +12,7 @@ TagManager:
   - Tactic
   - Lineup
   - Card
+  - Contract
   layers:
   - Default
   - TransparentFX

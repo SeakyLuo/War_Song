@@ -6,12 +6,12 @@ using UnityEngine.EventSystems;
 public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     public Canvas parentCanvas;
-    public GameObject collectionPanel, createLineupPanel, card;
+    public GameObject collectionPanel, createLineupPanel, infoCard;
     public static string TACTICSLOTPANEL = "TacticSlotPanel";
+    public static bool dragBegins = false;
     public static float xscale = Screen.width / 1920, yscale = Screen.width / 1080;
 
-    private GameObject selectedObject, dragCard, mouseOver, showCardInfo, tactic;
-    private bool dragBegins = false;
+    private GameObject selectedObject, mouseOver, showCardInfo, tactic;
     private LineupBuilder lineupBuilder;
     private CollectionManager collectionManager;
 
@@ -28,16 +28,15 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         tactic = selectedObject.transform.parent.Find("Tactic").gameObject;
         if (!tactic.activeSelf) return;
         dragBegins = true;
-        dragCard = Instantiate(card, parentCanvas.transform);
-        dragCard.SetActive(true);
-        dragCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tactic);
-        dragCard.transform.position = AdjustedMousePosition();
+        infoCard.SetActive(true);
+        infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tactic);
+        infoCard.transform.position = AdjustedMousePosition();
         tactic.SetActive(false);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (dragBegins) dragCard.transform.position = AdjustedMousePosition();
+        if (dragBegins) infoCard.transform.position = AdjustedMousePosition();
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -46,8 +45,8 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         dragBegins = false;
         tactic.SetActive(true);
         if (!InTacticRegion(Input.mousePosition))
-            lineupBuilder.RemoveTactic(dragCard.GetComponent<CardInfo>().tactic);        
-        Destroy(dragCard);
+            lineupBuilder.RemoveTactic(infoCard.GetComponent<CardInfo>().tactic);        
+        infoCard.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -56,11 +55,7 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         if (selectedObject.name == TACTICSLOTPANEL)
         {
              tactic = selectedObject.transform.parent.Find("Tactic").gameObject;
-             if (!tactic.activeSelf)
-             {
-                collectionManager.SetCurrentPage("Tactic",1);
-                collectionManager.ShowCurrentPage();
-             }
+             if (!tactic.activeSelf) collectionManager.SetCurrentPage("Tactic",1);
              else lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
         }            
     }

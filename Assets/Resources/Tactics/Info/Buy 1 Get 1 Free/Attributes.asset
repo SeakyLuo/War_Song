@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Buy 1 Get 1 Free
-  description: Your Gold +10
+  description: Your Coins +10
   goldCost: 5
   oreCost: 0
   image: {fileID: 21300000, guid: d7107f4b0d0e7154fa90029075715735, type: 3}

@@ -5,15 +5,17 @@ using UnityEngine.UI;
 
 public class LineupsManager : MonoBehaviour {
 
-    public GameObject createLineupButton, selectBoardPanel, collectionPanel, createLineupPanel;
-    public Text myLineups;
+    public static int modifyLineup = -1;
     public static int lineupsLimit = 9;
+
+    public GameObject createLineupButton, collectionPanel, createLineupPanel;
+    public GameObject lineupView;
+    public Text myLineups;
+    public BoardManager boardManager;
     public GameObject[] lineupObjects = new GameObject[lineupsLimit];
 
-    private int lineupsCount = 0,
-        modifyLineup = -1;
     private static string CUSTOMLINEUP = "Custom Lineup";
-    private BoardManager boardManager;
+    private int lineupsCount = 0;
     private LineupBuilder lineupBuilder;
 
     // Use this for initialization
@@ -30,8 +32,8 @@ public class LineupsManager : MonoBehaviour {
             else lineupObjects[i].SetActive(false);
         }
         myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
-        boardManager = selectBoardPanel.GetComponent<BoardManager>();
         lineupBuilder = createLineupPanel.GetComponent<LineupBuilder>();
+        ResizeLineup();
     }
 
     public void AddLineup(Lineup lineup)
@@ -57,6 +59,7 @@ public class LineupsManager : MonoBehaviour {
             myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
             if (lineupsCount == lineupsLimit) createLineupButton.SetActive(false);
             else createLineupButton.SetActive(true);
+            ResizeLineup();
         }
         else
         {
@@ -78,6 +81,7 @@ public class LineupsManager : MonoBehaviour {
                 lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
             myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
             modifyLineup = -1;
+            ResizeLineup();
         }       
     }
 
@@ -89,4 +93,15 @@ public class LineupsManager : MonoBehaviour {
         lineupBuilder.SetLineup(InfoLoader.user.lineups[number]);
     }
 
+    private void ResizeLineup()
+    {
+        GridLayoutGroup gridLayoutGroup = lineupView.GetComponent<GridLayoutGroup>();
+        int count = InfoLoader.user.lineups.Count + 1;
+        if (createLineupButton.activeSelf) count++;
+        lineupView.GetComponent<RectTransform>().sizeDelta = new Vector2
+        (
+             lineupView.GetComponent<RectTransform>().rect.width,
+             gridLayoutGroup.padding.top + gridLayoutGroup.padding.bottom + gridLayoutGroup.cellSize.y * count + gridLayoutGroup.spacing.y * (count - 1)
+        );
+    }
 }

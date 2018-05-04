@@ -6,20 +6,23 @@ using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject mainSettingsPanel, optionsPanel, logoutPanel, creditsPanel;
+    public GameObject mainSettingsPanel, optionsPanel, logoutPanel, creditsPanel, guidebookPanel;
     public Canvas parentCanvas;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if ( (logoutPanel!=null && logoutPanel.activeSelf) || creditsPanel.activeSelf) return;
+        if ((logoutPanel != null && logoutPanel.activeSelf) ||
+            (creditsPanel != null && logoutPanel.activeSelf) ||
+            (guidebookPanel != null && guidebookPanel.activeSelf)) return;
         GameObject close = mainSettingsPanel;
         if (optionsPanel.activeSelf) close = optionsPanel;
+        else if (guidebookPanel.activeSelf) close = guidebookPanel;
         Vector2 mousePosition = AdjustedMousePosition();
         Rect rect = close.GetComponent<RectTransform>().rect;
         // rect.x and rect.y are negative
         if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
         {
-            if (optionsPanel.activeSelf) close.SetActive(false);
+            if (optionsPanel.activeSelf || guidebookPanel.activeSelf) close.SetActive(false);
             else gameObject.SetActive(false);
         }
     }
@@ -28,8 +31,9 @@ public class Settings : MonoBehaviour, IPointerClickHandler
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            if (creditsPanel.activeSelf) creditsPanel.SetActive(false);
+            if (creditsPanel != null && creditsPanel.activeSelf) creditsPanel.SetActive(false);
             else if (optionsPanel.activeSelf) optionsPanel.SetActive(false);
+            else if (guidebookPanel != null && guidebookPanel.activeSelf) guidebookPanel.SetActive(false);
             else if (logoutPanel.activeSelf) return;
             else gameObject.SetActive(!gameObject.activeSelf);
         }
@@ -37,7 +41,7 @@ public class Settings : MonoBehaviour, IPointerClickHandler
 
     public void ShowSettings()
     {
-        if (creditsPanel.activeSelf)
+        if (creditsPanel != null && creditsPanel.activeSelf)
         {
             creditsPanel.SetActive(false);
             optionsPanel.SetActive(false);            

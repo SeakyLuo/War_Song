@@ -33,9 +33,18 @@ public class Lineup
         if (tactics.Count == tacticLimit) complete = true;
     }
 
+    public void Clear()
+    {
+        cardLocations = new Dictionary<Vector2Int, Collection>();
+        tactics = new List<string>();
+        boardName = "Standard Board";
+        lineupName = "Custom Lineup";
+        complete = false;
+    }
+
     public bool IsEmpty()
     {
-        return this == new Lineup();
+        return cardLocations.Count == 0 && tactics.Count == 0;
     }
 }
 

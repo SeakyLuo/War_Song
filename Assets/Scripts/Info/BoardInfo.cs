@@ -16,9 +16,9 @@ public class BoardInfo : MonoBehaviour
     {
         if (standardLocations == null) SetupStandardLocation();
         DataSetup();
-        GameObject.Find("Collections").GetComponent<CollectionGestureHandler>().SetBoardInfo(this);
-        gameObject.transform.parent.parent.parent.GetComponent<LineupBuilder>().SetBoardInfo(this);
-        gameObject.transform.parent.GetComponent<LineupBoardGestureHandler>().SetBoardInfo(this);
+        GameObject.Find("Collection").GetComponent<CollectionGestureHandler>().SetBoardInfo(this);
+        transform.parent.parent.parent.GetComponent<LineupBuilder>().SetBoardInfo(this);
+        transform.parent.GetComponent<LineupBoardGestureHandler>().SetBoardInfo(this);
     }
 
     public void Reset()

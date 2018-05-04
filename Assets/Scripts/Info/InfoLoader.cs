@@ -8,8 +8,6 @@ public class InfoLoader : MonoBehaviour {
 
     public static UserInfo user;
     public static List<BoardAttributes> boards = new List<BoardAttributes>();
-    public GameObject coinsPanel;
-    public Text playerCoinsAmount;
     public static string switchSceneCaller = "Main";
     public static Dictionary<string, PieceAttributes> standardAttributes = new Dictionary<string, PieceAttributes>();
     public PieceAttributes standardGeneral, standardAdvisor, standardElephant, standardHorse, standardChariot, standardCannon, standardSoldier;
@@ -30,7 +28,6 @@ public class InfoLoader : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        playerCoinsAmount.text = user.coins.ToString();
         foreach (string path in Directory.GetDirectories("Assets/Resources/Board/Info"))
             boards.Add(Resources.Load<BoardAttributes>("Board/Info/" + path.Substring(path.IndexOf("Info") + 5) + "/Attributes"));
         boards = Sorted(boards);

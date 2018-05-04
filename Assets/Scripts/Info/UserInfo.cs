@@ -5,7 +5,7 @@ using UnityEngine;
 public class UserInfo {
 
     public string username;
-    public List<Collection> collections;
+    public List<Collection> collection;
     public List<Lineup> lineups;
     public Dictionary<string,int> contracts;
     public int coins, rank, lastLineupSelected, winsToday;
@@ -13,14 +13,13 @@ public class UserInfo {
     public Dictionary<string, Stats> boardResult;
     public List<Challenge> challenges;
     public string preferredBoard = "Standard Board";
+    public string lastModeSelected = "";
+    public int gameID;
 
     public UserInfo()
     {
         username = "WarSong Account";
-        collections = new List<Collection> { new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),
-            new Collection("Soldier Recruitment",5), new Collection("Advisor Recruitment"), new Collection("Greeeeeat Elephant","Elephant",3),
-            new Collection("Tame An Elephant"),new Collection("Purchase An Horse"), new Collection("King Guardian","Advisor", 3),
-            new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100)};
+        collection = new List<Collection>();
         lineups = new List<Lineup>();
         contracts = new Dictionary<string, int>(){
             { "Standard Contract", 0},
@@ -32,9 +31,44 @@ public class UserInfo {
         coins = 0;
         rank = 0;
         lastLineupSelected = -1;
+        winsToday = 0;
         total = new Stats(0,0,0);
         challenges = new List<Challenge>();
         preferredBoard = "Standard Board";
+    }
+
+    public void AddCollection(Collection insert)
+    {
+        int index = 0;
+        if (collection.Count == 0 || insert.LessThan(collection[0])) index = 0;
+        else if (insert.GreaterThan(collection[collection.Count - 1])) index = collection.Count;
+        else
+        {
+            for (int i = 0; i < collection.Count - 1; i++)
+            {
+                if (insert.GreaterThan(collection[i]) && insert.LessThan(collection[i + 1]))
+                {
+                    index = i + 1;
+                    break;
+                }
+                else if (insert.Equals(collection[i]))
+                {
+                    collection[i].count += insert.count;
+                    return;
+                }
+            }
+        }
+        collection.Insert(index, insert);
+    }
+
+    public void ClassToJson()
+    {
+
+    }
+
+    public void JsonToClass()
+    {
+
     }
 }
 
@@ -43,12 +77,16 @@ public class CheatAccount:UserInfo
     public CheatAccount():base()
     {
         username = "WarSong CheatAccount";
-        Collection[] cheat = { new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("A Secret Plan", 3),
+        Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),
+            new Collection("Soldier Recruitment",5), new Collection("Advisor Recruitment"), new Collection("Greeeeeat Elephant","Elephant",3),
+            new Collection("Tame An Elephant"),new Collection("Purchase A Horse"), new Collection("King Guardian","Advisor", 3),
+            new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100), new Collection("Space Witch", "General", 2, 20),
+            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("A Secret Plan", 3),
             new Collection("No Way", 100), new Collection("Qin Shihuang", "General"), new Collection("Xiao He", "General"),new Collection("Turret","Cannon"),
-             new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build A Cannon","Tactic"),
+            new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build A Cannon"),
             new Collection("Build A Rook"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Minesweeper",20)
         };
-        foreach (Collection c in cheat) collections.Add(c);
+        foreach (Collection c in cheat) AddCollection(c);
         lineups = new List<Lineup>()
         {
             new Lineup(
@@ -65,7 +103,7 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Tame An Elephant","Purchase An Horse","Advisor Recruitment","Soldier Recruitment","Minesweeper",
+                    "Tame An Elephant","Purchase A Horse","Advisor Recruitment","Soldier Recruitment","Minesweeper",
                     "A Secret Plan","Buy 1 Get 1 Free","Build A Rook","Winner Trophy","No Way"
                 },
                 "Standard Board",
@@ -86,7 +124,7 @@ public class CheatAccount:UserInfo
                 new List<string>()
                 {
                     "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Soldier Recruitment",
-                    "Advisor Recruitment", "No Way", "Tame An Elephant","Purchase An Horse","Build A Rook"
+                    "Advisor Recruitment", "No Way", "Tame An Elephant","Purchase A Horse","Build A Rook"
                 },
                 "Standard Board",
                 "CheatLineup2"
@@ -106,7 +144,7 @@ public class CheatAccount:UserInfo
                 new List<string>()
                 {
                     "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Soldier Recruitment",
-                    "Advisor Recruitment", "Tame An Elephant","Purchase An Horse","Build A Rook"
+                    "Advisor Recruitment", "Tame An Elephant","Purchase A Horse","Build A Rook"
                 },
                 "Standard Board",
                 "CheatLineup2"

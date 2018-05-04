@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   contractName: Human Resource
-  description: HR will help you recruit 5 human!
+  description: HR will help you recruit 5 human allies!
   image: {fileID: 21300000, guid: 95a9cfd7cdd166b43a17324efa50eef6, type: 3}
   price: 15
   cardTypes:

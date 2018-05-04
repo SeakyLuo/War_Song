@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public Material red, black;
+
     private GameObject PieceInfoCard;
     private GameObject card;
     private Piece piece;
@@ -29,13 +31,16 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         piece = new Piece(collection, loc, isAlly);
         pieceAttributes = FindPieceAttributes(collection.name);
-        gameObject.GetComponentInChildren<Image>().sprite = pieceAttributes.image;
+        GetComponentInChildren<Image>().sprite = pieceAttributes.image;
+        if (isAlly) GetComponent<Renderer>().material = red;
+        else GetComponent<Renderer>().material = black;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         card.SetActive(true);
         card.GetComponent<CardInfo>().SetAttributes(pieceAttributes);
+        card.GetComponent<CardInfo>().SetIsAlly(piece.IsAlly());
         PieceInfoCard.transform.position = newPosition;
     }
 

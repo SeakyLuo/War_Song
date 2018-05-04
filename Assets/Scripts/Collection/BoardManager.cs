@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BoardManager : MonoBehaviour {
 
     public GameObject nextBoardButton, previousBoardButton, confirmButton, preferButton, createLineupButton,
-        createLineupPanel, board;
+        createLineupPanel, board, askPasteOrNot;
     public Text boardName, boardInformation;
     public Image boardImage;
     public BoardAttributes standardBoardAttributes;
@@ -14,6 +14,12 @@ public class BoardManager : MonoBehaviour {
     private List<BoardAttributes> boardAttributes;
     private int currentBoard = 0;
     private GameObject loadedBoard;
+
+    private void OnEnable()
+    {
+        if (!LineupBuilder.copy.IsEmpty())
+            askPasteOrNot.SetActive(true);
+    }
 
     private void Start()
     {
@@ -54,6 +60,14 @@ public class BoardManager : MonoBehaviour {
         }            
     }
 
+    public void PreferBoard()
+    {
+        if (boardAttributes[currentBoard].available)
+        {
+            InfoLoader.user.preferredBoard = boardAttributes[currentBoard].boardName;
+        }
+    }
+
     public void ConfirmBoardSelection()
     {
         gameObject.SetActive(false);
@@ -72,6 +86,19 @@ public class BoardManager : MonoBehaviour {
         loadedBoard.transform.localPosition = new Vector3(0, 0, 0);
         loadedBoard.SetActive(true);
         loadedBoard.GetComponent<BoardInfo>().SetAttributes(attributes, newLocations);
+    }
+
+    public void PasteLineup()
+    {
+        askPasteOrNot.SetActive(false);
+        LoadBoard(LineupBuilder.copy);
+        ConfirmBoardSelection();
+    }
+
+    public void DontPasteLineup()
+    {
+        askPasteOrNot.SetActive(false);
+        LineupBuilder.copy.Clear();
     }
 
     public void DestroyBoard()

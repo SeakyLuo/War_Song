@@ -6,23 +6,14 @@ public class CardInfo : MonoBehaviour {
     public PieceAttributes piece;
     public TacticAttributes tactic;
 
-    public Text nameText, descriptionText, costText, healthText;
-    public Image image;
-    public GameObject HealthImage, Background;
-    public static Sprite heartImage, coinImage;
+    public Text nameText, descriptionText, costText, healthText, coinText, typeText;
+    public Image image, background;
+    public GameObject healthImage, coinImage;
+    public Sprite allyBackground, enemyBackground;
 
     private string cardName, type, description;
     private int health = 1;
-
-    public CardInfo() { }
-
-    private void Start()
-    {
-        heartImage = Resources.Load<Sprite>("Main/heart");
-        coinImage = Resources.Load<Sprite>("Main/coin");
-        if (piece != null) SetAttributes(piece);
-        else if (tactic != null) SetAttributes(tactic);
-    }
+    private bool isAlly = true;
 
     public void SetAttributes(CardInfo cardInfo)
     {
@@ -34,22 +25,28 @@ public class CardInfo : MonoBehaviour {
             health = cardInfo.GetHealth();
             if (health == 0) healthText.text = "∞";
             else healthText.text = health.ToString();
+            healthText.color = cardInfo.healthText.color;
         }
+        isAlly = cardInfo.isAlly;
+        background.sprite = cardInfo.background.sprite;
     }
 
     public void SetAttributes(Collection collection)
     {
         if (collection == null) return;
-        if(collection.type == "Tactic")
+        if (collection.type == "Tactic")
             SetAttributes(Resources.Load<TacticAttributes>("Tactics/Info/" + collection.name + "/Attributes"));
         else
         {
             SetAttributes(Resources.Load<PieceAttributes>("Pieces/Info/" + collection.name + "/Attributes"));
             if (collection.health != 0 && health != collection.health)
-            {                
+            {
+                if (health > collection.health) healthText.color = Color.red;
+                else healthText.color = Color.green;
                 health = collection.health;
                 healthText.text = collection.health.ToString();
-            }            
+            }
+            else healthText.color = Color.white;
         }
     }
 
@@ -66,12 +63,13 @@ public class CardInfo : MonoBehaviour {
         descriptionText.text = attributes.description;
         costText.text = attributes.oreCost.ToString();
         health = attributes.health;
-        healthText.color = Color.white;
+        healthImage.SetActive(true);
+        coinImage.SetActive(false);
         if (health == 0) healthText.text = "∞";
         else healthText.text = attributes.health.ToString();
         image.sprite = attributes.image;
         type = attributes.type;
-        HealthImage.GetComponent<Image>().sprite = heartImage;
+        typeText.text = type;
     }
 
     public void SetAttributes(TacticAttributes attributes)
@@ -84,12 +82,13 @@ public class CardInfo : MonoBehaviour {
         description = attributes.description;
         descriptionText.text = attributes.description;
         costText.text = attributes.oreCost.ToString();
+        healthImage.SetActive(false);
+        coinImage.SetActive(true);
         health = attributes.goldCost;
-        healthText.text = attributes.goldCost.ToString();
-        healthText.color = Color.black;
+        coinText.text = attributes.goldCost.ToString();
         image.sprite = attributes.image;
         type = "Tactic";
-        HealthImage.GetComponent<Image>().sprite = coinImage;
+        typeText.text = type;
     }
 
     public void Clear()
@@ -100,10 +99,9 @@ public class CardInfo : MonoBehaviour {
         descriptionText.text = "Description";
         costText.text = "0";
         healthText.text = "0";
-        healthText.color = Color.white;
+        coinText.text = "0";
         image.sprite = null;
-        type = "";
-        HealthImage.GetComponent<Image>().sprite = heartImage;
+        cardName = type = description = "";
     }
 
     public string GetCardName() { return cardName; }
@@ -111,4 +109,10 @@ public class CardInfo : MonoBehaviour {
     public int GetHealth() { return health; }
     public string GetDescription() { return description; }
     public bool IsStandard() { return cardName.StartsWith("Standard "); }
+    public void SetIsAlly(bool value)
+    {
+        isAlly = value;
+        if(value) background.sprite = allyBackground;
+        else background.sprite = enemyBackground;
+    }
 }

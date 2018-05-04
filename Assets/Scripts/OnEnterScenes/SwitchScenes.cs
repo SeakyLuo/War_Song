@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject playerInfoPanel, settingsPanel, optionsPanel;
+    public GameObject playerInfoPanel, settingsPanel, optionsPanel, challengeToday;
     public Text winText, loseText, drawText, percentageText;
     public Text rank, title;
 
@@ -13,8 +13,12 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        parentCanvas = gameObject.GetComponent<Canvas>();
+        parentCanvas = GetComponent<Canvas>();
         SetPlayerInfo();
+        if (InfoLoader.user.challenges.Count != 0)
+        {
+            challengeToday.SetActive(true);
+        }
     }
 
     private void Update()
@@ -50,8 +54,8 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     public void ShowPlayerInfo()
     {
-        playerInfoPanel.SetActive(true);
         SetPlayerInfo();
+        playerInfoPanel.SetActive(true);
     }
 
     public void ChangeChallenge()
@@ -61,7 +65,8 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (playerInfoPanel.activeSelf)
+        if (challengeToday.activeSelf) challengeToday.SetActive(false);
+        else if (playerInfoPanel.activeSelf)
         {
             Vector2 mousePosition = AdjustedMousePosition();
             Rect rect = playerInfoPanel.GetComponent<RectTransform>().rect;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Minesweeper
-  description: Remove all landmines
+  description: Remove all Traps
   goldCost: 3
   oreCost: 0
   image: {fileID: 21300000, guid: a882ad9c84fedbf4492823de20710432, type: 3}

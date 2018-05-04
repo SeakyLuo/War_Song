@@ -8,7 +8,9 @@ public class Collection
     public int count = 1;
     public int health = 0;
 
-    public static string[] types = new string[] { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
+    private int oreCost = 0; //tmp
+
+    public static List<string> types = new List<string> { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
     public static Collection General = standardCollection("General");
     public static Collection Advisor = standardCollection("Advisor");
     public static Collection Elephant = standardCollection("Elephant");
@@ -35,7 +37,8 @@ public class Collection
         type = attributes.type;
         count = Count;
         health = Health;
-        if (health == 0) health = attributes.health;
+        if (Health == 0) health = attributes.health;
+        oreCost = attributes.oreCost;
     }
 
     public Collection(string tacticName, int Count = 1)
@@ -43,7 +46,9 @@ public class Collection
         name = tacticName;
         type = "Tactic";
         count = Count;
-        health = Resources.Load<TacticAttributes>("Tactics/Info/" + tacticName + "/Attributes").goldCost;
+        TacticAttributes attributes = Resources.Load<TacticAttributes>("Tactics/Info/" + tacticName + "/Attributes");
+        health = attributes.goldCost;
+        oreCost = attributes.oreCost;
     }
 
     public Collection(TacticAttributes attributes, int Count = 1)
@@ -52,6 +57,7 @@ public class Collection
         type = "Tactic";
         count = Count;
         health = attributes.goldCost;
+        oreCost = attributes.oreCost;
     }
 
     public Collection(string Name, string Type, int Count = 1, int Health = 0)
@@ -60,8 +66,18 @@ public class Collection
         type = Type;
         count = Count;
         health = Health;
-        if (Type == "Tactic") health = Resources.Load<TacticAttributes>("Tactics/Info/" + Name + "/Attributes").goldCost;
-        else if (Health == 0 && !Name.StartsWith("Standard ")) health = Resources.Load<PieceAttributes>("Pieces/Info/" + Name + "/Attributes").health;
+        if (Type == "Tactic")
+        {
+            TacticAttributes attributes = Resources.Load<TacticAttributes>("Tactics/Info/" + Name + "/Attributes");
+            health = attributes.goldCost;
+            oreCost = attributes.oreCost;
+        }
+        else if (!Name.StartsWith("Standard "))
+        {
+            PieceAttributes attributes = Resources.Load<PieceAttributes>("Pieces/Info/" + Name + "/Attributes");
+            if (Health == 0) health = attributes.health;
+            oreCost = attributes.oreCost;
+        }
     }
 
     public static Collection standardCollection(string type)
@@ -72,5 +88,33 @@ public class Collection
     public bool IsEmpty()
     {
         return name == "" && type == "" && count == 1 && health == 0;
+    }
+
+    public bool LessThan(Collection collection)
+    {
+        if(type == "Tactic" && collection.type == type)
+        {
+            return (oreCost < collection.oreCost) ||
+                    (oreCost == collection.oreCost && health < collection.health) ||
+                    (oreCost == collection.oreCost && health == collection.health && name.CompareTo(collection.name) < 0);
+        }
+        else
+        {
+            int typeIndex = types.IndexOf(type), collectionTypeIndex = types.IndexOf(collection.type);
+            return (typeIndex < collectionTypeIndex) ||
+                   (typeIndex == collectionTypeIndex && oreCost < collection.oreCost) ||
+                   (typeIndex == collectionTypeIndex && oreCost == collection.oreCost && name.CompareTo(collection.name) < 0) ||
+                   (typeIndex == collectionTypeIndex && name == collection.name && health < collection.health);
+        }
+    }
+
+    public bool GreaterThan(Collection collection)
+    {
+        return !LessThan(collection) && !Equals(collection);
+    }
+
+    public bool Equals(Collection collection)
+    {
+        return type == collection.type && oreCost == collection.oreCost && name == collection.name && health == collection.health;
     }
 }

@@ -7,16 +7,17 @@ using UnityEngine.EventSystems;
 
 public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Canvas parentCanvas;
-    public GameObject collectionPanel, createLineupPanel, card;
     public static string GRIDSLOTPANEL = "GridSlotPanel";
+    public static bool dragBegins;
     public static float xscale = Screen.width / 1920, yscale = Screen.width / 1080;
 
-    private GameObject selectedObject, clickedObject, mouseOver, showCardInfo, dragCard;
+    public Canvas parentCanvas;
+    public GameObject collectionPanel, createLineupPanel, infoCard, cantSwitch;
+
+    private GameObject selectedObject, clickedObject, mouseOver, showCardInfo;
     private Transform parent;
     private CollectionManager collectionManager;
     private BoardInfo boardInfo;
-    private bool dragBegins;
     private Image cardImage;
     private Color tmpColor;
 
@@ -34,17 +35,16 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         {
             dragBegins = true;            
             EnableImage(cardImage, false);
-            dragCard = Instantiate(card, parentCanvas.transform);
-            dragCard.SetActive(true);
-            dragCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[StringToVec2(parent.name)]);
-            dragCard.transform.position = AdjustedMousePosition();
+            infoCard.SetActive(true);
+            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[StringToVec2(parent.name)]);
+            infoCard.transform.position = AdjustedMousePosition();
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (!dragBegins) return;
-        dragCard.transform.position = AdjustedMousePosition();
+        infoCard.transform.position = AdjustedMousePosition();
     }
 
     public string FindLoc(Vector3 loc)
@@ -58,10 +58,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
     {
         if (!dragBegins) return;
         dragBegins = false;
-        if (!dragCard.GetComponent<CardInfo>().GetCardName().StartsWith("Standard "))
+        if (!infoCard.GetComponent<CardInfo>().IsStandard())
         {
             cardImage.GetComponent<Image>().sprite = null;
-            CardInfo newCard = dragCard.GetComponent<CardInfo>();
+            CardInfo newCard = infoCard.GetComponent<CardInfo>();
             GameObject find = GameObject.Find(FindLoc(Input.mousePosition));
             if (find != null)
             {
@@ -82,13 +82,14 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                     else
                     {
                         // Show Animation: Can't Switch
-                        cardImage.GetComponent<Image>().sprite = dragCard.GetComponent<CardInfo>().piece.image;
+                        StartCoroutine(ShowCantSwitch());
+                        cardImage.GetComponent<Image>().sprite = infoCard.GetComponent<CardInfo>().piece.image;
                     }
                 }
                 else
                 {
                     // Drag to an empty spot and resume.
-                    cardImage.GetComponent<Image>().sprite = dragCard.GetComponent<CardInfo>().piece.image;
+                    cardImage.GetComponent<Image>().sprite = infoCard.GetComponent<CardInfo>().piece.image;
                 }
             }
             else
@@ -99,12 +100,19 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                 boardInfo.SetStandardCard(cardType, StringToVec2(parent.name));
                 collectionManager.RemoveCollection(Collection.standardCollectionDict[cardType]);
                 cardImage.sprite = InfoLoader.standardAttributes["Standard " + cardType].image;
-                // drag to a card to switch?
+                // drag to a infoCard to switch?
             }
         }
         EnableImage(cardImage);
-        Destroy(dragCard);
-    }    
+        infoCard.SetActive(false);
+    }
+
+    private IEnumerator ShowCantSwitch()
+    {
+        cantSwitch.SetActive(true);
+        yield return new WaitForSeconds(1.0f);
+        cantSwitch.SetActive(false);
+    }
 
     private void EnableImage(Image image, bool enable = true)
     {
@@ -123,8 +131,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
             collectionManager.ClickTab(cardType);
         }
     }
-
-    private string Vec2ToString(Vector2Int v) { return v.x.ToString() + v.y.ToString(); }
+    
     private Vector2Int StringToVec2(string loc) { return new Vector2Int((int)Char.GetNumericValue(loc[0]), (int)Char.GetNumericValue(loc[1])); }
 
     private Vector3 AdjustedMousePosition()
