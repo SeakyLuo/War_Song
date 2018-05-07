@@ -59,14 +59,11 @@ public class LineupBuilder : MonoBehaviour {
 
     public void AddPiece(CardInfo cardInfo, Vector3 loc)
     {
-        int x = (int)Mathf.Floor((loc.x - 380) / 100);
-        int y = (int)Mathf.Floor((loc.y - 10) / 100);
+        Vector2Int location = LineupBoardGestureHandler.FindLoc(loc);
         string cardType,
-               locName = x.ToString() + y.ToString();
+               locName = InfoLoader.Vec2ToString(location);
         if (boardInfo.locationType.TryGetValue(locName, out cardType) && cardType == cardInfo.GetCardType())
-        {
-            PieceAdder(cardInfo, new Vector2Int(x, y), x, y);
-        }
+            PieceAdder(cardInfo, location, location.x, location.y);
     }
 
     private void PieceAdder(CardInfo cardInfo, Vector2Int loc, int locx, int locy)
@@ -77,8 +74,8 @@ public class LineupBuilder : MonoBehaviour {
         lineup.cardLocations[loc] = newCollection;
         lineupBoard.Find(locName).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
         collectionManager.RemoveCollection(newCollection);
-        // Bug with next line, count is not 1
         collectionManager.AddCollection(boardInfo.cardLocations[loc]);
+        collectionManager.ShowCurrentPage();
         boardInfo.SetCard(newCollection, loc);        
     }
 
@@ -91,18 +88,18 @@ public class LineupBuilder : MonoBehaviour {
         }
         else if (InTactics(cardInfo.GetCardName()))
         {
-            // show animation;
             StartCoroutine(SameTacticReminder());
             return;
         }
         TacticAdder(cardInfo.tactic);
         collectionManager.RemoveCollection(new Collection(cardInfo.GetCardName()));
+        collectionManager.ShowCurrentPage();
     }
 
     private void AddTactic(string TacticName)
     {
         // called by progrommer
-        TacticAdder(Resources.Load<TacticAttributes>("Tactics/Info/" + TacticName + "/Attributes"));
+        TacticAdder(Resources.Load<TacticAttributes>("Tactics/" + TacticName + "/Attributes"));
     }
 
     private void TacticAdder(TacticAttributes attributes)
@@ -137,6 +134,7 @@ public class LineupBuilder : MonoBehaviour {
         if (current_tactics == 0) return;
         TacticRemover(attributes);
         collectionManager.AddCollection(new Collection(attributes.Name));
+        collectionManager.ShowCurrentPage();
     }
     
     private void RemoveTactic(string TacticName)
@@ -165,8 +163,8 @@ public class LineupBuilder : MonoBehaviour {
     {
         // attributes1 less than attributes2
         return attributes1.oreCost < attributes2.oreCost ||
-            (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost < attributes2.goldCost) ||
-            (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost == attributes2.goldCost && attributes1.Name.CompareTo(attributes2.Name) < 0);
+              (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost < attributes2.goldCost) ||
+              (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost == attributes2.goldCost && attributes1.Name.CompareTo(attributes2.Name) < 0);
     }
 
     private bool GreaterThan(TacticAttributes attributes1, TacticAttributes attributes2)
@@ -197,8 +195,6 @@ public class LineupBuilder : MonoBehaviour {
 
     private void SetTexts()
     {
-        //if (totalOreCost > 30) totalOreCostText.color = Color.red;
-        //else totalOreCostText.color = Color.white;
         totalOreCostText.text = totalOreCost.ToString();
         totalGoldCostText.text = totalGoldCost.ToString();
         tacticsCountText.text = "Tactics\n" + lineup.tactics.Count.ToString() + "/10";
@@ -245,8 +241,12 @@ public class LineupBuilder : MonoBehaviour {
             foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
                 collectionManager.AddCollection(pair.Value);
             foreach (string tactic in lineup.tactics)
+            {
+                RemoveTactic(tactic);
                 collectionManager.AddCollection(new Collection(tactic));
+            }
             collectionManager.RemoveStandardCards();
+            collectionManager.ShowCurrentPage();
         }
         lineup = new Lineup();
         inputField.text = "Custom Lineup";
@@ -317,6 +317,4 @@ public class LineupBuilder : MonoBehaviour {
     }
 
     public void SetBoardInfo(BoardInfo info) { boardInfo = info; }
-
-    private string Vector2IntToString(Vector2Int v) { return v.x.ToString() + v.y.ToString(); }
 }

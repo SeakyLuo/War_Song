@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 public class TacticInfo : MonoBehaviour {
 
-    public TacticAttributes tactic;
+    [HideInInspector] public TacticAttributes tactic;
     public Text Name, oreCost, goldCost;
     public Image image;
-    private bool active = true;
+    [HideInInspector] public Trigger trigger;
+    [HideInInspector] public bool active = true;
 
     public void SetAttributes(TacticAttributes attributes)
     {
@@ -15,6 +16,7 @@ public class TacticInfo : MonoBehaviour {
         oreCost.text = attributes.oreCost.ToString();
         goldCost.text = attributes.goldCost.ToString();
         image.sprite = attributes.image;
+        trigger = tactic.trigger;
     }
 
     public void Clear()
@@ -25,7 +27,4 @@ public class TacticInfo : MonoBehaviour {
         goldCost.text = "0";
         image.sprite = null;
     }
-
-    public bool IsActive() { return active; }
-    public void SetActive(bool value) { active = value; }
 }

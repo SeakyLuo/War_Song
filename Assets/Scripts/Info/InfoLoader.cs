@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -28,9 +29,9 @@ public class InfoLoader : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        foreach (string path in Directory.GetDirectories("Assets/Resources/Board/Info"))
-            boards.Add(Resources.Load<BoardAttributes>("Board/Info/" + path.Substring(path.IndexOf("Info") + 5) + "/Attributes"));
-        boards = Sorted(boards);
+        boards.Add(Resources.Load<BoardAttributes>("Board/Standard Board/Attributes"));
+        boards.Add(Resources.Load<BoardAttributes>("Board/River Board/Attributes"));
+        //boards = Sorted(boards);
     }
 
     // Needs Sort By Last Use
@@ -51,4 +52,7 @@ public class InfoLoader : MonoBehaviour {
         newList.Insert(0, standardBoard);
         return newList;
     }
+
+    public static string Vec2ToString(Vector2Int vec) { return vec.x.ToString() + vec.y.ToString(); }
+    public static Vector2Int StringToVec2(string loc) { return new Vector2Int((int)Char.GetNumericValue(loc[0]), (int)Char.GetNumericValue(loc[1])); }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ActivateContractStore : MonoBehaviour {
 
-    public GameObject popupInputAmountWindow, displayContractsPanel, contractPanel, contractPrefab, standardContract;
+    public GameObject popupInputAmountWindow, displayContractsPanel, contractPanel, contractPrefab, standardContract, unsuccessfulPurchase, successfulPurchase;
     public Text priceText, contractsAmount, playerCoinsAmount, contractDescription;
     public InputField inputField;
 
@@ -51,7 +51,7 @@ public class ActivateContractStore : MonoBehaviour {
     {
         current_contract = contract.GetComponent<ContractInfo>().attributes;
         priceText.text = (current_contract.price * contractsCount).ToString();
-        contractDescription.text = current_contract.description.Replace("\\n", "\n");
+        contractDescription.text = current_contract.description;
         foreach(GameObject obj in contracts) obj.GetComponent<PlayerContract>().SetAttributes(current_contract);
     }
 
@@ -63,10 +63,12 @@ public class ActivateContractStore : MonoBehaviour {
             InfoLoader.user.coins -= price;
             playerCoinsAmount.text = InfoLoader.user.coins.ToString();
             contractsManager.AddContract(current_contract, contractsCount);
+            successfulPurchase.SetActive(true);
             // Show Purchase Successful
         }
         else
         {
+            unsuccessfulPurchase.SetActive(true);
             // Show Purchase Unsuccessful
         }
     }

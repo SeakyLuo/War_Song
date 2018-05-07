@@ -1,6 +1,6 @@
 ﻿using System;
-using UnityEngine;
 
+[Serializable]
 public class Stats {
 
     public int gamesPlayed = 0;

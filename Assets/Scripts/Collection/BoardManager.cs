@@ -29,16 +29,16 @@ public class BoardManager : MonoBehaviour {
 
     public void NextBoard()
     {
-        if (++currentBoard == boardAttributes.Count - 1)
-            nextBoardButton.SetActive(false);
+        if (++currentBoard == boardAttributes.Count - 1) nextBoardButton.SetActive(false);
+        else nextBoardButton.SetActive(true);
         previousBoardButton.SetActive(true);
         DisplayBoardSelectionInterface();
     }
 
     public void PreviousBoard()
     {
-        if (--currentBoard == 0)
-            previousBoardButton.SetActive(false);
+        if (--currentBoard == 0) previousBoardButton.SetActive(false);
+        else previousBoardButton.SetActive(true);
         nextBoardButton.SetActive(true);
         DisplayBoardSelectionInterface();
     }
@@ -77,12 +77,12 @@ public class BoardManager : MonoBehaviour {
 
     public void LoadBoard(Lineup lineup)
     {
-        LoadBoard(Resources.Load<BoardAttributes>("Board/Info/" + lineup.boardName + "/Attributes"), lineup.cardLocations);
+        LoadBoard(Resources.Load<BoardAttributes>("Board/" + lineup.boardName + "/Attributes"), lineup.cardLocations);
     }
 
     public void LoadBoard(BoardAttributes attributes, Dictionary<Vector2Int, Collection> newLocations = null)
     {
-        loadedBoard = Instantiate(Resources.Load<GameObject>("Board/Info/" + attributes.boardName + "/LineupBoard"), board.transform);
+        loadedBoard = Instantiate(Resources.Load<GameObject>("Board/" + attributes.boardName + "/LineupBoard"), board.transform);
         loadedBoard.transform.localPosition = new Vector3(0, 0, 0);
         loadedBoard.SetActive(true);
         loadedBoard.GetComponent<BoardInfo>().SetAttributes(attributes, newLocations);

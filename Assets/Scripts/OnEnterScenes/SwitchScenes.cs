@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject playerInfoPanel, settingsPanel, optionsPanel, challengeToday;
+    public GameObject playerInfoPanel, settingsPanel, optionsPanel, missionToday;
     public Text winText, loseText, drawText, percentageText;
     public Text rank, title;
 
@@ -15,9 +15,9 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
     {
         parentCanvas = GetComponent<Canvas>();
         SetPlayerInfo();
-        if (InfoLoader.user.challenges.Count != 0)
+        if (InfoLoader.user.missions.Count != 0)
         {
-            challengeToday.SetActive(true);
+            missionToday.SetActive(true);
         }
     }
 
@@ -58,14 +58,14 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
         playerInfoPanel.SetActive(true);
     }
 
-    public void ChangeChallenge()
+    public void ChangeMission()
     {
 
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (challengeToday.activeSelf) challengeToday.SetActive(false);
+        if (missionToday.activeSelf) missionToday.SetActive(false);
         else if (playerInfoPanel.activeSelf)
         {
             Vector2 mousePosition = AdjustedMousePosition();

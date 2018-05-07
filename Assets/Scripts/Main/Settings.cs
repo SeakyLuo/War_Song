@@ -47,6 +47,7 @@ public class Settings : MonoBehaviour, IPointerClickHandler
             optionsPanel.SetActive(false);            
         }
         gameObject.SetActive(!gameObject.activeSelf);
+        if(SceneManager.GetActiveScene().name == "GameMode") MovementController.PutDownPiece();
     }
 
     public void ConfirmLogout()

@@ -5,13 +5,14 @@ using UnityEngine;
 public class UserInfo {
 
     public string username;
+    public int playerID;
     public List<Collection> collection;
     public List<Lineup> lineups;
     public Dictionary<string,int> contracts;
     public int coins, rank, lastLineupSelected, winsToday;
     public Stats total;
     public Dictionary<string, Stats> boardResult;
-    public List<Challenge> challenges;
+    public List<Mission> missions;
     public string preferredBoard = "Standard Board";
     public string lastModeSelected = "";
     public int gameID;
@@ -33,7 +34,7 @@ public class UserInfo {
         lastLineupSelected = -1;
         winsToday = 0;
         total = new Stats(0,0,0);
-        challenges = new List<Challenge>();
+        missions = new List<Mission>();
         preferredBoard = "Standard Board";
     }
 
@@ -77,6 +78,7 @@ public class CheatAccount:UserInfo
     public CheatAccount():base()
     {
         username = "WarSong CheatAccount";
+        playerID = 12345789;
         Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),
             new Collection("Soldier Recruitment",5), new Collection("Advisor Recruitment"), new Collection("Greeeeeat Elephant","Elephant",3),
             new Collection("Tame An Elephant"),new Collection("Purchase A Horse"), new Collection("King Guardian","Advisor", 3),
@@ -112,14 +114,14 @@ public class CheatAccount:UserInfo
             new Lineup(
                 new Dictionary<Vector2Int, Collection>()
                 {
-                    {new Vector2Int(4,0), new Collection("Space Witch", "General") },
-                    {new Vector2Int(3,0), new Collection("King Guardian","Advisor", 3) },{new Vector2Int(5,0), new Collection("King Guardian","Advisor", 3) },
+                    {new Vector2Int(4,0), new Collection("Space Witch", "General",1 , 9) },
+                    {new Vector2Int(3,0), new Collection("King Guardian","Advisor", 1, 4) },{new Vector2Int(5,0), new Collection("King Guardian","Advisor") },
                     {new Vector2Int(2,0), new Collection("Greeeeeat Elephant", "Elephant") },{new Vector2Int(6,0), new Collection("Greeeeeat Elephant", "Elephant")},
-                    {new Vector2Int(1,0), new Collection("Horse Rider","Horse",4) },{new Vector2Int(7,0), new Collection("Horse Rider","Horse",4) },
+                    {new Vector2Int(1,0), new Collection("Horse Rider","Horse") },{new Vector2Int(7,0), new Collection("Horse Rider","Horse") },
                     {new Vector2Int(0,0), new Collection("Monster Hunter","Chariot") },{new Vector2Int(8,0), new Collection("Monster Hunter","Chariot") },
                     {new Vector2Int(1,2), new Collection("Turret","Cannon") },{new Vector2Int(7,2), new Collection("Turret","Cannon") },
-                    {new Vector2Int(0,3), new Collection("Fat Soldier", "Soldier",4) },{new Vector2Int(2,3), new Collection("Link Soldier","Soldier",11) },
-                    {new Vector2Int(4,3), new Collection("Link Soldier","Soldier",11) },{new Vector2Int(6,3), new Collection("Link Soldier","Soldier",11) },{new Vector2Int(8,3), new Collection("Fat Soldier", "Soldier",4) }
+                    {new Vector2Int(0,3), new Collection("Fat Soldier", "Soldier") },{new Vector2Int(2,3), new Collection("Link Soldier","Soldier") },
+                    {new Vector2Int(4,3), new Collection("Link Soldier","Soldier") },{new Vector2Int(6,3), new Collection("Link Soldier","Soldier") },{new Vector2Int(8,3), new Collection("Fat Soldier", "Soldier") }
                 },
                 new List<string>()
                 {
@@ -160,7 +162,7 @@ public class CheatAccount:UserInfo
         };
         coins = 99999;
         rank = 9999;
-        lastLineupSelected = -1;
+        lastLineupSelected = 1;
         total = new Stats(10, 1, 1);
         preferredBoard = "Standard Board";
     }

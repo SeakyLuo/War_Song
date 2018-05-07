@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
+[System.Serializable]
 [CreateAssetMenu(fileName = "Attributes", menuName = "Board")]
 public class BoardAttributes : ScriptableObject {
 
@@ -9,10 +11,13 @@ public class BoardAttributes : ScriptableObject {
     public int boardWidth = 9;
     public int boardHeight = 10;
     public int allyField = 4;
+    [TextArea(2, 3)]
     public string description;
 
     public Vector2Int palaceDownLeft = new Vector2Int(3, 0);
     public Vector2Int palaceUpperRight = new Vector2Int(5, 2);
+    public Vector2Int enemyPalaceDownLeft = new Vector2Int(3, 7);
+    public Vector2Int enemyPalaceUpperRight = new Vector2Int(5, 9);
 
     public Vector2Int asloc1 = new Vector2Int(0, 3);
     public Vector2Int asloc2 = new Vector2Int(2, 3);
@@ -48,4 +53,14 @@ public class BoardAttributes : ScriptableObject {
     public Vector2Int ealoc2 = new Vector2Int(5, 9);
     public Vector2Int egloc = new Vector2Int(4, 9);
 
+    public List<Vector2Int> AdvisorCastle() { return new List<Vector2Int> { aaloc1, aaloc2 }; }
+    public List<Vector2Int> ElephantCastle() { return new List<Vector2Int> { aeloc1, aeloc2 }; }
+    public List<Vector2Int> HorseCastle() { return new List<Vector2Int> { ahloc1, ahloc2 }; }
+    public List<Vector2Int> ChariotCastle() { return new List<Vector2Int> { arloc1, arloc2 }; }
+    public List<Vector2Int> CannonCastle() { return new List<Vector2Int> { acloc1, acloc2 }; }
+    public List<Vector2Int> SoldierCastle() { return new List<Vector2Int> { asloc1, asloc2, asloc3, asloc4, asloc5 }; }
+    public bool InPalace(int x, int y) { return palaceDownLeft.x <= x && x <= palaceUpperRight.x && palaceDownLeft.y <= y && y <= palaceUpperRight.y; }
+    public bool InEnemyPalace(int x, int y) { return enemyPalaceDownLeft.x <= x && x <= enemyPalaceUpperRight.x && enemyPalaceDownLeft.y <= y && y <= enemyPalaceUpperRight.y; }
+    public bool InAllyField(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y <= allyField; }
+    public bool InBoard(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y < boardHeight; }
 }

@@ -73,7 +73,6 @@ public class CollectionManager : MonoBehaviour {
             collectionDict[collection.type].Add(collection);
             SetPageLimits();
         }
-        ShowCurrentPage();
     }
 
     public bool RemoveCollection(Collection collection)
@@ -94,7 +93,6 @@ public class CollectionManager : MonoBehaviour {
             collectionDict[found.type].Remove(found);
             SetPageLimits();
         }
-        ShowCurrentPage();
         return true;
     }
 
@@ -226,27 +224,16 @@ public class CollectionManager : MonoBehaviour {
             collection = collectionOfType[previousCards + i];
             card.GetComponent<CardInfo>().SetAttributes(collection);
             card.SetActive(true);
-            if (collection.count == 1)
-            {
-                counters[i].text = "";
-                counters[i].transform.parent.gameObject.SetActive(false);
-            }
-            else if (collection.count > 99)
-            {
-                counters[i].text = "×99+";
-                counters[i].transform.parent.gameObject.SetActive(true);
-            }
-            else
-            {
-                counters[i].text = "×" + collection.count.ToString();
-                counters[i].transform.parent.gameObject.SetActive(true);
-            }
+            if (collection.count == 1) counters[i].text = "";
+            else if (collection.count > 99) counters[i].text = "×99+";
+            else counters[i].text = "×" + collection.count.ToString();
+            counters[i].transform.parent.gameObject.SetActive(collection.count != 1);
         }
     }
 
     public void PreviousPage()
     {
-        // Turn page animatioin    
+        // Turn page animation    
         string type = currentPage.Key;
         int page = currentPage.Value;
         if (currentPage.Value == 1)
@@ -353,8 +340,8 @@ public class CollectionManager : MonoBehaviour {
             foreach (Collection collection in searchedCollections)
             {
                 int oreCost;
-                if (collection.type == "Tactic") oreCost = Resources.Load<TacticAttributes>("Tactics/Info/" + collection.name + "/Attributes").oreCost;
-                else oreCost = Resources.Load<PieceAttributes>("Pieces/Info/" + collection.name + "/Attributes").oreCost;
+                if (collection.type == "Tactic") oreCost = Resources.Load<TacticAttributes>("Tactics/" + collection.name + "/Attributes").oreCost;
+                else oreCost = Resources.Load<PieceAttributes>("Pieces/" + collection.name + "/Attributes").oreCost;
                 if ((ore == 5 && oreCost >= ore) ||
                     (ore < 5 && oreCost == ore))
                     newSearched.Add(collection);
@@ -369,7 +356,7 @@ public class CollectionManager : MonoBehaviour {
                 if (collection.type != "Tactic")
                 {
                     // IDK whether ∞ is 5+ or not
-                    int Health = Resources.Load<PieceAttributes>("Pieces/Info/" + collection.name + "/Attributes").health;
+                    int Health = Resources.Load<PieceAttributes>("Pieces/" + collection.name + "/Attributes").health;
                     if ((health == 0 && Health == health) ||
                         (health == 5 && Health >= health) ||
                         (health < 5 && Health == health))

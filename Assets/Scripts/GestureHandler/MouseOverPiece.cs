@@ -12,7 +12,7 @@ public class MouseOverPiece : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         infoCard = transform.parent.parent.parent.parent.parent.Find("InfoCard").gameObject;
         boardInfo = transform.parent.GetComponent<BoardInfo>();
-        nameLoc = StringToVec2(gameObject.name);
+        nameLoc = InfoLoader.StringToVec2(gameObject.name);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -21,13 +21,11 @@ public class MouseOverPiece : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         infoCard.SetActive(true);
         infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[nameLoc]);
         // could be closer
-        infoCard.transform.position = transform.localPosition;
+        infoCard.transform.position = transform.position - new Vector3(0, infoCard.GetComponent<RectTransform>().rect.y + GetComponent<RectTransform>().rect.y);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!LineupBoardGestureHandler.dragBegins && infoCard.activeSelf) infoCard.SetActive(false);
     }
-
-    private Vector2Int StringToVec2(string loc) { return new Vector2Int((int)Char.GetNumericValue(loc[0]), (int)Char.GetNumericValue(loc[1])); }
 }

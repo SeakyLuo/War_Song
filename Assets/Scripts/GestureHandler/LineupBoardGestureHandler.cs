@@ -9,10 +9,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
 {
     public static string GRIDSLOTPANEL = "GridSlotPanel";
     public static bool dragBegins;
-    public static float xscale = Screen.width / 1920, yscale = Screen.width / 1080;
 
-    public Canvas parentCanvas;
     public GameObject collectionPanel, createLineupPanel, infoCard, cantSwitch;
+
+    private static float offsetLeft, offsetRight, offsetDown, offsetUp;
 
     private GameObject selectedObject, clickedObject, mouseOver, showCardInfo;
     private Transform parent;
@@ -24,6 +24,12 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
     private void Start()
     {
         collectionManager = collectionPanel.GetComponent<CollectionManager>();
+        Rect boardRect = transform.Find("LineupBoard(Clone)").GetComponent<RectTransform>().rect,
+             parentRect = transform.parent.GetComponent<RectTransform>().rect;
+        offsetLeft = boardRect.x + transform.localPosition.x - parentRect.x;
+        offsetRight = boardRect.width + offsetLeft;
+        offsetDown = boardRect.y - parentRect.y;
+        offsetUp = parentRect.height - offsetDown;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -36,22 +42,22 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
             dragBegins = true;            
             EnableImage(cardImage, false);
             infoCard.SetActive(true);
-            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[StringToVec2(parent.name)]);
-            infoCard.transform.position = AdjustedMousePosition();
+            infoCard.transform.position = Input.mousePosition;
+            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[InfoLoader.StringToVec2(parent.name)]);
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (!dragBegins) return;
-        infoCard.transform.position = AdjustedMousePosition();
+        infoCard.transform.position = Input.mousePosition;
     }
 
-    public string FindLoc(Vector3 loc)
+    public static Vector2Int FindLoc(Vector3 loc)
     {
-        int x = (int)Mathf.Floor((loc.x - 380 * xscale) / (100 * xscale));
-        int y = (int)Mathf.Floor((loc.y - 10 * yscale) / (100 * yscale));
-        return x.ToString() + y.ToString();
+        int x = (int)Mathf.Floor((loc.x - offsetLeft) / 100); // 100 is grid size
+        int y = (int)Mathf.Floor((loc.y - offsetDown) / 100);
+        return new Vector2Int(x, y);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -62,7 +68,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         {
             cardImage.GetComponent<Image>().sprite = null;
             CardInfo newCard = infoCard.GetComponent<CardInfo>();
-            GameObject find = GameObject.Find(FindLoc(Input.mousePosition));
+            GameObject find = GameObject.Find(InfoLoader.Vec2ToString(FindLoc(Input.mousePosition)));
             if (find != null)
             {
                 Transform oldObject = find.transform;
@@ -73,10 +79,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                     PieceAttributes attributes = boardInfo.attributesDict[oldObject.name];                    
                     if (attributes.type == newCard.GetCardType())
                     {
-                        boardInfo.SetCard(attributes, StringToVec2(parent.name));
+                        boardInfo.SetCard(attributes, InfoLoader.StringToVec2(parent.name));
                         cardImage.GetComponent<Image>().sprite = attributes.image;
                         parent = oldObject;
-                        boardInfo.SetCard(newCard.piece, StringToVec2(parent.name));
+                        boardInfo.SetCard(newCard.piece, InfoLoader.StringToVec2(parent.name));
                         oldCardImage.sprite = newCard.piece.image;
                     }
                     else
@@ -97,10 +103,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                 // Drag outside the board.
                 string cardType = newCard.GetCardType();
                 collectionManager.AddCollection(new Collection(newCard.piece));
-                boardInfo.SetStandardCard(cardType, StringToVec2(parent.name));
+                boardInfo.SetStandardCard(cardType, InfoLoader.StringToVec2(parent.name));
                 collectionManager.RemoveCollection(Collection.standardCollectionDict[cardType]);
+                collectionManager.ShowCurrentPage();
                 cardImage.sprite = InfoLoader.standardAttributes["Standard " + cardType].image;
-                // drag to a infoCard to switch?
             }
         }
         EnableImage(cardImage);
@@ -110,7 +116,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
     private IEnumerator ShowCantSwitch()
     {
         cantSwitch.SetActive(true);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.5f);
         cantSwitch.SetActive(false);
     }
 
@@ -127,19 +133,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
         string cardType, parentName = clickedObject.transform.parent.name;
         if (clickedObject.name == GRIDSLOTPANEL && boardInfo.locationType.TryGetValue(parentName, out cardType))
-        {
             collectionManager.ClickTab(cardType);
-        }
-    }
-    
-    private Vector2Int StringToVec2(string loc) { return new Vector2Int((int)Char.GetNumericValue(loc[0]), (int)Char.GetNumericValue(loc[1])); }
-
-    private Vector3 AdjustedMousePosition()
-    {
-        Vector2 mousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
-        return mousePosition;
     }
 
     public void SetBoardInfo(BoardInfo info) { boardInfo = info; }
+
+    public static bool InBoardRegion(Vector2 pos) { return offsetLeft <= pos.x && pos.x <= offsetRight && offsetDown <= pos.y && pos.y <=  offsetUp; }
 }

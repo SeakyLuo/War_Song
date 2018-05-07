@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
-    public Canvas parentCanvas;
     public GameObject collectionPanel, createLineupPanel, infoCard;
     public static string TACTICSLOTPANEL = "TacticSlotPanel";
     public static bool dragBegins = false;
-    public static float xscale = Screen.width / 1920, yscale = Screen.width / 1080;
 
     private GameObject selectedObject, mouseOver, showCardInfo, tactic;
     private LineupBuilder lineupBuilder;
@@ -29,14 +27,14 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         if (!tactic.activeSelf) return;
         dragBegins = true;
         infoCard.SetActive(true);
+        infoCard.transform.position = Input.mousePosition;
         infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tactic);
-        infoCard.transform.position = AdjustedMousePosition();
-        tactic.SetActive(false);
+        lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (dragBegins) infoCard.transform.position = AdjustedMousePosition();
+        if (dragBegins) infoCard.transform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -44,8 +42,7 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         if (!dragBegins) return;
         dragBegins = false;
         tactic.SetActive(true);
-        if (!InTacticRegion(Input.mousePosition))
-            lineupBuilder.RemoveTactic(infoCard.GetComponent<CardInfo>().tactic);        
+        if (InTacticRegion(Input.mousePosition)) lineupBuilder.AddTactic(infoCard.GetComponent<CardInfo>());
         infoCard.SetActive(false);
     }
 
@@ -60,12 +57,8 @@ public class TacticGestureHandler : MonoBehaviour,IBeginDragHandler, IDragHandle
         }            
     }
 
-    private bool InTacticRegion(Vector2 pos) { return createLineupPanel.activeSelf && 0.75 * Screen.width <= pos.x && pos.x <= Screen.width && 100 * yscale <= pos.y && pos.y <= 1000 * yscale; }
-
-    private Vector3 AdjustedMousePosition()
+    public static bool InTacticRegion(Vector2 pos)
     {
-        Vector2 mousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
-        return mousePosition;
+        return 0.75 * Screen.width <= pos.x;
     }
 }
