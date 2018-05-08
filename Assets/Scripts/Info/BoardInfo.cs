@@ -44,7 +44,7 @@ public class BoardInfo : MonoBehaviour
 
     public void SetAttributes(string boardName, Dictionary<Vector2Int, Collection> newLocations)
     {
-        SetAttributes(Resources.Load<BoardAttributes>("Board/" + boardName + "/Attributes"), newLocations);
+        SetAttributes(InfoLoader.FindBoardAttributes(boardName), newLocations);
     }
 
     public void SetAttributes(BoardAttributes board, Dictionary<Vector2Int, Collection> newLocations = null)
@@ -73,7 +73,7 @@ public class BoardInfo : MonoBehaviour
         collection.count = 1;
         cardLocations[location] = collection;
         string locName = InfoLoader.Vec2ToString(location);
-        attributesDict[locName] = LoadPieceAttributes(collection.name);
+        attributesDict[locName] = InfoLoader.FindPieceAttributes(collection.name);
     }
 
     public void SetCard(PieceAttributes attributes, Vector2Int location)
@@ -105,22 +105,22 @@ public class BoardInfo : MonoBehaviour
         }        
         attributesDict = new Dictionary<string, PieceAttributes>
         {
-            { InfoLoader.Vec2ToString(attributes.agloc), LoadPieceAttributes(newLocations[attributes.agloc].name) },
-            { InfoLoader.Vec2ToString(attributes.aaloc1), LoadPieceAttributes(newLocations[attributes.aaloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.aaloc2), LoadPieceAttributes(newLocations[attributes.aaloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.aeloc1), LoadPieceAttributes(newLocations[attributes.aeloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.aeloc2), LoadPieceAttributes(newLocations[attributes.aeloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.ahloc1), LoadPieceAttributes(newLocations[attributes.ahloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.ahloc2), LoadPieceAttributes(newLocations[attributes.ahloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.arloc1), LoadPieceAttributes(newLocations[attributes.arloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.arloc2), LoadPieceAttributes(newLocations[attributes.arloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.acloc1), LoadPieceAttributes(newLocations[attributes.acloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.acloc2), LoadPieceAttributes(newLocations[attributes.acloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.asloc1), LoadPieceAttributes(newLocations[attributes.asloc1].name) },
-            { InfoLoader.Vec2ToString(attributes.asloc2), LoadPieceAttributes(newLocations[attributes.asloc2].name) },
-            { InfoLoader.Vec2ToString(attributes.asloc3), LoadPieceAttributes(newLocations[attributes.asloc3].name) },
-            { InfoLoader.Vec2ToString(attributes.asloc4), LoadPieceAttributes(newLocations[attributes.asloc4].name) },
-            { InfoLoader.Vec2ToString(attributes.asloc5), LoadPieceAttributes(newLocations[attributes.asloc5].name) }
+            { InfoLoader.Vec2ToString(attributes.agloc), InfoLoader.FindPieceAttributes(newLocations[attributes.agloc].name) },
+            { InfoLoader.Vec2ToString(attributes.aaloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.aaloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.aaloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.aaloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.aeloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.aeloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.aeloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.aeloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.ahloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.ahloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.ahloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.ahloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.arloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.arloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.arloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.arloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.acloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.acloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.acloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.acloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.asloc1), InfoLoader.FindPieceAttributes(newLocations[attributes.asloc1].name) },
+            { InfoLoader.Vec2ToString(attributes.asloc2), InfoLoader.FindPieceAttributes(newLocations[attributes.asloc2].name) },
+            { InfoLoader.Vec2ToString(attributes.asloc3), InfoLoader.FindPieceAttributes(newLocations[attributes.asloc3].name) },
+            { InfoLoader.Vec2ToString(attributes.asloc4), InfoLoader.FindPieceAttributes(newLocations[attributes.asloc4].name) },
+            { InfoLoader.Vec2ToString(attributes.asloc5), InfoLoader.FindPieceAttributes(newLocations[attributes.asloc5].name) }
         };
         typeLocations = new Dictionary<string, List<Vector2Int>>
         {
@@ -143,11 +143,5 @@ public class BoardInfo : MonoBehaviour
             { InfoLoader.Vec2ToString(attributes.asloc1), "Soldier" },{ InfoLoader.Vec2ToString(attributes.asloc2), "Soldier" },
             { InfoLoader.Vec2ToString(attributes.asloc3), "Soldier" },{ InfoLoader.Vec2ToString(attributes.asloc4), "Soldier" },{ InfoLoader.Vec2ToString(attributes.asloc5), "Soldier" }
         };
-    }
-
-    private static PieceAttributes LoadPieceAttributes(string pieceName)
-    {
-        if (pieceName.StartsWith("Standard ")) return InfoLoader.standardAttributes[pieceName];
-        return Resources.Load<PieceAttributes>("Pieces/" + pieceName + "/Attributes");
     }
 }

@@ -6,11 +6,11 @@ public class Piece
     public static Vector2Int noLocation = new Vector2Int(-1, -1);
     public Vector2Int location;
     public bool active = true;
+    public bool isAlly;
 
     private Collection collection;
     private Vector2Int castle;
     private int oreCost = 0;
-    private bool isAlly;
 
     public Piece(string type, Vector2Int loc, bool IsAlly)
     {
@@ -36,7 +36,8 @@ public class Piece
     public bool IsStandard() { return collection.name.StartsWith("Standard "); }
     public string GetPieceType() { return collection.type; }
     public Vector2Int GetCastle() { return castle; }
-    public bool IsAlly() { return isAlly; }
+    public bool IsMinion() { return collection.type != "General"; }
+    public bool SameCollection(Collection other) { return collection.Equals(other); }
     public void Resurrect(Vector2Int loc)
     {
         // may be useless

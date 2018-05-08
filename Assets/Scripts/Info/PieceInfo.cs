@@ -31,7 +31,7 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void Setup(Collection collection, Vector2Int loc, bool isAlly)
     {
-        pieceAttributes = FindPieceAttributes(collection.name);
+        pieceAttributes = InfoLoader.FindPieceAttributes(collection.name);
         piece = new Piece(collection, loc, pieceAttributes.oreCost, isAlly);
         if (pieceAttributes.trigger != null) trigger = Instantiate(pieceAttributes.trigger);
         if (trigger != null) trigger.piece = piece; // remove the if when all completed
@@ -57,7 +57,7 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         if (selected) return;
         card.SetActive(true);
         card.GetComponent<CardInfo>().SetAttributes(pieceAttributes);
-        card.GetComponent<CardInfo>().SetIsAlly(piece.IsAlly());
+        card.GetComponent<CardInfo>().SetIsAlly(piece.isAlly);
         card.GetComponent<CardInfo>().SetHealth(piece.GetHealth());
         PieceInfoCard.transform.position = newPosition;
     }
@@ -77,9 +77,4 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public string GetPieceType() { return pieceAttributes.type; }
     public void SetLocation(Vector2Int loc) { piece.location = loc; }
     public bool IsStandard() { return piece.IsStandard(); }
-    private PieceAttributes FindPieceAttributes(string name)
-    {
-        if (name.StartsWith("Standard ")) return InfoLoader.standardAttributes[name];
-        return Resources.Load<PieceAttributes>("Pieces/" + name + "/Attributes");
-    }
 }

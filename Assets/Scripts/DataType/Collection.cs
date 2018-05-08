@@ -12,13 +12,13 @@ public class Collection
     private int oreCost = 0; //tmp
 
     public static List<string> types = new List<string> { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
-    public static Collection General = standardCollection("General");
-    public static Collection Advisor = standardCollection("Advisor");
-    public static Collection Elephant = standardCollection("Elephant");
-    public static Collection Horse = standardCollection("Horse");
-    public static Collection Chariot = standardCollection("Chariot");
-    public static Collection Cannon = standardCollection("Cannon");
-    public static Collection Soldier = standardCollection("Soldier");
+    public static Collection General = StandardCollection("General");
+    public static Collection Advisor = StandardCollection("Advisor");
+    public static Collection Elephant = StandardCollection("Elephant");
+    public static Collection Horse = StandardCollection("Horse");
+    public static Collection Chariot = StandardCollection("Chariot");
+    public static Collection Cannon = StandardCollection("Cannon");
+    public static Collection Soldier = StandardCollection("Soldier");
     public static Dictionary<string, Collection> standardCollectionDict = new Dictionary<string, Collection>
     {
         {"General", General },
@@ -47,7 +47,7 @@ public class Collection
         name = tacticName;
         type = "Tactic";
         count = Count;
-        TacticAttributes attributes = Resources.Load<TacticAttributes>("Tactics/" + tacticName + "/Attributes");
+        TacticAttributes attributes = InfoLoader.FindTacticAttributes(tacticName);
         health = attributes.goldCost;
         oreCost = attributes.oreCost;
     }
@@ -69,19 +69,19 @@ public class Collection
         health = Health;
         if (Type == "Tactic")
         {
-            TacticAttributes attributes = Resources.Load<TacticAttributes>("Tactics/" + Name + "/Attributes");
+            TacticAttributes attributes = InfoLoader.FindTacticAttributes(Name);
             health = attributes.goldCost;
             oreCost = attributes.oreCost;
         }
         else if (!Name.StartsWith("Standard "))
         {
-            PieceAttributes attributes = Resources.Load<PieceAttributes>("Pieces/" + Name + "/Attributes");
+            PieceAttributes attributes = InfoLoader.FindPieceAttributes(Name);
             if (Health == 0) health = attributes.health;
             oreCost = attributes.oreCost;
         }
     }
 
-    public static Collection standardCollection(string type)
+    public static Collection StandardCollection(string type)
     {
         return new Collection("Standard " + type, type);
     }

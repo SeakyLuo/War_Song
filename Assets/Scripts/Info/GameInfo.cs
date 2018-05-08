@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GameInfo
+public class GameInfo
 {
     public static Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
     public static Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
-    public static Dictionary<Vector2Int, string> traps = new Dictionary<Vector2Int, string>();
-    public static List<string> tactics = new List<string>();
+    public static Dictionary<Vector2Int, string> traps = new Dictionary<Vector2Int, string>(); // loc and trap name
+    public static Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
+    public static List<string> unusedTactics = new List<string>();
     public static List<string> usedTactics = new List<string>();
     public static List<Piece> activeAllies = new List<Piece>(),
                            inactiveAllies = new List<Piece>(),
                            activeEnemies = new List<Piece>(),
                            inactiveEnemies = new List<Piece>();
 
-    public static bool pieceMoved = false;
-    public static bool tacticUsed = false;
-    public static bool abilityActivated = false;
     public static bool actionTaken = false;
-
     public static int firstPlayer; //player ID
     public static int secondPlayer;
     public static Dictionary<int, int> ores;
@@ -27,16 +24,13 @@ public static class GameInfo
     public static int maxTime = 90;
     public static int gameID;
 
-    //public GameInfo()
-    //{
-
-    //}
+    public GameInfo() { }
 
     public static void Add(Piece piece, bool reactivate = false)
     {
         piece.active = true;
         board.Add(piece.GetCastle(), piece);
-        if (piece.IsAlly())
+        if (piece.isAlly)
         {
             activeAllies.Add(piece);
             if (reactivate) inactiveAllies.Remove(piece);
@@ -52,7 +46,7 @@ public static class GameInfo
     {
         piece.active = false;
         board.Remove(piece.location);
-        if (piece.IsAlly())
+        if (piece.isAlly)
         {
             activeAllies.Remove(piece);
             inactiveAllies.Add(piece);
@@ -62,6 +56,25 @@ public static class GameInfo
             activeEnemies.Remove(piece);
             inactiveEnemies.Add(piece);
         }
+    }
+
+    public static bool IsAllyAlive(Collection collection)
+    {
+        foreach(Piece piece in activeAllies)
+            if (piece.SameCollection(collection))
+                return true;
+        return false;
+    }
+
+    public static void AddTactic(string tacticName)
+    {
+        unusedTactics.Add(tacticName);
+    }
+
+    public static void RemoveTactic(string tacticName)
+    {
+        unusedTactics.Remove(tacticName);
+        usedTactics.Add(tacticName);
     }
 
     public static void SetOrder(int player1, int player2)
@@ -100,7 +113,7 @@ public static class GameInfo
     public static void Clear()
     {
         board.Clear();
-        tactics.Clear();
+        unusedTactics.Clear();
         usedTactics.Clear();
         activeAllies.Clear();
         inactiveAllies.Clear();

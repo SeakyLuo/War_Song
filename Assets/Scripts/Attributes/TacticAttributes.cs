@@ -9,5 +9,5 @@ public class TacticAttributes : ScriptableObject {
     public string description;
     public int goldCost, oreCost;
     public Sprite image;
-    public Trigger trigger;
+    public TacticTrigger trigger;
 }

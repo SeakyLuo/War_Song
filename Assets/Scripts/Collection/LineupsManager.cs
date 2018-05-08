@@ -27,7 +27,7 @@ public class LineupsManager : MonoBehaviour {
             if (i < lineupsCount)
             {                
                 lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
-                // Assign Data
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = InfoLoader.FindPieceAttributes(InfoLoader.user.lineups[i].general).image;
             }
             else lineupObjects[i].SetActive(false);
         }

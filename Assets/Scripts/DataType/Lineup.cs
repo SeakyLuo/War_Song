@@ -6,30 +6,29 @@ public class Lineup
 {
     public Dictionary<Vector2Int, Collection> cardLocations;
     public List<string> tactics;
-    public string boardName, lineupName;
+    public string boardName;
+    public string lineupName;
+    public string general;
     public bool complete;
     public static int tacticLimit = 10;
 
     public Lineup()
     {
-        cardLocations = new Dictionary<Vector2Int, Collection>();
-        tactics = new List<string>();
-        boardName = "Standard Board";
-        lineupName = "Custom Lineup";
-        complete = false;
+        Clear();
     }
 
-    public Lineup(Dictionary<Vector2Int, Collection> cardLoc, List<string> Tactics, string BoardName, string LineupName)
+    public Lineup(Dictionary<Vector2Int, Collection> cardLoc, List<string> Tactics, string BoardName = "Standard Board", string LineupName = "Custom Lineup", string General = "Standard General")
     {
-        SetInfo(cardLoc, Tactics, BoardName, LineupName);
+        SetInfo(cardLoc, Tactics, BoardName, LineupName, General);
     }
 
-    public void SetInfo(Dictionary<Vector2Int, Collection> cardLoc, List<string> Tactics, string BoardName, string LineupName)
+    public void SetInfo(Dictionary<Vector2Int, Collection> cardLoc, List<string> Tactics, string BoardName = "Standard Board", string LineupName = "Custom Lineup", string General = "Standard General")
     {
         cardLocations = cardLoc;
         tactics = Tactics;
         boardName = BoardName;
         lineupName = LineupName;
+        general = General;
         if (tactics.Count == tacticLimit) complete = true;
     }
 
@@ -39,6 +38,7 @@ public class Lineup
         tactics = new List<string>();
         boardName = "Standard Board";
         lineupName = "Custom Lineup";
+        general = "Standard General";
         complete = false;
     }
 

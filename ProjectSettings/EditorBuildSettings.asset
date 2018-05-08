@@ -20,3 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/Recruitment.unity
     guid: a2f64f18b8ff4c0478d0717ab4a63e61
+  - enabled: 1
+    path: Assets/_Scenes/GameMode.unity
+    guid: e77d71b75539ff14c92449bdddd481c7

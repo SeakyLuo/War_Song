@@ -13,6 +13,8 @@ public class Database {
         {"Horse", new List<PieceAttributes>() }, {"Chariot", new List<PieceAttributes>() }, {"Cannon", new List<PieceAttributes>() }, {"Soldier", new List<PieceAttributes>() }
     };
     public static List<BoardAttributes> boards = new List<BoardAttributes>();
+    public static List<Trap> traps = new List<Trap>();
+    public static List<Mission> missions = new List<Mission>();
 
     public Database(Dictionary<string, List<Collection>> dict)
     {

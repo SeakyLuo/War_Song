@@ -35,10 +35,10 @@ public class CardInfo : MonoBehaviour {
     {
         if (collection == null) return;
         if (collection.type == "Tactic")
-            SetAttributes(Resources.Load<TacticAttributes>("Tactics/" + collection.name + "/Attributes"));
+            SetAttributes(InfoLoader.FindTacticAttributes(collection.name));
         else
         {
-            SetAttributes(Resources.Load<PieceAttributes>("Pieces/" + collection.name + "/Attributes"));
+            SetAttributes(InfoLoader.FindPieceAttributes(collection.name));
             SetHealth(collection.health);
         }
     }

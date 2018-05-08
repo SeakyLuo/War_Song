@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System;
-using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InfoLoader : MonoBehaviour {
 
@@ -29,8 +27,8 @@ public class InfoLoader : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        boards.Add(Resources.Load<BoardAttributes>("Board/Standard Board/Attributes"));
-        boards.Add(Resources.Load<BoardAttributes>("Board/River Board/Attributes"));
+        boards.Add(FindBoardAttributes("Standard Board"));
+        boards.Add(FindBoardAttributes("River Board"));
         //boards = Sorted(boards);
     }
 
@@ -55,4 +53,12 @@ public class InfoLoader : MonoBehaviour {
 
     public static string Vec2ToString(Vector2Int vec) { return vec.x.ToString() + vec.y.ToString(); }
     public static Vector2Int StringToVec2(string loc) { return new Vector2Int((int)Char.GetNumericValue(loc[0]), (int)Char.GetNumericValue(loc[1])); }
+    public static BoardAttributes FindBoardAttributes(string boardName) { return Resources.Load<BoardAttributes>("Board/" + boardName + "/Attributes"); }
+    public static PieceAttributes FindPieceAttributes(string pieceName)
+    {
+        if (pieceName.StartsWith("Standard ")) return InfoLoader.standardAttributes[pieceName];
+        return Resources.Load<PieceAttributes>("Piece/" + pieceName + "/Attributes");
+    }
+    public static TacticAttributes FindTacticAttributes(string tacticName) { return Resources.Load<TacticAttributes>("Tactic/" + tacticName + "/Attributes"); }
+    public static Trap FindTrap(string trapName) { return Resources.Load<Trap>("Trap/" + trapName + "/Trap"); }
 }

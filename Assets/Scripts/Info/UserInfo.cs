@@ -38,6 +38,21 @@ public class UserInfo {
         preferredBoard = "Standard Board";
     }
 
+    public int FindCollectionWithName(string name)
+    {
+        /// return first occurence
+        for(int i = 0; i < collection.Count; i++)
+            if (collection[i].name == name) return i;
+        return -1;
+    }
+
+    public int FindCollection(Collection card)
+    {
+        for (int i = 0; i < collection.Count; i++)
+            if (card.Equals(collection[i])) return i;
+        return -1;
+    }
+
     public void AddCollection(Collection insert)
     {
         int index = 0;
@@ -109,7 +124,8 @@ public class CheatAccount:UserInfo
                     "A Secret Plan","Buy 1 Get 1 Free","Build A Rook","Winner Trophy","No Way"
                 },
                 "Standard Board",
-                "CheatLineup"
+                "CheatLineup",
+                "Standard General"
             ),
             new Lineup(
                 new Dictionary<Vector2Int, Collection>()
@@ -129,7 +145,8 @@ public class CheatAccount:UserInfo
                     "Advisor Recruitment", "No Way", "Tame An Elephant","Purchase A Horse","Build A Rook"
                 },
                 "Standard Board",
-                "CheatLineup2"
+                "CheatLineup2",
+                "Space Witch"
             ),
             new Lineup(
                 new Dictionary<Vector2Int, Collection>()
@@ -149,7 +166,8 @@ public class CheatAccount:UserInfo
                     "Advisor Recruitment", "Tame An Elephant","Purchase A Horse","Build A Rook"
                 },
                 "Standard Board",
-                "CheatLineup2"
+                "CheatLineup2",
+                "Space Witch"
             )
         };
         contracts = new Dictionary<string, int>()

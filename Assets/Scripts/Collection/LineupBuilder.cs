@@ -71,6 +71,7 @@ public class LineupBuilder : MonoBehaviour {
         string locName = locx.ToString() + locy.ToString();
         if (lineupBoard == null) lineupBoard = board.transform.Find("LineupBoard(Clone)");
         Collection newCollection = new Collection(cardInfo.piece, 1, cardInfo.GetHealth());
+        if (newCollection.type == "General") lineup.general = newCollection.name;
         lineup.cardLocations[loc] = newCollection;
         lineupBoard.Find(locName).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
         collectionManager.RemoveCollection(newCollection);
@@ -96,10 +97,10 @@ public class LineupBuilder : MonoBehaviour {
         collectionManager.ShowCurrentPage();
     }
 
-    private void AddTactic(string TacticName)
+    private void AddTactic(string tacticName)
     {
         // called by progrommer
-        TacticAdder(Resources.Load<TacticAttributes>("Tactics/" + TacticName + "/Attributes"));
+        TacticAdder(InfoLoader.FindTacticAttributes(tacticName));
     }
 
     private void TacticAdder(TacticAttributes attributes)
@@ -295,7 +296,7 @@ public class LineupBuilder : MonoBehaviour {
                 if (!collectionManager.RemoveCollection(collection) || 
                     !collectionManager.RemoveCollection(new Collection(collection.name,collection.type))) //find card with the same name
                 {
-                    Collection standardCollection = Collection.standardCollection(collection.type);
+                    Collection standardCollection = Collection.StandardCollection(collection.type);
                     boardInfo.cardLocations[pair.Key] = standardCollection;
                     lineup.cardLocations[pair.Key] = standardCollection;
                 }
