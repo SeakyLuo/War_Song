@@ -6,7 +6,7 @@ public class GameInfo
 {
     public static Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
     public static Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
-    public static Dictionary<Vector2Int, string> traps = new Dictionary<Vector2Int, string>(); // loc and trap name
+    public static Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
     public static Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
     public static List<string> unusedTactics = new List<string>();
     public static List<string> usedTactics = new List<string>();
@@ -15,16 +15,41 @@ public class GameInfo
                            activeEnemies = new List<Piece>(),
                            inactiveEnemies = new List<Piece>();
 
-    public static bool actionTaken = false;
+    public static string boardName;
     public static int firstPlayer; //player ID
     public static int secondPlayer;
     public static Dictionary<int, int> ores;
+    public static Dictionary<int, int> actions;
     public static int round = 1;
     public static int time = 90;
     public static int maxTime = 90;
     public static int gameID;
+    public static bool gameStarts = false;
+    public static bool gameOver = false;
 
-    public GameInfo() { }
+    public GameInfo()
+    {
+        SetOrder(InfoLoader.user.playerID, 100000000);
+        ores = new Dictionary<int, int>()
+        {
+            { firstPlayer, 30 },
+            { secondPlayer, 30 }
+        };
+        actions = new Dictionary<int, int>();
+        actions.Add(firstPlayer, 1);
+        actions.Add(secondPlayer, 1);
+        gameStarts = true;
+        
+        SetGameID(1);
+        Lineup lineup = InfoLoader.user.lineups[InfoLoader.user.lastLineupSelected];
+        boardName = lineup.boardName;
+        unusedTactics = new List<string>(lineup.tactics);
+    }
+    public static int TheOtherPlayerID()
+    {
+        if (firstPlayer == InfoLoader.user.playerID) return secondPlayer;
+        else return firstPlayer;
+    }
 
     public static void Add(Piece piece, bool reactivate = false)
     {
@@ -89,11 +114,7 @@ public class GameInfo
             firstPlayer = player2;
             secondPlayer = player1;
         }
-        ores = new Dictionary<int, int>()
-        {
-            { firstPlayer, 30 },
-            { secondPlayer, 30 }
-        };
+
     }
 
     public static void SetGameID(int value)
@@ -127,7 +148,7 @@ public class GameInfo
 
     }
 
-    public static void JsonToClass()
+    public static void JsonToClass(GameInfo gameInfo)
     {
 
     }

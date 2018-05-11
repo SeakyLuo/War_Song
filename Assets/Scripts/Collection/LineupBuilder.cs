@@ -135,7 +135,8 @@ public class LineupBuilder : MonoBehaviour {
         if (current_tactics == 0) return;
         TacticRemover(attributes);
         collectionManager.AddCollection(new Collection(attributes.Name));
-        collectionManager.ShowCurrentPage();
+        if(collectionManager.currentPage.Key == "Tactic")
+            collectionManager.ShowCurrentPage();
     }
     
     private void RemoveTactic(string TacticName)

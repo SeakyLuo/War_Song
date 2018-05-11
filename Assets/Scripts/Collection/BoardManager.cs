@@ -5,14 +5,13 @@ using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour {
 
-    public GameObject nextBoardButton, previousBoardButton, confirmButton, preferButton, createLineupButton,
-        createLineupPanel, board, askPasteOrNot;
+    public GameObject confirmButton, preferButton, createLineupButton, createLineupPanel, board, askPasteOrNot;
     public Text boardName, boardInformation;
     public Image boardImage;
     public BoardAttributes standardBoardAttributes;
+    [HideInInspector] public int currentBoard = 0;
+    [HideInInspector] public List<BoardAttributes> boardAttributes;
 
-    private List<BoardAttributes> boardAttributes;
-    private int currentBoard = 0;
     private GameObject loadedBoard;
 
     private void OnEnable()
@@ -29,17 +28,13 @@ public class BoardManager : MonoBehaviour {
 
     public void NextBoard()
     {
-        if (++currentBoard == boardAttributes.Count - 1) nextBoardButton.SetActive(false);
-        else nextBoardButton.SetActive(true);
-        previousBoardButton.SetActive(true);
+        ++currentBoard;
         DisplayBoardSelectionInterface();
     }
 
     public void PreviousBoard()
     {
-        if (--currentBoard == 0) previousBoardButton.SetActive(false);
-        else previousBoardButton.SetActive(true);
-        nextBoardButton.SetActive(true);
+        --currentBoard;
         DisplayBoardSelectionInterface();
     }
 

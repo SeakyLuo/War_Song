@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Name: Trap
   m_EditorClassIdentifier: 
   Name: Frighten Bomb
-  description: Piece lose 1 health.
-  image: {fileID: 0}
+  description: Piece loses 1 health.
+  image: {fileID: 21300000, guid: 5f1046c201cf4404c8da890a5c03a0c1, type: 3}
+  trigger: {fileID: 0}

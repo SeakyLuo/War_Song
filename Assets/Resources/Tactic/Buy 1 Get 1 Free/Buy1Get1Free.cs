@@ -2,9 +2,6 @@
 
     public override void Activate()
     {
-        if (GameController.ChangeCoin(-5))
-        {
-            GameController.ChangeCoin(10);
-        }
+        GameController.ChangeCoin(10);
     }
 }

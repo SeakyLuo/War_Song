@@ -2,17 +2,18 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MouseOverTactic : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class MouseOverTactic : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject infoCard;
+    public LineupBuilder lineupBuilder;
+    public CollectionManager collectionManager;
+    public GameObject tactic;
 
     private Vector3 newPosition;
-    private GameObject tactic;
 
     private void Start()
     {
         newPosition = new Vector3(transform.position.x + GetComponent<RectTransform>().rect.x + infoCard.GetComponent<RectTransform>().rect.x, transform.position.y - 15);
-        tactic = transform.Find("Tactic").gameObject;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -27,5 +28,11 @@ public class MouseOverTactic : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if(!LineupBoardGestureHandler.dragBegins && !TacticGestureHandler.dragBegins && infoCard.activeSelf)
             infoCard.SetActive(false);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!tactic.activeSelf) collectionManager.SetCurrentPage("Tactic", 1);
+        else lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
     }
 }

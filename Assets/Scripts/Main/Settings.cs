@@ -35,7 +35,11 @@ public class Settings : MonoBehaviour, IPointerClickHandler
             else if (optionsPanel.activeSelf) optionsPanel.SetActive(false);
             else if (guidebookPanel != null && guidebookPanel.activeSelf) guidebookPanel.SetActive(false);
             else if (logoutPanel.activeSelf) return;
-            else gameObject.SetActive(!gameObject.activeSelf);
+            else
+            {
+                gameObject.SetActive(!gameObject.activeSelf);
+                //if(SceneManager.GetActiveScene().name == "GameMode" && gameObject.activeSelf) MovementController.PutDownPiece();
+            }
         }
     }
 

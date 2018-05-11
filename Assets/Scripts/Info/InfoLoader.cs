@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine;
+using System.IO;
 
 public class InfoLoader : MonoBehaviour {
 
@@ -13,7 +14,10 @@ public class InfoLoader : MonoBehaviour {
 
     private void Awake()
     {
-        user = new CheatAccount();
+        user = new CheatAccount(); // This line should be
+        // user = new UserInfo();
+        // download Json
+        // user.JsonToClass();
         standardAttributes = new Dictionary<string, PieceAttributes>(){
             { "Standard General", standardGeneral },
             { "Standard Advisor", standardAdvisor },
@@ -27,28 +31,11 @@ public class InfoLoader : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        boards.Add(FindBoardAttributes("Standard Board"));
+        boards.Add(FindBoardAttributes(user.preferredBoard));
         boards.Add(FindBoardAttributes("River Board"));
-        //boards = Sorted(boards);
-    }
-
-    // Needs Sort By Last Use
-    private List<BoardAttributes> Sorted(List<BoardAttributes> boardAttributes)
-    {
-        List<BoardAttributes> newList = boardAttributes;
-        BoardAttributes standardBoard = boardAttributes[0];
-        foreach (BoardAttributes attribute in boardAttributes)
-        {
-            if (attribute.boardName == "Standard Board")
-            {
-                standardBoard = attribute;
-                newList.Remove(attribute);
-                break;
-            }
-        }
-        newList.OrderBy(BoardAttributes => BoardAttributes.boardName);
-        newList.Insert(0, standardBoard);
-        return newList;
+        //foreach(string boardName in Directory.GetFiles("Assets/Resources/Board"))
+        //    if(boardName!= user.preferredBoard)
+        //        boards.Add(FindBoardAttributes(boardName));
     }
 
     public static string Vec2ToString(Vector2Int vec) { return vec.x.ToString() + vec.y.ToString(); }

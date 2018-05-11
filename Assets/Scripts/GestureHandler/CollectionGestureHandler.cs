@@ -6,13 +6,12 @@ using UnityEngine.EventSystems;
 
 public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public GameObject createLineupPanel, infoCard;
-    public Canvas parentCanvas;
-
     public static string CARDSLOTPANEL = "CardSlotPanel";
+    public static bool dragBegins = false;
+
+    public GameObject createLineupPanel, infoCard;
 
     private BoardInfo boardInfo;
-    private bool dragBegins = false;
     private LineupBuilder lineupBuilder;
 
     private void Start()
@@ -53,9 +52,9 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!createLineupPanel.activeSelf) return;
+        if (!createLineupPanel.activeSelf || SetCursor.cursorSwitched) return;
         GameObject selectedObject = eventData.pointerCurrentRaycast.gameObject;
-        if (selectedObject.name != CARDSLOTPANEL) return;
+        if (selectedObject.name != CARDSLOTPANEL || !selectedObject.transform.parent.Find("Card").gameObject.activeSelf) return;
         CardInfo cardInfo = selectedObject.transform.parent.Find("Card").GetComponent<CardInfo>();
         if (cardInfo.GetCardType() == "Tactic") lineupBuilder.AddTactic(cardInfo);      
         else

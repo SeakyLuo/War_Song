@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: No Way
-  description: Your opponent cannot use tactics this turn.
+  description: Your enemy cannot use tactic this round.
   goldCost: 0
   oreCost: 3
-  image: {fileID: 21300000, guid: f02a0af21ae3b7d4db37ac7d25c1eb1d, type: 3}
+  image: {fileID: 21300000, guid: 8a2d09905bd8bad49889563423eef29f, type: 3}
+  trigger: {fileID: 11400000, guid: 66d3c130c8d88dc4c9d6ff1f3a61044a, type: 2}

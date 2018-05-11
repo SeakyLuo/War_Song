@@ -16,5 +16,5 @@ MonoBehaviour:
   description: If he survives this war, coin +1.
   oreCost: 0
   health: 3
-  image: {fileID: 21300000, guid: 234e58738a60623458fb081aeed36a82, type: 3}
+  image: {fileID: 21300000, guid: e5def7a4a1930a14b91d6adf95166a12, type: 3}
   trigger: {fileID: 11400000, guid: f79b861e1ae2d5b47b70f656e88eebe2, type: 2}

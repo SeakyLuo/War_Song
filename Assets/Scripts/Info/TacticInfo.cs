@@ -3,28 +3,28 @@ using UnityEngine.UI;
 
 public class TacticInfo : MonoBehaviour {
 
-    [HideInInspector] public TacticAttributes tactic;
     public Text nameText, oreCostText, goldCostText;
     public Image image;
+    [HideInInspector] public TacticAttributes tactic;
+    [HideInInspector] public TacticTrigger trigger;
     [HideInInspector] public int oreCost;
     [HideInInspector] public int goldCost;
-    [HideInInspector] public TacticTrigger trigger;
     [HideInInspector] public bool active = true;
 
     public void SetAttributes(TacticAttributes attributes)
     {
         tactic = attributes;
+        trigger = tactic.trigger;
         nameText.text = attributes.Name;
         SetOreCost(attributes.oreCost);
-        goldCostText.text = attributes.goldCost.ToString();
+        SetGoldCost(attributes.goldCost);
         image.sprite = attributes.image;
-        trigger = tactic.trigger;        
     }
 
     public void SetOreCost(int value)
     {
         oreCost = value;
-        if(trigger != null) trigger.oreCost = oreCost;
+        trigger.oreCost = oreCost;
         oreCostText.text = oreCost.ToString();
     }
     public void ChangeOreCost(int deltaAmount)
@@ -34,6 +34,7 @@ public class TacticInfo : MonoBehaviour {
     public void SetGoldCost(int value)
     {
         goldCost = value;
+        trigger.goldCost = goldCost;
         goldCostText.text = goldCost.ToString();
     }
     public void ChangeGoldCost(int deltaAmount)
@@ -48,5 +49,6 @@ public class TacticInfo : MonoBehaviour {
         oreCostText.text = "0";
         goldCostText.text = "0";
         image.sprite = null;
+        oreCost = goldCost = 0;
     }
 }

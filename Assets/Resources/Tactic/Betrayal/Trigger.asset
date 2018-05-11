@@ -11,4 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bd311b88313b134d8589caa2f579dfd, type: 3}
   m_Name: Trigger
   m_EditorClassIdentifier: 
-  afterRound: 10
+  afterRound: 15
+  lastRound: 1
+  effectiveStarts: 0
+  oreCost: 10
+  goldCost: 0

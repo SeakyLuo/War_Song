@@ -22,7 +22,7 @@ public class DropdownIcon : MonoBehaviour
 
     public void ShowDropdown()
     {
-		gameObject.SetActive(!gameObject.activeSelf);
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 
     public void HideDropdown()

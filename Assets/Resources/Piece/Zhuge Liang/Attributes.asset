@@ -16,4 +16,5 @@ MonoBehaviour:
   description: Get a random used tactic.
   oreCost: 4
   health: 0
-  image: {fileID: 21300000, guid: 07c44380033f63347ade96f3704184a5, type: 3}
+  image: {fileID: 21300000, guid: 73d875c40b4cb8046b177a6814f3a8f5, type: 3}
+  trigger: {fileID: 0}

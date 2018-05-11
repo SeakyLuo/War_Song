@@ -8,5 +8,5 @@ public class Trap : ScriptableObject
     [TextArea(2, 3)]
     public string description;
     public Sprite image;
-    public Trigger trigger;
+    public TacticTrigger trigger;
 }

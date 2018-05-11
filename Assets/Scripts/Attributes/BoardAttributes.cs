@@ -10,7 +10,8 @@ public class BoardAttributes : ScriptableObject {
     public Sprite allyFieldImage, completeImage;
     public int boardWidth = 9;
     public int boardHeight = 10;
-    public int allyField = 4;
+    public int allyField = 4; // from 0 to allyfield
+    public int enemyField = 5; // from enemyField to boardHeight-1
     [TextArea(2, 3)]
     public string description;
 
@@ -59,8 +60,16 @@ public class BoardAttributes : ScriptableObject {
     public List<Vector2Int> ChariotCastle() { return new List<Vector2Int> { arloc1, arloc2 }; }
     public List<Vector2Int> CannonCastle() { return new List<Vector2Int> { acloc1, acloc2 }; }
     public List<Vector2Int> SoldierCastle() { return new List<Vector2Int> { asloc1, asloc2, asloc3, asloc4, asloc5 }; }
+    public List<Vector2Int> EnemyAdvisorCastle() { return new List<Vector2Int> { ealoc1, ealoc2 }; }
+    public List<Vector2Int> EnemyElephantCastle() { return new List<Vector2Int> { eeloc1, eeloc2 }; }
+    public List<Vector2Int> EnemyHorseCastle() { return new List<Vector2Int> { ehloc1, ehloc2 }; }
+    public List<Vector2Int> EnemyChariotCastle() { return new List<Vector2Int> { erloc1, erloc2 }; }
+    public List<Vector2Int> EnemyCannonCastle() { return new List<Vector2Int> { ecloc1, ecloc2 }; }
+    public List<Vector2Int> EnemySoldierCastle() { return new List<Vector2Int> { esloc1, esloc2, esloc3, esloc4, esloc5 }; }
+    public bool InAllyField(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y <= allyField; }
     public bool InPalace(int x, int y) { return palaceDownLeft.x <= x && x <= palaceUpperRight.x && palaceDownLeft.y <= y && y <= palaceUpperRight.y; }
     public bool InEnemyPalace(int x, int y) { return enemyPalaceDownLeft.x <= x && x <= enemyPalaceUpperRight.x && enemyPalaceDownLeft.y <= y && y <= enemyPalaceUpperRight.y; }
-    public bool InAllyField(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y <= allyField; }
+    public bool InEnemyRegion(int x, int y) { return 0 <= x && x < boardWidth && enemyField <= y && y < boardHeight; }
+    public bool AtEnemyBottom(int x, int y) { return 0 <= x && x < boardWidth && y == boardHeight; }
     public bool InBoard(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y < boardHeight; }
 }

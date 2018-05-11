@@ -3,21 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public GameObject collectionPanel, createLineupPanel, infoCard;
     public static string TACTICSLOTPANEL = "TacticSlotPanel";
     public static bool dragBegins = false;
 
-    private GameObject selectedObject, mouseOver, showCardInfo, tactic;
-    private LineupBuilder lineupBuilder;
-    private CollectionManager collectionManager;
+    public GameObject infoCard;
+    public LineupBuilder lineupBuilder;
+    public CollectionManager collectionManager;
 
-    private void Start()
-    {
-        lineupBuilder = createLineupPanel.GetComponent<LineupBuilder>();
-        collectionManager = collectionPanel.GetComponent<CollectionManager>();
-    }
+    private GameObject selectedObject, showCardInfo, tactic;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -44,17 +39,6 @@ public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
         tactic.SetActive(true);
         if (InTacticRegion(Input.mousePosition)) lineupBuilder.AddTactic(infoCard.GetComponent<CardInfo>());
         infoCard.SetActive(false);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        selectedObject = eventData.pointerCurrentRaycast.gameObject;
-        if (selectedObject.name == TACTICSLOTPANEL)
-        {
-             tactic = selectedObject.transform.parent.Find("Tactic").gameObject;
-             if (!tactic.activeSelf) collectionManager.SetCurrentPage("Tactic",1);
-             else lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
-        }            
     }
 
     public static bool InTacticRegion(Vector2 pos)

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Betrayal
-  description: 'Round 10: Gain the control of an enemy minion It will join your ally.'
+  description: 'Round 15: Gain the control of an enemy minion It will join your ally.'
   goldCost: 0
   oreCost: 10
   image: {fileID: 21300000, guid: 66dadb2b7e767344fa7e30ba391c01b8, type: 3}

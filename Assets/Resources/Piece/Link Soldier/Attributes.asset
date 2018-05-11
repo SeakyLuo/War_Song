@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Link Soldier
   type: Soldier
-  description: 'Link: Gain Revenge: Return to its castle'
+  description: 'Link: Gain Revenge: Return to his castle'
   oreCost: 1
   health: 1
-  image: {fileID: 21300000, guid: eead718ed5e26f745a2d3040319505c3, type: 3}
+  image: {fileID: 21300000, guid: 8367fc8684b66ec42b60ca42aff39aef, type: 3}
   trigger: {fileID: 11400000, guid: 1bfcbe2642a29c7498b0cabd8f0d78a4, type: 2}

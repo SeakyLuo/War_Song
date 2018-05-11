@@ -163,22 +163,22 @@ Prefab:
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
@@ -188,7 +188,7 @@ Prefab:
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
@@ -198,7 +198,7 @@ Prefab:
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224468260585670162, guid: eeea2c328b28df545b5f4a0009b2ad2e,
         type: 2}
@@ -209,6 +209,16 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114975478882031446, guid: eeea2c328b28df545b5f4a0009b2ad2e,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 290464587}
+    - target: {fileID: 114975478882031446, guid: eeea2c328b28df545b5f4a0009b2ad2e,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SelectLineup
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: eeea2c328b28df545b5f4a0009b2ad2e, type: 2}

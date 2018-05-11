@@ -5,11 +5,11 @@ public class SoldierRecruitment : TacticTrigger {
 
     public override void Activate(Vector2Int loc)
     {
-        GameInfo.Add(new Piece("Soldier", loc, true));
+        GameController.AddPiece(Collection.StandardCollection("Soldier"), loc, true);
         GameController.ChangeOre(-oreCost);
     }
 
-    public override List<Vector2Int> ValidTarget()
+    public override List<Vector2Int> ValidTargets()
     {
         List<Vector2Int> target = new List<Vector2Int>();
         foreach (Vector2Int loc in GameController.FindCastles("Soldier"))

@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public static string GRIDSLOTPANEL = "GridSlotPanel";
-    public static bool dragBegins;
+    public static bool dragBegins = false;
 
     public GameObject collectionPanel, createLineupPanel, infoCard, cantSwitch;
 

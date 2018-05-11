@@ -8,7 +8,7 @@ public class LinkSoldier : Trigger
 
     public override void Activate()
     {
-        if (link && GameController.ChangeOre(-piece.GetOreCost()))
+        if (link)
         {
             gained = true;
             limitedUse = 0;
@@ -20,7 +20,7 @@ public class LinkSoldier : Trigger
         if (!gained) return;
         MovementController.Move(piece, piece.location, piece.GetCastle());
         MovementController.KillAt(piece.GetCastle());
-        // better to have a mark below
+        // better to change description
     }
 
 }

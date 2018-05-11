@@ -96,12 +96,12 @@ public class CheatAccount:UserInfo
         playerID = 12345789;
         Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),
             new Collection("Soldier Recruitment",5), new Collection("Advisor Recruitment"), new Collection("Greeeeeat Elephant","Elephant",3),
-            new Collection("Tame An Elephant"),new Collection("Purchase A Horse"), new Collection("King Guardian","Advisor", 3),
+            new Collection("Tame An Elephant"),new Collection("Purchase A Horse"), new Collection("King's Guardian","Advisor", 3),new Collection("Protect the King", 8),
             new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100), new Collection("Space Witch", "General", 2, 20),
-            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("A Secret Plan", 3),
+            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("A Secret Plan", 3),new Collection("Place A Flag",20),
             new Collection("No Way", 100), new Collection("Qin Shihuang", "General"), new Collection("Xiao He", "General"),new Collection("Turret","Cannon"),
-            new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build A Cannon"),
-            new Collection("Build A Rook"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Minesweeper",20)
+            new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build A Cannon"),new Collection("Betrayal", 5),
+            new Collection("Build A Rook"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
         };
         foreach (Collection c in cheat) AddCollection(c);
         lineups = new List<Lineup>()
@@ -131,7 +131,7 @@ public class CheatAccount:UserInfo
                 new Dictionary<Vector2Int, Collection>()
                 {
                     {new Vector2Int(4,0), new Collection("Space Witch", "General",1 , 9) },
-                    {new Vector2Int(3,0), new Collection("King Guardian","Advisor", 1, 4) },{new Vector2Int(5,0), new Collection("King Guardian","Advisor") },
+                    {new Vector2Int(3,0), new Collection("King's Guardian","Advisor", 1, 4) },{new Vector2Int(5,0), new Collection("King's Guardian","Advisor") },
                     {new Vector2Int(2,0), new Collection("Greeeeeat Elephant", "Elephant") },{new Vector2Int(6,0), new Collection("Greeeeeat Elephant", "Elephant")},
                     {new Vector2Int(1,0), new Collection("Horse Rider","Horse") },{new Vector2Int(7,0), new Collection("Horse Rider","Horse") },
                     {new Vector2Int(0,0), new Collection("Monster Hunter","Chariot") },{new Vector2Int(8,0), new Collection("Monster Hunter","Chariot") },
@@ -141,8 +141,8 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Soldier Recruitment",
-                    "Advisor Recruitment", "No Way", "Tame An Elephant","Purchase A Horse","Build A Rook"
+                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Disarm",
+                    "Place A Flag","Soldier Recruitment","No Way", "Protect the King","Betrayal"
                 },
                 "Standard Board",
                 "CheatLineup2",

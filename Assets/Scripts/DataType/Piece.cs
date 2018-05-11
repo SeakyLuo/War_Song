@@ -5,6 +5,7 @@ public class Piece
 {
     public static Vector2Int noLocation = new Vector2Int(-1, -1);
     public Vector2Int location;
+    public int freeze = 0;
     public bool active = true;
     public bool isAlly;
 
