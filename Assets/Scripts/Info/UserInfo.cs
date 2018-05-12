@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UserInfo {
 
+    public static int maxWinPerDay = 10;
+
     public string username;
     public int playerID;
     public List<Collection> collection;
@@ -77,14 +79,15 @@ public class UserInfo {
         collection.Insert(index, insert);
     }
 
-    public void ClassToJson()
+    public static void ClassToJson()
     {
 
     }
 
-    public void JsonToClass()
+    public static UserInfo JsonToClass()
     {
-
+        UserInfo player = new UserInfo();
+        return player;
     }
 }
 
@@ -94,14 +97,14 @@ public class CheatAccount:UserInfo
     {
         username = "WarSong CheatAccount";
         playerID = 12345789;
-        Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),
-            new Collection("Soldier Recruitment",5), new Collection("Advisor Recruitment"), new Collection("Greeeeeat Elephant","Elephant",3),
-            new Collection("Tame An Elephant"),new Collection("Purchase A Horse"), new Collection("King's Guardian","Advisor", 3),new Collection("Protect the King", 8),
+        Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),new Collection("Dark Bargain", 5),
+            new Collection("Soldier Recruitment",5), new Collection("Seek for Advisors"), new Collection("Greeeeeat Elephant","Elephant",3),new Collection("Place a Trap", 5),
+            new Collection("Tame an Elephant"),new Collection("Purchase a Horse"), new Collection("King's Guardian","Advisor", 3),new Collection("Protect the King", 8),
             new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100), new Collection("Space Witch", "General", 2, 20),
-            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("A Secret Plan", 3),new Collection("Place A Flag",20),
+            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("Secret Plan", 3),new Collection("Place a Flag",20),
             new Collection("No Way", 100), new Collection("Qin Shihuang", "General"), new Collection("Xiao He", "General"),new Collection("Turret","Cannon"),
-            new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build A Cannon"),new Collection("Betrayal", 5),
-            new Collection("Build A Rook"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
+            new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build a Cannon"),new Collection("Betrayal", 5),
+            new Collection("Build a Chariot"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
         };
         foreach (Collection c in cheat) AddCollection(c);
         lineups = new List<Lineup>()
@@ -120,8 +123,8 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Tame An Elephant","Purchase A Horse","Advisor Recruitment","Soldier Recruitment","Minesweeper",
-                    "A Secret Plan","Buy 1 Get 1 Free","Build A Rook","Winner Trophy","No Way"
+                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
+                    "No Way","Seek for Advisors","Tame an Elephant","Purchase a Horse","Build a Chariot"
                 },
                 "Standard Board",
                 "CheatLineup",
@@ -141,8 +144,8 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Disarm",
-                    "Place A Flag","Soldier Recruitment","No Way", "Protect the King","Betrayal"
+                    "Winner Trophy","Buy 1 Get 1 Free","Place a Trap","Disarm","Place a Flag",
+                    "Secret Plan","Soldier Recruitment","No Way", "Protect the King","Betrayal"
                 },
                 "Standard Board",
                 "CheatLineup2",
@@ -162,8 +165,8 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","A Secret Plan","Soldier Recruitment",
-                    "Advisor Recruitment", "Tame An Elephant","Purchase A Horse","Build A Rook"
+                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
+                    "Seek for Advisors","Tame an Elephant","Purchase a Horse","Build a Chariot"
                 },
                 "Standard Board",
                 "CheatLineup2",
@@ -172,10 +175,10 @@ public class CheatAccount:UserInfo
         };
         contracts = new Dictionary<string, int>()
         {
-            { "Standard Contract", 100},
-            { "Artillery Seller", 10},
-            { "Human Resource", 5},
-            { "Animal Smuggler", 2},
+            { "Standard Contract", 1111},
+            { "Artillery Seller", 111},
+            { "Human Resource", 11},
+            { "Animal Smuggler", 5},
             { "Wise Elder", 1}
         };
         coins = 99999;

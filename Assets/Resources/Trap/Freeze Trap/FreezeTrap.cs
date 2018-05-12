@@ -6,7 +6,6 @@ public class FreezeTrap : TacticTrigger
 {
     public override void Activate(Vector2Int location)
     {
-        GameController.FreezePiece(location, 2);
+        GameController.FreezePiece(location, 3);
     }
-
 }

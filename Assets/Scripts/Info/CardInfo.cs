@@ -12,6 +12,7 @@ public class CardInfo : MonoBehaviour {
     public Sprite allyBackground, enemyBackground;
 
     private string cardName, type, description;
+    private int cost;
     private int health = 1;
     private bool isAlly = true;
 
@@ -35,10 +36,10 @@ public class CardInfo : MonoBehaviour {
     {
         if (collection == null) return;
         if (collection.type == "Tactic")
-            SetAttributes(InfoLoader.FindTacticAttributes(collection.name));
+            SetAttributes(Database.FindTacticAttributes(collection.name));
         else
         {
-            SetAttributes(InfoLoader.FindPieceAttributes(collection.name));
+            SetAttributes(Database.FindPieceAttributes(collection.name));
             SetHealth(collection.health);
         }
     }
@@ -54,6 +55,7 @@ public class CardInfo : MonoBehaviour {
         cardName = attributes.Name;
         description = attributes.description;
         descriptionText.text = attributes.description;
+        cost = attributes.oreCost;
         costText.text = attributes.oreCost.ToString();
         health = attributes.health;
         healthImage.SetActive(true);
@@ -75,6 +77,7 @@ public class CardInfo : MonoBehaviour {
         cardName = attributes.Name;
         description = attributes.description;
         descriptionText.text = attributes.description;
+        cost = attributes.oreCost;
         costText.text = attributes.oreCost.ToString();
         healthImage.SetActive(false);
         coinImage.SetActive(true);
@@ -83,6 +86,17 @@ public class CardInfo : MonoBehaviour {
         image.sprite = attributes.image;
         type = "Tactic";
         typeText.text = type;
+    }
+
+    public void SetPiece(Piece setupPiece)
+    {
+        SetIsAlly(setupPiece.isAlly);
+        SetHealth(setupPiece.health);
+        cost = setupPiece.oreCost;
+        costText.text = cost.ToString();
+        if (piece.oreCost > cost) costText.color = Color.green;
+        else if (piece.oreCost == cost) costText.color = Color.white;
+        else costText.color = Color.red;
     }
 
     public void SetHealth(int Health)
@@ -94,6 +108,22 @@ public class CardInfo : MonoBehaviour {
         if (piece.health > health) healthText.color = Color.red;
         else if (piece.health == health) healthText.color = Color.white;
         else healthText.color = Color.green;
+    }
+
+    public void SetTactic(Tactic setupTactic)
+    {
+        if (tactic == null) return;
+        cost = setupTactic.oreCost;
+        costText.text = cost.ToString();
+        if (tactic.oreCost > cost) costText.color = Color.green;
+        else if (tactic.oreCost == cost) costText.color = Color.white;
+        else costText.color = Color.red;
+
+        health = setupTactic.goldCost;
+        healthText.text = health.ToString();
+        if (tactic.goldCost > health) healthText.color = Color.green;
+        else if (tactic.goldCost == health) healthText.color = Color.white;
+        else healthText.color = Color.red;
     }
 
     public void Clear()

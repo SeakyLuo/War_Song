@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59ce146b8e2925b49861d09c5bc69ea7, type: 3}
   m_Name: Attributes
   m_EditorClassIdentifier: 
-  Name: Build A Cannon
+  Name: Build a Cannon
   description: Deploy a Standard Cannon
   goldCost: 0
   oreCost: 4

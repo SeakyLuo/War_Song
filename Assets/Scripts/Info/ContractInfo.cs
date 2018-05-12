@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ContractInfo : MonoBehaviour {
@@ -10,8 +8,8 @@ public class ContractInfo : MonoBehaviour {
     public Text contractName;
 
 	void Start () {
-        gameObject.name = attributes.contractName;
-        contractName.text = attributes.contractName;
+        gameObject.name = attributes.Name;
+        contractName.text = attributes.Name;
         image.sprite = attributes.image;
     }
 
@@ -19,7 +17,7 @@ public class ContractInfo : MonoBehaviour {
     {
         attributes = contract;
         image.sprite = contract.image;
-        contractName.text = contract.contractName;
+        contractName.text = contract.Name;
     }
 
 }

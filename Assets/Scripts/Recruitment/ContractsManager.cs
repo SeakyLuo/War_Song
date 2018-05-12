@@ -17,8 +17,11 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public GameObject dragHere, claimCards, use10Contracts, cardView;
     public Text use10ContractsText, congratsText;
     public List<GameObject> contractSlots = new List<GameObject>();
+    public Texture2D dragCursor;
+    public ScrollRect scrollRect;
 
     private GameObject targetContract;
+    private int contractCount;
 
     // Use this for initialization
     private void Start()
@@ -35,6 +38,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
              countDragged = (selectedObject.name == "CountPanel");
         if (contractDragged || countDragged)
         {
+            Cursor.SetCursor(dragCursor, Vector2.zero, CursorMode.Auto);
             dragContract.SetActive(true);
             dragContract.transform.position = Input.mousePosition;
             dragHere.SetActive(true);
@@ -44,6 +48,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 dragContract.GetComponent<PlayerContract>().SetAttributes(targetContract.GetComponent<PlayerContract>().attributes);
                 targetContract.GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[targetContract.name] - 1);
                 dragContract.GetComponent<PlayerContract>().SetCount(1);
+                contractCount = 1;
             }
             else
             {
@@ -54,11 +59,13 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 {
                     targetContract.GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[targetContract.name] - 10);
                     dragContract.GetComponent<PlayerContract>().SetCount(10);
+                    contractCount = 10;
                 }
                 else
                 {
                     targetContract.GetComponent<PlayerContract>().SetCount(0);
                     dragContract.GetComponent<PlayerContract>().SetCount(count);
+                    contractCount = count;
                 }
             }
         }
@@ -68,23 +75,24 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         if (!dragHere.activeSelf) return;
         dragContract.transform.position = Input.mousePosition;
+        Cursor.SetCursor(dragCursor, Vector2.zero, CursorMode.Auto);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!dragHere.activeSelf) return;
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         dragContract.SetActive(false);
         dragHere.SetActive(false);
         if (Input.mousePosition.y >= GetComponent<RectTransform>().rect.height)
         {
-            int count = dragContract.GetComponent<PlayerContract>().GetCount();
-            congratsText.text = string.Format("Congratulations! You have recruited {0} new allies!", count * 5);
-            ResizeCardView(count);
-            if (count == 1)
+            congratsText.text = string.Format("Congratulations! You have recruited {0} new allies!", contractCount * 5);
+            ResizeCardView(contractCount);
+            if (contractCount == 1)
             {
-                --InfoLoader.user.contracts[targetContract.name];
                 // retrieve cards from the server and set them
-                claimCards.SetActive(true);
+                SetCards();
+                DisplayCards();
             }
             else
             {
@@ -95,7 +103,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 else
                 {
                     use10Contracts.SetActive(true);
-                    if (count == 10) use10ContractsText.text = "Do you want to use 10 contracts?";
+                    if (contractCount == 10) use10ContractsText.text = "Do you want to use 10 contracts?";
                     else use10ContractsText.text = "Do you want to use all contracts?";
                 }
             }
@@ -105,8 +113,8 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void AddContract(ContractAttributes contractAttributes, int contractsCount)
     {
-        InfoLoader.user.contracts[contractAttributes.contractName] += contractsCount;
-        contractSlots[contractName.IndexOf(contractAttributes.contractName)].GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[contractAttributes.contractName]);
+        InfoLoader.user.contracts[contractAttributes.Name] += contractsCount;
+        contractSlots[contractName.IndexOf(contractAttributes.Name)].GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[contractAttributes.Name]);
     }
 
     public void CancelUse10Contract()
@@ -118,20 +126,59 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void Use10Contracts()
     {
+        SetCards();
         use10Contracts.SetActive(false);
-        claimCards.SetActive(true);
+        DisplayCards();
         warned = true;
     }
 
-    public void ResizeCardView(int count)
+    public void DisplayCards()
+    {
+        claimCards.SetActive(true);
+        scrollRect.verticalNormalizedPosition = 1;
+    }
+
+    public void SetCards()
+    {
+        InfoLoader.user.contracts[targetContract.name] -= contractCount;
+        List<string> types = Database.FindContractAttributes(targetContract.name).cardTypes;
+        for(int i = 0; i < contractCount * 5; i++)
+        {
+            string type = types[Random.Range(0, types.Count)];
+            Collection collection;
+            if(type == "Tactic")
+            {
+                string tactic = Database.tacticList[Random.Range(0, Database.tacticList.Count)];
+                TacticAttributes attributes = Database.FindTacticAttributes(tactic);
+                collection = new Collection(attributes);
+                cardView.transform.Find("Card" + i.ToString()).GetComponent<CardInfo>().SetAttributes(collection);
+            }
+            else
+            {
+                int luck = Random.Range(0, 100);
+                List<string> pieces = Database.pieceListDict[type];
+                string piece = pieces[Random.Range(0, pieces.Count)];
+                PieceAttributes attributes = Database.FindPieceAttributes(piece);
+                collection = new Collection(attributes);
+                if (luck > 90) collection.health += (int) Mathf.Ceil(collection.health * 0.2f);
+                if (luck > 95) collection.health += (int)Mathf.Ceil(collection.health * 0.1f);
+                cardView.transform.Find("Card" + i.ToString()).GetComponent<CardInfo>().SetAttributes(attributes);
+            }
+            InfoLoader.user.AddCollection(collection);
+        }
+        contractCount = 0;
+    }
+
+    public void ResizeCardView(int contractCount)
     {
         GridLayoutGroup gridLayoutGroup = cardView.GetComponent<GridLayoutGroup>();
         cardView.GetComponent<RectTransform>().sizeDelta = new Vector2
         (
              cardView.GetComponent<RectTransform>().rect.width,
-             gridLayoutGroup.padding.top + gridLayoutGroup.padding.bottom + gridLayoutGroup.cellSize.y * count + gridLayoutGroup.spacing.y * (count - 1)
+             gridLayoutGroup.padding.top + gridLayoutGroup.padding.bottom + gridLayoutGroup.cellSize.y * contractCount + gridLayoutGroup.spacing.y * (contractCount - 1)
         );
+        int amount = 5 * contractCount;
         for (int i = 0; i < 50; i++)
-            cardView.transform.Find("Card" + i.ToString()).gameObject.SetActive(i < 5 * count);
+            cardView.transform.Find("Card" + i.ToString()).gameObject.SetActive(i < amount);
     }
 }

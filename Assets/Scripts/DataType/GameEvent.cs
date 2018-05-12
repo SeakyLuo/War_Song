@@ -42,4 +42,10 @@ public class GameEvent {
         eventLocation = gameEvent.eventLocation;
         targetLocation = gameEvent.targetLocation;
     }
+
+    public static GameEvent JsonToEvent()
+    {
+        GameEvent gameEvent = new GameEvent();
+        return gameEvent;
+    }
 }

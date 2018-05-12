@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attributes", menuName = "Contract")]
 public class ContractAttributes:ScriptableObject {
 
-    public string contractName;
+    public string Name;
     [TextArea(2, 3)]
     public string description;
     public Sprite image;

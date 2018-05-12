@@ -34,7 +34,7 @@ public class Settings : MonoBehaviour, IPointerClickHandler
             if (creditsPanel != null && creditsPanel.activeSelf) creditsPanel.SetActive(false);
             else if (optionsPanel.activeSelf) optionsPanel.SetActive(false);
             else if (guidebookPanel != null && guidebookPanel.activeSelf) guidebookPanel.SetActive(false);
-            else if (logoutPanel.activeSelf) return;
+            else if (logoutPanel != null && logoutPanel.activeSelf) return;
             else
             {
                 gameObject.SetActive(!gameObject.activeSelf);

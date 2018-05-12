@@ -23,8 +23,8 @@ public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
         dragBegins = true;
         infoCard.SetActive(true);
         infoCard.transform.position = Input.mousePosition;
-        infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tactic);
-        lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
+        infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tacticAttributes);
+        lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tacticAttributes);
     }
 
     public void OnDrag(PointerEventData eventData)

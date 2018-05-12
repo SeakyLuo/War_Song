@@ -304,8 +304,8 @@ public class CollectionManager : MonoBehaviour {
             foreach (Collection collection in searchedCollections)
             {
                 if (collection.name.Contains(word) ||
-                    (collection.type == "Tactic" && InfoLoader.FindTacticAttributes(collection.name).description.Contains(word)) ||
-                    (collection.type != "Tactic" && InfoLoader.FindPieceAttributes(collection.name).description.Contains(word)))
+                    (collection.type == "Tactic" && Database.FindTacticAttributes(collection.name).description.Contains(word)) ||
+                    (collection.type != "Tactic" && Database.FindPieceAttributes(collection.name).description.Contains(word)))
                     newSearched.Add(collection);
             }
             searchedCollections = newSearched;
@@ -317,7 +317,7 @@ public class CollectionManager : MonoBehaviour {
             {
                 if (collection.type == "Tactic")
                 {
-                    int goldCost = InfoLoader.FindTacticAttributes(collection.name).goldCost;
+                    int goldCost = Database.FindTacticAttributes(collection.name).goldCost;
                     if ((gold == 5 && goldCost >= gold) ||
                         (gold < 5 && goldCost == gold))
                         newSearched.Add(collection);
@@ -332,8 +332,8 @@ public class CollectionManager : MonoBehaviour {
             foreach (Collection collection in searchedCollections)
             {
                 int oreCost;
-                if (collection.type == "Tactic") oreCost = InfoLoader.FindTacticAttributes(collection.name).oreCost;
-                else oreCost = InfoLoader.FindPieceAttributes(collection.name).oreCost;
+                if (collection.type == "Tactic") oreCost = Database.FindTacticAttributes(collection.name).oreCost;
+                else oreCost = Database.FindPieceAttributes(collection.name).oreCost;
                 if ((ore == 5 && oreCost >= ore) ||
                     (ore < 5 && oreCost == ore))
                     newSearched.Add(collection);
@@ -348,7 +348,7 @@ public class CollectionManager : MonoBehaviour {
                 if (collection.type != "Tactic")
                 {
                     // IDK whether ∞ is 5+ or not
-                    int Health = InfoLoader.FindPieceAttributes(collection.name).health;
+                    int Health = Database.FindPieceAttributes(collection.name).health;
                     if ((health == 0 && Health == health) ||
                         (health == 5 && Health >= health) ||
                         (health < 5 && Health == health))

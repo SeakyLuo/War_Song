@@ -12,7 +12,6 @@ public class OnEnterPlayerMatching : MonoBehaviour
     public GameObject[] lineupObjects = new GameObject[LineupsManager.lineupsLimit];
 
     private GameObject[] xs = new GameObject[LineupsManager.lineupsLimit];
-    private string modeSelected;
 
     private void Start()
     {
@@ -24,7 +23,7 @@ public class OnEnterPlayerMatching : MonoBehaviour
             if (i < lineupsCount)
             {
                 lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
-                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = InfoLoader.FindPieceAttributes(InfoLoader.user.lineups[i].general).image;
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[i].general).image;
                 lineupObjects[i].GetComponent<Button>().interactable = InfoLoader.user.lineups[i].complete;
                 xs[i].SetActive(!InfoLoader.user.lineups[i].complete);
             }

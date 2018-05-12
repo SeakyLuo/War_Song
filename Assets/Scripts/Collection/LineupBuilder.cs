@@ -87,7 +87,7 @@ public class LineupBuilder : MonoBehaviour {
             StartCoroutine(FullReminder());
             return;
         }
-        else if (InTactics(cardInfo.GetCardName()))
+        else if (TacticIndex(cardInfo.GetCardName()) != -1)
         {
             StartCoroutine(SameTacticReminder());
             return;
@@ -97,10 +97,10 @@ public class LineupBuilder : MonoBehaviour {
         collectionManager.ShowCurrentPage();
     }
 
-    private void AddTactic(string tacticName)
+    private void AddTactic(Tactic tactic)
     {
         // called by progrommer
-        TacticAdder(InfoLoader.FindTacticAttributes(tacticName));
+        TacticAdder(Database.FindTacticAttributes(tactic.tacticName));
     }
 
     private void TacticAdder(TacticAttributes attributes)
@@ -121,7 +121,7 @@ public class LineupBuilder : MonoBehaviour {
                 }
             }
         }
-        lineup.tactics.Insert(index, attributes.Name);
+        lineup.tactics.Insert(index, new Tactic(attributes));
         tacticAttributes.Insert(index, attributes);
         tacticObjs[current_tactics++].SetActive(true);
         for (int i = index; i < current_tactics; i++)
@@ -134,19 +134,20 @@ public class LineupBuilder : MonoBehaviour {
         // called by user
         if (current_tactics == 0) return;
         TacticRemover(attributes);
-        collectionManager.AddCollection(new Collection(attributes.Name));
+        collectionManager.AddCollection(new Collection(attributes));
         if(collectionManager.currentPage.Key == "Tactic")
             collectionManager.ShowCurrentPage();
     }
     
-    private void RemoveTactic(string TacticName)
+    private void RemoveTactic(Tactic tactic)
     {
-        TacticRemover(tacticAttributes[lineup.tactics.IndexOf(TacticName)]);
+        TacticRemover(tacticAttributes[lineup.tactics.IndexOf(tactic)]);
     }
 
     private void TacticRemover(TacticAttributes attributes)
     {
-        int index = lineup.tactics.IndexOf(attributes.Name);
+        Tactic remove = new Tactic(attributes);
+        int index = TacticIndex(remove.tacticName);
         totalOreCost -= attributes.oreCost;
         totalGoldCost -= attributes.goldCost;
         if (current_tactics > 1)
@@ -155,7 +156,7 @@ public class LineupBuilder : MonoBehaviour {
                 tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1]);
         }
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
-        lineup.tactics.Remove(attributes.Name);
+        lineup.tactics.Remove(remove);
         tacticAttributes.RemoveAt(index);                   
         tacticObjs[--current_tactics].SetActive(false);
         SetTexts();        
@@ -168,17 +169,17 @@ public class LineupBuilder : MonoBehaviour {
               (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost < attributes2.goldCost) ||
               (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost == attributes2.goldCost && attributes1.Name.CompareTo(attributes2.Name) < 0);
     }
-
     private bool GreaterThan(TacticAttributes attributes1, TacticAttributes attributes2)
     {
         // Because tactics can't be the same.
         return !LessThan(attributes1, attributes2);
     }
 
-    private bool InTactics(string attributes)
+    private int TacticIndex(string tacticName)
     {
-        foreach (string name in lineup.tactics) if (name == attributes) return true;
-        return false;
+        for (int i = 0; i < lineup.tactics.Count; i++)
+            if (lineup.tactics[i].tacticName == tacticName) return i;
+        return -1;
     }
 
     private IEnumerator SameTacticReminder()
@@ -226,7 +227,7 @@ public class LineupBuilder : MonoBehaviour {
     public void SaveLineup()
     {
         lineup.cardLocations = boardInfo.cardLocations;
-        lineup.boardName = boardInfo.attributes.boardName;
+        lineup.boardName = boardInfo.attributes.Name;
         lineup.complete = (lineup.tactics.Count == Lineup.tacticLimit);
         // Incomplete Reminder
         lineupsManager.AddLineup(lineup);
@@ -242,7 +243,7 @@ public class LineupBuilder : MonoBehaviour {
             // return cards
             foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
                 collectionManager.AddCollection(pair.Value);
-            foreach (string tactic in lineup.tactics)
+            foreach (Tactic tactic in lineup.tactics)
             {
                 RemoveTactic(tactic);
                 collectionManager.AddCollection(new Collection(tactic));
@@ -285,7 +286,7 @@ public class LineupBuilder : MonoBehaviour {
         lineup.boardName = newLineup.boardName;
         if (isCopy)
         {
-            foreach (string tactic in newLineup.tactics)
+            foreach (Tactic tactic in newLineup.tactics)
             {
                 if (collectionManager.RemoveCollection(new Collection(tactic)))
                     AddTactic(tactic);
@@ -310,7 +311,7 @@ public class LineupBuilder : MonoBehaviour {
         }
         else
         {
-            foreach (string tactic in newLineup.tactics) AddTactic(tactic);
+            foreach (Tactic tactic in newLineup.tactics) AddTactic(tactic);
             boardInfo.cardLocations = newLineup.cardLocations;
             lineup.cardLocations = newLineup.cardLocations;
         }

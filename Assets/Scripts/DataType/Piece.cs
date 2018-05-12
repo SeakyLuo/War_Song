@@ -8,10 +8,11 @@ public class Piece
     public int freeze = 0;
     public bool active = true;
     public bool isAlly;
+    public int oreCost = 0;
+    public int health = 0;
 
     private Collection collection;
     private Vector2Int castle;
-    private int oreCost = 0;
 
     public Piece(string type, Vector2Int loc, bool IsAlly)
     {
@@ -28,12 +29,11 @@ public class Piece
         castle = loc;
         location = loc;
         oreCost = OreCost;
+        health = setupCollection.health;
         isAlly = IsAlly;
     }
 
     public string GetName() { return collection.name; }
-    public int GetHealth() { return collection.health; }
-    public int GetOreCost() { return oreCost; }
     public bool IsStandard() { return collection.name.StartsWith("Standard "); }
     public string GetPieceType() { return collection.type; }
     public Vector2Int GetCastle() { return castle; }

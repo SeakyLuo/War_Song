@@ -10,13 +10,13 @@ public class Betrayal: TacticTrigger
         GameController.ChangeSide(location, true);
         // Join your ally
         if(!GameInfo.board[location].IsStandard())
-            InfoLoader.user.AddCollection(new Collection(enemy.GetName(), enemy.GetPieceType(), 1, enemy.GetHealth()));
+            InfoLoader.user.AddCollection(new Collection(enemy.GetName(), enemy.GetPieceType(), 1, enemy.health));
     }
 
     public override List<Vector2Int> ValidTargets()
     {
         List<Vector2Int> target = new List<Vector2Int>();
-        foreach (Piece piece in GameInfo.activeEnemies)
+        foreach (Piece piece in GameInfo.activePieces[GameInfo.TheOtherPlayer()])
             if(piece.IsMinion())
                 target.Add(piece.location);
         return target;

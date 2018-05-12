@@ -18,7 +18,7 @@ public class PlayerContract : MonoBehaviour {
     public void SetAttributes(ContractAttributes contractAttributes)
     {
         attributes = contractAttributes;
-        gameObject.name = attributes.contractName;
+        gameObject.name = attributes.Name;
         image.sprite = attributes.image;
     }
 

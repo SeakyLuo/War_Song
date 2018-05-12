@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class AccountCreation : MonoBehaviour {
 
     public InputField email, password, confirmPassword, playerName;
-    public GameObject emailWarn, passwordWarn, confirmPasswordWarn, playerNameWarn;
+    public GameObject emailWarn, passwordWarn, confirmPasswordWarn, playerNameWarn, networkError, accountExists;
     public Button confirmCreation, login;
     public Toggle readAgreement;
 
@@ -48,12 +48,45 @@ public class AccountCreation : MonoBehaviour {
 
     public void ConfirmCreation()
     {
+        StartCoroutine(Register());
+    }
+
+    public IEnumerator Register()
+    {
         // create an account in the server
-        PlayerPrefs.SetString("email",email.text);
-        PlayerPrefs.SetString("password", password.text);
-        CancelCreation();
-        transform.parent.Find("Login").GetComponent<Login>().login(email.text, password.text);
-        // login and tutorial        
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("email", email.text);
+        infoToPhp.AddField("password", password.text);
+        infoToPhp.AddField("userName", playerName.text);
+
+        WWW sendToPhp = new WWW("http://localhost:8888/action_reg.php", infoToPhp);
+        yield return sendToPhp;
+        Debug.Log(sendToPhp.error);
+        if(sendToPhp.error.Contains("Cannot connect"))
+        {
+            networkError.SetActive(true);
+        }
+        else if (string.IsNullOrEmpty(sendToPhp.error))
+        {
+            if (sendToPhp.text.Contains("Error Could not create."))
+            {
+                accountExists.SetActive(true);
+            }
+            else
+            {
+                PlayerPrefs.SetString("email", email.text);
+                PlayerPrefs.SetString("password", password.text);
+
+                CancelCreation();
+                StartCoroutine(transform.parent.Find("Login").GetComponent<Login>().RequestLogin(email.text, password.text));
+            }
+        }
+    }
+
+    public void CloseAccountExists()
+    {
+        email.text = "";
+        accountExists.SetActive(false);
     }
 
     public void Agree()

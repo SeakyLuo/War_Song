@@ -10,7 +10,7 @@ public class TrapInfo : MonoBehaviour {
     public Sprite allyBackground;
     public Sprite enemyBackground;
 
-	public void SetAttributes(Trap trap, int creator)
+	public void SetAttributes(TrapAttributes trap, int creator)
     {
         nameText.text = trap.name;
         descriptionText.text = trap.description;

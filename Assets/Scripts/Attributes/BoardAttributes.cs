@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attributes", menuName = "Board")]
 public class BoardAttributes : ScriptableObject {
 
-    public string boardName;
+    public string Name;
     public bool available = true;
     public Sprite allyFieldImage, completeImage;
     public int boardWidth = 9;

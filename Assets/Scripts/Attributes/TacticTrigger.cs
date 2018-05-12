@@ -6,10 +6,9 @@ public class TacticTrigger : ScriptableObject
 {
     public bool needsTarget = true;
     public int afterRound = 0;
-    public int lastRound = 1; // Number of rounds this effect will last
-    public int effectiveStarts = 0; // Effective round number. 0 if effective immediately, 
-    [HideInInspector] public int oreCost;
-    [HideInInspector] public int goldCost;
+    public int effectLasts = 1; // Number of rounds this effect will last
+    public int effectiveRound = 0; // Effective round number. 0 if effective immediately, 
+    [HideInInspector] public Tactic tactic;
     private Vector2Int target;
 
     public virtual void Activate() { }  // Override this if !needsTarget

@@ -20,7 +20,7 @@ public class MouseOverTactic : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (LineupBoardGestureHandler.dragBegins || !tactic.activeSelf) return;
         infoCard.SetActive(true);
-        infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tactic);
+        infoCard.GetComponent<CardInfo>().SetAttributes(tactic.GetComponent<TacticInfo>().tacticAttributes);
         infoCard.transform.position = newPosition;
     }
 
@@ -33,6 +33,6 @@ public class MouseOverTactic : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!tactic.activeSelf) collectionManager.SetCurrentPage("Tactic", 1);
-        else lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tactic);
+        else lineupBuilder.RemoveTactic(tactic.GetComponent<TacticInfo>().tacticAttributes);
     }
 }

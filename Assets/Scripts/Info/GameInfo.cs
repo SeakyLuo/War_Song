@@ -8,16 +8,15 @@ public class GameInfo
     public static Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
     public static Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
     public static Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
-    public static List<string> unusedTactics = new List<string>();
-    public static List<string> usedTactics = new List<string>();
-    public static List<Piece> activeAllies = new List<Piece>(),
-                           inactiveAllies = new List<Piece>(),
-                           activeEnemies = new List<Piece>(),
-                           inactiveEnemies = new List<Piece>();
+    public static Dictionary<int, List<Tactic>> unusedTactics = new Dictionary<int, List<Tactic>>();
+    public static Dictionary<int, List<Tactic>> usedTactics = new Dictionary<int, List<Tactic>>();
+    public static Dictionary<int, List<Piece>> activePieces = new Dictionary<int, List<Piece>>(),
+                                               inactivePieces = new Dictionary<int, List<Piece>>();
 
     public static string boardName;
     public static int firstPlayer; //player ID
     public static int secondPlayer;
+    public static Dictionary<int, Lineup> lineups;
     public static Dictionary<int, int> ores;
     public static Dictionary<int, int> actions;
     public static int round = 1;
@@ -26,28 +25,54 @@ public class GameInfo
     public static int gameID;
     public static bool gameStarts = false;
     public static bool gameOver = false;
+    public static int victory = -1; // -1 if draw, otherwise playerID
 
-    public GameInfo()
+    public GameInfo(Lineup playerLineup, int playerID, Lineup enemyLineup, int enemyID)
     {
-        SetOrder(InfoLoader.user.playerID, 100000000);
+        lineups = new Dictionary<int, Lineup>()
+        {
+            { playerID, playerLineup },
+            { enemyID, enemyLineup }
+        };
+        SetOrder(playerID, enemyID);
         ores = new Dictionary<int, int>()
         {
-            { firstPlayer, 30 },
-            { secondPlayer, 30 }
+            { playerID, 30 },
+            { enemyID, 30 }
         };
-        actions = new Dictionary<int, int>();
-        actions.Add(firstPlayer, 1);
-        actions.Add(secondPlayer, 1);
-        gameStarts = true;
-        
+        actions = new Dictionary<int, int>()
+        {
+            { playerID, 1 },
+            { enemyID, 1 }
+        };
+
         SetGameID(1);
-        Lineup lineup = InfoLoader.user.lineups[InfoLoader.user.lastLineupSelected];
-        boardName = lineup.boardName;
-        unusedTactics = new List<string>(lineup.tactics);
+        boardName = playerLineup.boardName;
+        activePieces = new Dictionary<int, List<Piece>>()
+        {
+            { playerID, new List<Piece>() },
+            { enemyID, new List<Piece>() },
+        };
+        inactivePieces = new Dictionary<int, List<Piece>>()
+        {
+            { playerID, new List<Piece>() },
+            { enemyID, new List<Piece>() },
+        };
+        unusedTactics = new Dictionary<int, List<Tactic>>()
+        {
+            { playerID, playerLineup.tactics },
+            { enemyID, enemyLineup.tactics }
+        };
+        usedTactics = new Dictionary<int, List<Tactic>>()
+        {
+            { playerID, new List<Tactic>() },
+            { enemyID, new List<Tactic>() }
+        };
+        gameStarts = true;
     }
-    public static int TheOtherPlayerID()
+    public static int TheOtherPlayer()
     {
-        if (firstPlayer == InfoLoader.user.playerID) return secondPlayer;
+        if (firstPlayer == InfoLoader.playerID) return secondPlayer;
         else return firstPlayer;
     }
 
@@ -57,13 +82,13 @@ public class GameInfo
         board.Add(piece.GetCastle(), piece);
         if (piece.isAlly)
         {
-            activeAllies.Add(piece);
-            if (reactivate) inactiveAllies.Remove(piece);
+            activePieces[InfoLoader.playerID].Add(piece);
+            if (reactivate) inactivePieces[InfoLoader.playerID].Remove(piece);
         }
         else
         {
-            activeEnemies.Add(piece);
-            if (reactivate) inactiveEnemies.Remove(piece);
+            activePieces[InfoLoader.playerID].Add(piece);
+            if (reactivate) inactivePieces[InfoLoader.playerID].Remove(piece);
         }
     }
 
@@ -73,33 +98,33 @@ public class GameInfo
         board.Remove(piece.location);
         if (piece.isAlly)
         {
-            activeAllies.Remove(piece);
-            inactiveAllies.Add(piece);
+            activePieces[InfoLoader.playerID].Remove(piece);
+            inactivePieces[InfoLoader.playerID].Add(piece);
         }
         else
         {
-            activeEnemies.Remove(piece);
-            inactiveEnemies.Add(piece);
+            activePieces[TheOtherPlayer()].Remove(piece);
+            inactivePieces[TheOtherPlayer()].Add(piece);
         }
     }
 
     public static bool IsAllyAlive(Collection collection)
     {
-        foreach(Piece piece in activeAllies)
+        foreach(Piece piece in activePieces[InfoLoader.playerID])
             if (piece.SameCollection(collection))
                 return true;
         return false;
     }
 
-    public static void AddTactic(string tacticName)
+    public static void AddTactic(Tactic tactic)
     {
-        unusedTactics.Add(tacticName);
+        unusedTactics[InfoLoader.playerID].Add(tactic);
     }
 
-    public static void RemoveTactic(string tacticName)
+    public static void RemoveTactic(Tactic tactic)
     {
-        unusedTactics.Remove(tacticName);
-        usedTactics.Add(tacticName);
+        unusedTactics[InfoLoader.playerID].Remove(tactic);
+        usedTactics[InfoLoader.playerID].Add(tactic);
     }
 
     public static void SetOrder(int player1, int player2)
@@ -136,10 +161,10 @@ public class GameInfo
         board.Clear();
         unusedTactics.Clear();
         usedTactics.Clear();
-        activeAllies.Clear();
-        inactiveAllies.Clear();
-        activeEnemies.Clear();
-        inactiveEnemies.Clear();
+        activePieces[firstPlayer].Clear();
+        activePieces[secondPlayer].Clear();
+        inactivePieces[firstPlayer].Clear();
+        inactivePieces[secondPlayer].Clear();
         round = 1;
     }
 
@@ -148,7 +173,7 @@ public class GameInfo
 
     }
 
-    public static void JsonToClass(GameInfo gameInfo)
+    public static void JsonToClass()
     {
 
     }

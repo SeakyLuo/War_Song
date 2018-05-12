@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Fat Soldier
   type: Soldier
-  description: If he survives this war, coin +1.
+  description: If you win and he survives this war, Coin +1.
   oreCost: 0
   health: 3
   image: {fileID: 21300000, guid: e5def7a4a1930a14b91d6adf95166a12, type: 3}

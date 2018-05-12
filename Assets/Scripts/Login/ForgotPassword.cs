@@ -74,6 +74,6 @@ public class ForgotPassword : MonoBehaviour {
         newPassword.text = confirmPassword.text = "";
         resetPasswordPanel.SetActive(false);
         gameObject.SetActive(false);
-        transform.parent.GetComponent<Login>().login(PlayerPrefs.GetString("password"), newPassword.text);
+        StartCoroutine(transform.parent.GetComponent<Login>().RequestLogin(PlayerPrefs.GetString("password"), newPassword.text));
     }
 }

@@ -37,9 +37,9 @@ public class Collection
         name = attributes.Name;
         type = attributes.type;
         count = Count;
+        oreCost = attributes.oreCost;
         health = Health;
         if (Health == 0) health = attributes.health;
-        oreCost = attributes.oreCost;
     }
 
     public Collection(string tacticName, int Count = 1)
@@ -47,9 +47,17 @@ public class Collection
         name = tacticName;
         type = "Tactic";
         count = Count;
-        TacticAttributes attributes = InfoLoader.FindTacticAttributes(tacticName);
-        health = attributes.goldCost;
+        TacticAttributes attributes = Database.FindTacticAttributes(tacticName);
         oreCost = attributes.oreCost;
+        health = attributes.goldCost;
+    }
+
+    public Collection(Tactic tactic, int Count = 1)
+    {
+        name = tactic.tacticName;
+        count = Count;
+        oreCost = tactic.oreCost;
+        health = tactic.goldCost;
     }
 
     public Collection(TacticAttributes attributes, int Count = 1)
@@ -57,8 +65,8 @@ public class Collection
         name = attributes.Name;
         type = "Tactic";
         count = Count;
-        health = attributes.goldCost;
         oreCost = attributes.oreCost;
+        health = attributes.goldCost;
     }
 
     public Collection(string Name, string Type, int Count = 1, int Health = 0)
@@ -69,13 +77,13 @@ public class Collection
         health = Health;
         if (Type == "Tactic")
         {
-            TacticAttributes attributes = InfoLoader.FindTacticAttributes(Name);
+            TacticAttributes attributes = Database.FindTacticAttributes(Name);
             health = attributes.goldCost;
             oreCost = attributes.oreCost;
         }
         else if (!Name.StartsWith("Standard "))
         {
-            PieceAttributes attributes = InfoLoader.FindPieceAttributes(Name);
+            PieceAttributes attributes = Database.FindPieceAttributes(Name);
             if (Health == 0) health = attributes.health;
             oreCost = attributes.oreCost;
         }

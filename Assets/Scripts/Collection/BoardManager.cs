@@ -22,7 +22,10 @@ public class BoardManager : MonoBehaviour {
 
     private void Start()
     {
-        boardAttributes = InfoLoader.boards;
+        boardAttributes = new List<BoardAttributes>() { Database.FindBoardAttributes(InfoLoader.user.preferredBoard) };
+        foreach (string boardName in Database.boardList)
+            if(boardName != InfoLoader.user.preferredBoard)
+                boardAttributes.Add(Database.FindBoardAttributes(boardName));
         DisplayBoardSelectionInterface();
     }
 
@@ -40,7 +43,7 @@ public class BoardManager : MonoBehaviour {
 
     private void DisplayBoardSelectionInterface()
     {
-        boardName.text = boardAttributes[currentBoard].boardName;
+        boardName.text = boardAttributes[currentBoard].Name;
         boardImage.sprite = boardAttributes[currentBoard].completeImage;
         boardInformation.text = boardAttributes[currentBoard].description;
         if (boardAttributes[currentBoard].available)
@@ -59,7 +62,7 @@ public class BoardManager : MonoBehaviour {
     {
         if (boardAttributes[currentBoard].available)
         {
-            InfoLoader.user.preferredBoard = boardAttributes[currentBoard].boardName;
+            InfoLoader.user.preferredBoard = boardAttributes[currentBoard].Name;
         }
     }
 
@@ -72,12 +75,12 @@ public class BoardManager : MonoBehaviour {
 
     public void LoadBoard(Lineup lineup)
     {
-        LoadBoard(Resources.Load<BoardAttributes>("Board/" + lineup.boardName + "/Attributes"), lineup.cardLocations);
+        LoadBoard(Database.FindBoardAttributes(lineup.boardName), lineup.cardLocations);
     }
 
     public void LoadBoard(BoardAttributes attributes, Dictionary<Vector2Int, Collection> newLocations = null)
     {
-        loadedBoard = Instantiate(Resources.Load<GameObject>("Board/" + attributes.boardName + "/LineupBoard"), board.transform);
+        loadedBoard = Instantiate(Resources.Load<GameObject>("Board/" + attributes.Name + "/LineupBoard"), board.transform);
         loadedBoard.transform.localPosition = new Vector3(0, 0, 0);
         loadedBoard.SetActive(true);
         loadedBoard.GetComponent<BoardInfo>().SetAttributes(attributes, newLocations);
