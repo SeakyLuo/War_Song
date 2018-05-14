@@ -22,7 +22,7 @@ public class Stats {
         SetPercentage();
     }
 
-    public void Lost()
+    public void Lose()
     {
         lose++;
         gamesPlayed++;

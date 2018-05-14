@@ -12,7 +12,7 @@ public class TacticGestureHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     public LineupBuilder lineupBuilder;
     public CollectionManager collectionManager;
 
-    private GameObject selectedObject, showCardInfo, tactic;
+    private GameObject selectedObject, tactic;
 
     public void OnBeginDrag(PointerEventData eventData)
     {

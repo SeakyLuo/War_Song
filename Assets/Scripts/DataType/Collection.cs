@@ -11,7 +11,6 @@ public class Collection
 
     private int oreCost = 0; //tmp
 
-    public static List<string> types = new List<string> { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
     public static Collection General = StandardCollection("General");
     public static Collection Advisor = StandardCollection("Advisor");
     public static Collection Elephant = StandardCollection("Elephant");
@@ -99,27 +98,27 @@ public class Collection
         return name == "" && type == "" && count == 1 && health == 0;
     }
 
-    public bool LessThan(Collection collection)
+    public static bool operator < (Collection collection1, Collection collection2)
     {
-        if(type == "Tactic" && collection.type == type)
+        if(collection1.type == "Tactic" && collection2.type == collection1.type)
         {
-            return (oreCost < collection.oreCost) ||
-                   (oreCost == collection.oreCost && health < collection.health) ||
-                   (oreCost == collection.oreCost && health == collection.health && name.CompareTo(collection.name) < 0);
+            return (collection1.oreCost< collection2.oreCost) ||
+                   (collection1.oreCost == collection2.oreCost && collection1.health < collection2.health) ||
+                   (collection1.oreCost == collection2.oreCost && collection1.health == collection2.health && collection1.name.CompareTo(collection2.name) < 0);
         }
         else
         {
-            int typeIndex = types.IndexOf(type), collectionTypeIndex = types.IndexOf(collection.type);
-            return (typeIndex < collectionTypeIndex) ||
-                   (typeIndex == collectionTypeIndex && oreCost < collection.oreCost) ||
-                   (typeIndex == collectionTypeIndex && oreCost == collection.oreCost && name.CompareTo(collection.name) < 0) ||
-                   (typeIndex == collectionTypeIndex && name == collection.name && health < collection.health);
+            int typeIndex = Database.types.IndexOf(collection1.type), collection2TypeIndex = Database.types.IndexOf(collection2.type);
+            return (typeIndex < collection2TypeIndex) ||
+                   (typeIndex == collection2TypeIndex && collection1.oreCost < collection2.oreCost) ||
+                   (typeIndex == collection2TypeIndex && collection1.oreCost == collection2.oreCost && collection1.name.CompareTo(collection2.name) < 0) ||
+                   (typeIndex == collection2TypeIndex && collection1.name == collection2.name && collection1.health < collection2.health);
         }
     }
 
-    public bool GreaterThan(Collection collection)
+    public static bool operator > (Collection collection1, Collection collection2)
     {
-        return !LessThan(collection) && !Equals(collection);
+        return !(collection1 < collection2) && !collection1.Equals(collection2);
     }
 
     public bool Equals(Collection collection)

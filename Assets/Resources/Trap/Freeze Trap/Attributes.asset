@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Freeze Trap
-  description: Piece can't move for 2 rounds.
+  description: 'Piece Freezes in 3 rounds
+
+    // Should be next 2 rounds'
   image: {fileID: 21300000, guid: a59e6260d27f1d543a1867381d33387a, type: 3}
   trigger: {fileID: 11400000, guid: 440fb1688971e284bbeb7bb5e4d84ee9, type: 2}

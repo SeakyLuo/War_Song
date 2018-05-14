@@ -5,25 +5,40 @@ public class Piece
 {
     public static Vector2Int noLocation = new Vector2Int(-1, -1);
     public Vector2Int location;
+    public int oreCost = 0;
+    public int health = 0;
     public int freeze = 0;
     public bool active = true;
     public bool isAlly;
-    public int oreCost = 0;
-    public int health = 0;
+    public bool original;
+    public Collection collection;
 
-    private Collection collection;
     private Vector2Int castle;
 
-    public Piece(string type, Vector2Int loc, bool IsAlly)
+    public Piece(Piece piece)
+    {
+        location = piece.location;
+        freeze = piece.freeze;
+        active = piece.active;
+        isAlly = piece.isAlly;
+        oreCost = piece.oreCost;
+        health = piece.health;
+        collection = piece.collection;
+        castle = piece.castle;
+        original = piece.original;
+    }
+
+    public Piece(string type, Vector2Int loc, bool IsAlly, bool Original)
     {
         /// Standard Piece
         collection = Collection.standardCollectionDict[type];
         castle = loc;
         location = loc;
         isAlly = IsAlly;
+        original = Original;
     }
 
-    public Piece(Collection setupCollection, Vector2Int loc, int OreCost, bool IsAlly)
+    public Piece(Collection setupCollection, Vector2Int loc, int OreCost, bool IsAlly, bool Original)
     {
         collection = setupCollection;
         castle = loc;
@@ -31,6 +46,7 @@ public class Piece
         oreCost = OreCost;
         health = setupCollection.health;
         isAlly = IsAlly;
+        original = Original;
     }
 
     public string GetName() { return collection.name; }
@@ -38,12 +54,4 @@ public class Piece
     public string GetPieceType() { return collection.type; }
     public Vector2Int GetCastle() { return castle; }
     public bool IsMinion() { return collection.type != "General"; }
-    public bool SameCollection(Collection other) { return collection.Equals(other); }
-    public void Resurrect(Vector2Int loc)
-    {
-        // may be useless
-        active = true;
-        if (loc == noLocation) location = castle;
-        else location = loc;
-    }
 }

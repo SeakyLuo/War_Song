@@ -20,7 +20,7 @@ public class Lineup
     public Lineup(Dictionary<Vector2Int, Collection> cardLoc, List<string> Tactics, string BoardName = "Standard Board", string LineupName = "Custom Lineup", string General = "Standard General")
     {
         List<Tactic> playerTactics = new List<Tactic>();
-        foreach (string tacticName in Tactics) playerTactics.Add(new Tactic(Database.FindTacticAttributes(tacticName)));
+        foreach (string tacticName in Tactics) playerTactics.Add(new Tactic(Database.FindTacticAttributes(tacticName), true));
         SetInfo(cardLoc, playerTactics, BoardName, LineupName, General);
     }
 
@@ -76,6 +76,6 @@ public class EnemyLineup: Lineup
             "No Way","Seek for Advisors","Tame an Elephant","Purchase a Horse","Build a Chariot"
         };
         tactics = new List<Tactic>();
-        foreach (string tacticName in enemyTactics) tactics.Add(new Tactic(Database.FindTacticAttributes(tacticName)));
+        foreach (string tacticName in enemyTactics) tactics.Add(new Tactic(Database.FindTacticAttributes(tacticName), true));
     }
 }

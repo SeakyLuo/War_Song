@@ -5,6 +5,7 @@ using UnityEngine;
 
 [System.Serializable]
 public class Database {
+    public static List<string> types = new List<string> { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
     public static Dictionary<string, PieceAttributes> standardAttributes = new Dictionary<string, PieceAttributes>();
     public static Dictionary<string, PieceAttributes> pieces = new Dictionary<string, PieceAttributes>();
     public static Dictionary<string, TacticAttributes> tactics = new Dictionary<string, TacticAttributes>();

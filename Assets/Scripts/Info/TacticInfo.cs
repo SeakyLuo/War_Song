@@ -9,10 +9,10 @@ public class TacticInfo : MonoBehaviour {
     [HideInInspector] public TacticTrigger trigger;
     [HideInInspector] public Tactic tactic;
 
-    public void SetAttributes(TacticAttributes attributes)
+    public void SetAttributes(TacticAttributes attributes, bool original = true)
     {
         tacticAttributes = attributes;
-        tactic = new Tactic(attributes.Name, attributes.oreCost, attributes.goldCost);
+        tactic = new Tactic(attributes.Name, attributes.oreCost, attributes.goldCost, original);
         if (tacticAttributes.trigger != null) trigger = Instantiate(tacticAttributes.trigger);
         if (tacticAttributes.trigger != null) trigger.tactic = tactic;
         nameText.text = attributes.Name;

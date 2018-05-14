@@ -40,14 +40,13 @@ public class UserInfo {
         preferredBoard = "Standard Board";
     }
 
-    public int FindCollectionWithName(string name)
+    public int FindCollection(string name)
     {
         /// return first occurence
         for(int i = 0; i < collection.Count; i++)
             if (collection[i].name == name) return i;
         return -1;
     }
-
     public int FindCollection(Collection card)
     {
         for (int i = 0; i < collection.Count; i++)
@@ -58,13 +57,13 @@ public class UserInfo {
     public void AddCollection(Collection insert)
     {
         int index = 0;
-        if (collection.Count == 0 || insert.LessThan(collection[0])) index = 0;
-        else if (insert.GreaterThan(collection[collection.Count - 1])) index = collection.Count;
+        if (collection.Count == 0 || insert < collection[0]) index = 0;
+        else if (insert > collection[collection.Count - 1]) index = collection.Count;
         else
         {
             for (int i = 0; i < collection.Count - 1; i++)
             {
-                if (insert.GreaterThan(collection[i]) && insert.LessThan(collection[i + 1]))
+                if (insert > collection[i] && insert < collection[i + 1])
                 {
                     index = i + 1;
                     break;
@@ -78,16 +77,91 @@ public class UserInfo {
         }
         collection.Insert(index, insert);
     }
-
-    public static void ClassToJson()
+    public void RemoveCollection(int index)
     {
-
+        collection.RemoveAt(index);
+    }
+    public void RemoveCollection(Collection remove)
+    {
+        collection.Remove(remove);
+    }
+    public void ChangeCollectionCount(int index, int deltaAmount)
+    {
+        if (--InfoLoader.user.collection[index].count == 0) InfoLoader.user.RemoveCollection(index);
     }
 
-    public static UserInfo JsonToClass()
+    public void ChangeCoins(int deltaAmount)
     {
-        UserInfo player = new UserInfo();
-        return player;
+        coins += deltaAmount;
+        // upload()
+    }
+    public void AddLineup(Lineup lineup)
+    {
+        lineups.Add(lineup);
+    }
+    public void ModifyLineup(Lineup lineup, int index)
+    {
+        lineups[index] = lineup;
+    }
+    public void RemoveLineup(int index)
+    {
+        lineups.RemoveAt(index);
+    }
+    public void SetLastLineupSelected(int index = -1)
+    {
+        lastLineupSelected = index;
+    }
+    public void SetPreferredBoard(string boardName = "StandardBoard")
+    {
+        preferredBoard = boardName;
+    }
+    public void SetGameID(int GameId)
+    {
+        gameID = GameId;
+    }
+    public void ChangeContracts(string contractName, int deltaAmount)
+    {
+        if (contracts.ContainsKey(contractName)) contracts[contractName] += deltaAmount;
+        else contracts.Add(contractName, deltaAmount);
+    }
+    public void Win()
+    {
+        total.Win();
+        winsToday++;
+    }
+    public void Lose()
+    {
+        total.Lose();
+    }
+    public void Draw()
+    {
+        InfoLoader.user.total.Draw();
+    }
+
+    public static string ClassToJson(UserInfo user)
+    {
+        return JsonUtility.ToJson(user);
+    }
+    public static UserInfo JsonToClass(string json)
+    {
+        return JsonUtility.FromJson<UserInfo>(json);
+    }
+    public IEnumerator Upload(UserInfo user)
+    {
+        //user.username = "Connor";
+        string userJson = ClassToJson(user); //convert class to json string
+
+        WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+        infoToPhp.AddField("userName", user.username);
+        infoToPhp.AddField("userJson", userJson);
+
+        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
+        yield return sendToPhp;
+    }
+    public void DownloadLatestJson(UserInfo user)
+    {
+        //will test after upload is correct
+        
     }
 }
 

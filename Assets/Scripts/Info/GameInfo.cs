@@ -8,10 +8,10 @@ public class GameInfo
     public static Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
     public static Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
     public static Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
-    public static Dictionary<int, List<Tactic>> unusedTactics = new Dictionary<int, List<Tactic>>();
-    public static Dictionary<int, List<Tactic>> usedTactics = new Dictionary<int, List<Tactic>>();
-    public static Dictionary<int, List<Piece>> activePieces = new Dictionary<int, List<Piece>>(),
-                                               inactivePieces = new Dictionary<int, List<Piece>>();
+    public static Dictionary<int, List<Tactic>> unusedTactics;
+    public static Dictionary<int, List<Tactic>> usedTactics;
+    public static Dictionary<int, List<Piece>> activePieces;
+    public static Dictionary<int, List<Piece>> inactivePieces;
 
     public static string boardName;
     public static int firstPlayer; //player ID
@@ -76,7 +76,7 @@ public class GameInfo
         else return firstPlayer;
     }
 
-    public static void Add(Piece piece, bool reactivate = false)
+    public static void AddPiece(Piece piece, bool reactivate = false)
     {
         piece.active = true;
         board.Add(piece.GetCastle(), piece);
@@ -90,9 +90,12 @@ public class GameInfo
             activePieces[InfoLoader.playerID].Add(piece);
             if (reactivate) inactivePieces[InfoLoader.playerID].Remove(piece);
         }
+        if (castles.ContainsKey(piece.GetCastle())) castles[piece.GetCastle()].Add(piece);
+        else castles.Add(piece.GetCastle(), new List<Piece> { piece });
+        // upload
     }
 
-    public static void Remove(Piece piece)
+    public static void RemovePiece(Piece piece)
     {
         piece.active = false;
         board.Remove(piece.location);
@@ -106,25 +109,45 @@ public class GameInfo
             activePieces[TheOtherPlayer()].Remove(piece);
             inactivePieces[TheOtherPlayer()].Add(piece);
         }
-    }
-
-    public static bool IsAllyAlive(Collection collection)
-    {
-        foreach(Piece piece in activePieces[InfoLoader.playerID])
-            if (piece.SameCollection(collection))
-                return true;
-        return false;
+        castles[piece.location].Remove(piece);
+        // upload
     }
 
     public static void AddTactic(Tactic tactic)
     {
-        unusedTactics[InfoLoader.playerID].Add(tactic);
+        int index = 0;
+        List<Tactic> tactics = unusedTactics[InfoLoader.playerID];
+        if (tactics.Count == 0 || tactic < tactics[0]) index = 0;
+        else if (tactic > tactics[tactics.Count - 1]) index = tactics.Count;
+        else
+        {
+            for (int i = 0; i < unusedTactics[InfoLoader.playerID].Count - 1; i++)
+            {
+                if (tactic > tactics[i] && tactic < tactics[i+1])
+                {
+                    index = i + 1;
+                    break;
+                }
+            }
+        }
+        unusedTactics[InfoLoader.playerID].Insert(index, tactic);
+        // upload
     }
 
-    public static void RemoveTactic(Tactic tactic)
+    public static void RemoveTactic(int index)
     {
-        unusedTactics[InfoLoader.playerID].Remove(tactic);
-        usedTactics[InfoLoader.playerID].Add(tactic);
+        usedTactics[InfoLoader.playerID].Add(unusedTactics[InfoLoader.playerID][index]);
+        unusedTactics[InfoLoader.playerID].RemoveAt(index);
+        // upload
+    }
+
+    public static int FindTactic(string tacticName, int playerID)
+    {
+        List<Tactic> tactics = unusedTactics[playerID];
+        for (int i = 0; i < tactics.Count; i++)
+            if (tactics[i].tacticName == tacticName)
+                return i;
+        return -1;
     }
 
     public static void SetOrder(int player1, int player2)
@@ -154,6 +177,7 @@ public class GameInfo
         Piece piece = board[from];
         board.Remove(from);
         board.Add(to, piece);
+        // upload
     }
 
     public static void Clear()
@@ -168,13 +192,12 @@ public class GameInfo
         round = 1;
     }
 
-    public static void ClassToJson()
+    public static string ClassToJson(GameInfo gameInfo)
     {
-
+        return JsonUtility.ToJson(gameInfo);
     }
-
-    public static void JsonToClass()
+    public static GameInfo JsonToClass(string json)
     {
-
+        return JsonUtility.FromJson<GameInfo>(json);
     }
 }

@@ -18,7 +18,9 @@ public class InfoLoader : MonoBehaviour {
                                        // user = new UserInfo();
                                        // download Json
                                        // user.JsonToClass();
+            //UserInfo player = UserInfo.JsonToClass()
             playerID = user.playerID;
+            //UserInfo.ClassToJson(user);
             called = true;
         }
     }

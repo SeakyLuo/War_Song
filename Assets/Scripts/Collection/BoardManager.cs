@@ -62,7 +62,7 @@ public class BoardManager : MonoBehaviour {
     {
         if (boardAttributes[currentBoard].available)
         {
-            InfoLoader.user.preferredBoard = boardAttributes[currentBoard].Name;
+            InfoLoader.user.SetPreferredBoard(boardAttributes[currentBoard].Name);
         }
     }
 

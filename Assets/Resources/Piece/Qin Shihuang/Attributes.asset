@@ -13,7 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Qin Shihuang
   type: General
-  description: Your palace expands.
+  description: 'Start Of Game: Your palace expands.'
   oreCost: 0
   health: 50
   image: {fileID: 21300000, guid: 16eb7f3051587d04696572b029f4cb10, type: 3}
+  trigger: {fileID: 0}

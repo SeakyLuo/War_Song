@@ -43,9 +43,12 @@ public class GameEvent {
         targetLocation = gameEvent.targetLocation;
     }
 
-    public static GameEvent JsonToEvent()
+    public static string ClassToJson(GameEvent gameEvent)
     {
-        GameEvent gameEvent = new GameEvent();
-        return gameEvent;
+        return JsonUtility.ToJson(gameEvent);
+    }
+    public static GameEvent JsonToEvent(string json)
+    {
+        return JsonUtility.FromJson<GameEvent>(json);
     }
 }

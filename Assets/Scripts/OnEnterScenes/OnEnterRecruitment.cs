@@ -14,7 +14,6 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
     private Camera canvasCamera;
     private RectTransform rectTransform;
     private GameObject[] closeObjects;
-    private ContractsManager contractsManager;
 
 	// Use this for initialization
 	void Start () {

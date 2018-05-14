@@ -14,7 +14,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
 
     private static float offsetLeft, offsetRight, offsetDown, offsetUp;
 
-    private GameObject selectedObject, clickedObject, mouseOver, showCardInfo;
+    private GameObject selectedObject;
     private Transform parent;
     private CollectionManager collectionManager;
     private BoardInfo boardInfo;

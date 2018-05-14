@@ -24,8 +24,7 @@ public class CardInfo : MonoBehaviour {
         {
             SetAttributes(cardInfo.piece);
             health = cardInfo.GetHealth();
-            if (health == 0) healthText.text = "∞";
-            else healthText.text = health.ToString();
+            healthText.text = health.ToString();
             healthText.color = cardInfo.healthText.color;
         }
         isAlly = cardInfo.isAlly;
@@ -60,8 +59,7 @@ public class CardInfo : MonoBehaviour {
         health = attributes.health;
         healthImage.SetActive(true);
         coinImage.SetActive(false);
-        if (health == 0) healthText.text = "∞";
-        else healthText.text = attributes.health.ToString();
+        healthText.text = attributes.health.ToString();
         healthText.color = Color.white;
         image.sprite = attributes.image;
         type = attributes.type;
@@ -103,8 +101,7 @@ public class CardInfo : MonoBehaviour {
     {
         if (piece == null) return;
         health = Health;
-        if (health == 0) healthText.text = "∞";
-        else healthText.text = health.ToString();
+        healthText.text = health.ToString();
         if (piece.health > health) healthText.color = Color.red;
         else if (piece.health == health) healthText.color = Color.white;
         else healthText.color = Color.green;

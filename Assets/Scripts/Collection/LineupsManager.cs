@@ -53,7 +53,7 @@ public class LineupsManager : MonoBehaviour {
                         lineup.lineupName = CUSTOMLINEUP + customLineupCount.ToString();
                     }
             }
-            InfoLoader.user.lineups.Add(lineup);
+            InfoLoader.user.AddLineup(lineup);
             lineupObjects[lineupsCount].SetActive(true);
             lineupObjects[lineupsCount].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[lineupsCount].general).image;
             lineupObjects[lineupsCount++].GetComponentInChildren<Text>().text = lineup.lineupName;
@@ -64,7 +64,7 @@ public class LineupsManager : MonoBehaviour {
         }
         else
         {
-            InfoLoader.user.lineups[modifyLineup] = lineup;
+            InfoLoader.user.ModifyLineup(lineup, modifyLineup);
             lineupObjects[modifyLineup].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[modifyLineup].general).image;
             lineupObjects[modifyLineup].GetComponentInChildren<Text>().text = lineup.lineupName;
             modifyLineup = -1;
@@ -76,8 +76,8 @@ public class LineupsManager : MonoBehaviour {
         // bug
         if (modifyLineup != -1)
         {
-            if (InfoLoader.user.lastLineupSelected == modifyLineup) InfoLoader.user.lastLineupSelected = -1;
-            InfoLoader.user.lineups.RemoveAt(modifyLineup);
+            if (InfoLoader.user.lastLineupSelected == modifyLineup) InfoLoader.user.SetLastLineupSelected(-1);
+            InfoLoader.user.RemoveLineup(modifyLineup);
             lineupObjects[--lineupsCount].SetActive(false);
             for (int i = modifyLineup; i < lineupsCount; i++)
                 lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;

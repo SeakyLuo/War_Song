@@ -20,7 +20,7 @@ public class CollectionManager : MonoBehaviour {
                 searchByOreValue = -1, 
                 searchByHealthValue = -1;
     private string searchByKeyword = "";
-    private static GameObject[] tabs = new GameObject[Collection.types.Count];
+    private static GameObject[] tabs = new GameObject[Database.types.Count];
     private GameObject[] cards;
     private Text[] counters;
 
@@ -28,7 +28,7 @@ public class CollectionManager : MonoBehaviour {
     void Start () {
         cards = new GameObject[cardsPerPage];
         counters = new Text[cardsPerPage];
-        foreach (string type in Collection.types)
+        foreach (string type in Database.types)
         {
             pageLimits.Add(type, 1);
             collectionDict.Add(type, new List<Collection>());
@@ -40,9 +40,9 @@ public class CollectionManager : MonoBehaviour {
             cards[i] = slot.Find("Card").gameObject;
             counters[i] = slot.Find("Count/CountText").GetComponent<Text>();
         }
-        for (int i = 0; i < Collection.types.Count; i++)
+        for (int i = 0; i < Database.types.Count; i++)
         {
-            tabs[i] = GameObject.Find("Tabs/" + Collection.types[i]);
+            tabs[i] = GameObject.Find("Tabs/" + Database.types[i]);
             tabs[i].SetActive(true);
         }
         LoadUserCollections();
@@ -132,16 +132,16 @@ public class CollectionManager : MonoBehaviour {
     {
         // Hightlight Tab
         if (currentPage.Key != "" || type != "")
-            for (int i = 0; i < Collection.types.Count; i++)
-                if (Collection.types[i] != currentPage.Key)
+            for (int i = 0; i < Database.types.Count; i++)
+                if (Database.types[i] != currentPage.Key)
                 {
                     ColorBlock colorBlock = tabs[i].GetComponent<Button>().colors;
                     if(currentPage.Key != null && currentPage.Key != "") // Only used when initializing
-                        tabs[Collection.types.IndexOf(currentPage.Key)].GetComponent<Button>().colors = colorBlock; // Resume tab
+                        tabs[Database.types.IndexOf(currentPage.Key)].GetComponent<Button>().colors = colorBlock; // Resume tab
                     if(type != "")
                     {
                         colorBlock.normalColor = Color.white;
-                        tabs[Collection.types.IndexOf(type)].GetComponent<Button>().colors = colorBlock;
+                        tabs[Database.types.IndexOf(type)].GetComponent<Button>().colors = colorBlock;
                     }
                     break;
                 }
@@ -165,7 +165,7 @@ public class CollectionManager : MonoBehaviour {
 
     public KeyValuePair<string, int> FirstPage()
     {
-        foreach (string type in Collection.types)
+        foreach (string type in Database.types)
             if (pageLimits[type] != 0)
                 return new KeyValuePair<string, int>(type, 1);
         return notFound;
@@ -173,9 +173,9 @@ public class CollectionManager : MonoBehaviour {
 
     public KeyValuePair<string, int> LastPage()
     {
-        for (int i = Collection.types.Count - 1; i >= 0; i--)
-            if (pageLimits[Collection.types[i]] != 0)
-                return new KeyValuePair<string, int>(Collection.types[i], pageLimits[Collection.types[i]]);
+        for (int i = Database.types.Count - 1; i >= 0; i--)
+            if (pageLimits[Database.types[i]] != 0)
+                return new KeyValuePair<string, int>(Database.types[i], pageLimits[Database.types[i]]);
         return notFound;
     }
 
@@ -194,7 +194,7 @@ public class CollectionManager : MonoBehaviour {
         // Calculate Page Number
         string type = currentPage.Key;
         pageNumber = currentPage.Value;
-        foreach (string cardType in Collection.types)
+        foreach (string cardType in Database.types)
         {
             if (cardType != type) pageNumber += pageLimits[cardType];
             else break;
@@ -234,10 +234,10 @@ public class CollectionManager : MonoBehaviour {
         int page = currentPage.Value;
         if (currentPage.Value == 1)
         {
-            int index = Collection.types.IndexOf(type) - 1;
+            int index = Database.types.IndexOf(type) - 1;
             while (true)
             {
-                type = Collection.types[index];
+                type = Database.types[index];
                 page = pageLimits[type];
                 if (page != 0 || index == 0) break;
                 index--;
@@ -253,12 +253,12 @@ public class CollectionManager : MonoBehaviour {
         int page = currentPage.Value;
         if (currentPage.Value == pageLimits[type])
         {
-            int index = Collection.types.IndexOf(type) + 1;
+            int index = Database.types.IndexOf(type) + 1;
             while (true)
             {
-                type = Collection.types[index];
+                type = Database.types[index];
                 page = 1;
-                if (pageLimits[type] != 0 || index == Collection.types.Count - 1) break;
+                if (pageLimits[type] != 0 || index == Database.types.Count - 1) break;
                 index++;
             }
         }
@@ -279,10 +279,10 @@ public class CollectionManager : MonoBehaviour {
         displayCollections = searchedCollections;
         LoadCollections();
         SetPageLimits();
-        for (int i = Collection.types.Count - 1; i >= 0; i--)
+        for (int i = Database.types.Count - 1; i >= 0; i--)
         {
             // only show tab with result
-            if (collectionDict[Collection.types[i]].Count == 0) tabs[i].SetActive(false);
+            if (collectionDict[Database.types[i]].Count == 0) tabs[i].SetActive(false);
             else tabs[i].SetActive(true);
         }
         SetCurrentPage(FirstPage());
@@ -347,10 +347,8 @@ public class CollectionManager : MonoBehaviour {
             {
                 if (collection.type != "Tactic")
                 {
-                    // IDK whether ∞ is 5+ or not
                     int Health = Database.FindPieceAttributes(collection.name).health;
-                    if ((health == 0 && Health == health) ||
-                        (health == 5 && Health >= health) ||
+                    if ((health == 5 && Health >= health) ||
                         (health < 5 && Health == health))
                         newSearched.Add(collection);
                 }

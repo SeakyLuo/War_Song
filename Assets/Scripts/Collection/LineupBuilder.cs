@@ -21,7 +21,6 @@ public class LineupBuilder : MonoBehaviour {
     private GameObject[] tacticObjs;
     private List<TacticAttributes> tacticAttributes = new List<TacticAttributes>();    
     private int totalOreCost = 0, totalGoldCost = 0;
-    private Vector3 mousePosition;
 
     private void Awake()
     {
@@ -87,7 +86,7 @@ public class LineupBuilder : MonoBehaviour {
             StartCoroutine(FullReminder());
             return;
         }
-        else if (TacticIndex(cardInfo.GetCardName()) != -1)
+        else if (FindTactic(cardInfo.GetCardName()) != -1)
         {
             StartCoroutine(SameTacticReminder());
             return;
@@ -108,24 +107,24 @@ public class LineupBuilder : MonoBehaviour {
         totalOreCost += attributes.oreCost;
         totalGoldCost += attributes.goldCost;
         int index = 0;
-        if (current_tactics == 0 || LessThan(attributes, tacticAttributes[0])) index = 0;
-        else if (GreaterThan(attributes, tacticAttributes[current_tactics - 1])) index = current_tactics;
+        if (current_tactics == 0 || attributes.LessThan(tacticAttributes[0])) index = 0;
+        else if (attributes.GreaterThan(tacticAttributes[current_tactics - 1])) index = current_tactics;
         else
         {
             for (int i = 0; i < current_tactics - 1; i++)
             {
-                if (GreaterThan(attributes, tacticAttributes[i]) && LessThan(attributes, tacticAttributes[i + 1]))
+                if (attributes.GreaterThan(tacticAttributes[i]) && attributes.LessThan(tacticAttributes[i + 1]))
                 {
                     index = i + 1;
                     break;
                 }
             }
         }
-        lineup.tactics.Insert(index, new Tactic(attributes));
+        lineup.tactics.Insert(index, new Tactic(attributes, true));
         tacticAttributes.Insert(index, attributes);
         tacticObjs[current_tactics++].SetActive(true);
         for (int i = index; i < current_tactics; i++)
-            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i]);
+            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i], true);
         SetTexts();
     }
 
@@ -146,14 +145,14 @@ public class LineupBuilder : MonoBehaviour {
 
     private void TacticRemover(TacticAttributes attributes)
     {
-        Tactic remove = new Tactic(attributes);
-        int index = TacticIndex(remove.tacticName);
+        Tactic remove = new Tactic(attributes, true);
+        int index = FindTactic(remove.tacticName);
         totalOreCost -= attributes.oreCost;
         totalGoldCost -= attributes.goldCost;
         if (current_tactics > 1)
         {
             for (int i = index; i < current_tactics - 1; i++)
-                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1]);
+                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1], true);
         }
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
         lineup.tactics.Remove(remove);
@@ -162,20 +161,7 @@ public class LineupBuilder : MonoBehaviour {
         SetTexts();        
     }
 
-    private bool LessThan(TacticAttributes attributes1, TacticAttributes attributes2)
-    {
-        // attributes1 less than attributes2
-        return attributes1.oreCost < attributes2.oreCost ||
-              (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost < attributes2.goldCost) ||
-              (attributes1.oreCost == attributes2.oreCost && attributes1.goldCost == attributes2.goldCost && attributes1.Name.CompareTo(attributes2.Name) < 0);
-    }
-    private bool GreaterThan(TacticAttributes attributes1, TacticAttributes attributes2)
-    {
-        // Because tactics can't be the same.
-        return !LessThan(attributes1, attributes2);
-    }
-
-    private int TacticIndex(string tacticName)
+    private int FindTactic(string tacticName)
     {
         for (int i = 0; i < lineup.tactics.Count; i++)
             if (lineup.tactics[i].tacticName == tacticName) return i;

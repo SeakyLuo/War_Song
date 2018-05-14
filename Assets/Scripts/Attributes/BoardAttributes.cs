@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
 [CreateAssetMenu(fileName = "Attributes", menuName = "Board")]
 public class BoardAttributes : ScriptableObject {
 

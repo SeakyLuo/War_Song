@@ -21,10 +21,10 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         card = PieceInfoCard.transform.Find("Canvas/Card").gameObject;
     }
 
-    public void Setup(Collection collection, Vector2Int loc, bool IsAlly)
+    public void Setup(Collection collection, Vector2Int loc, bool IsAlly, bool original)
     {
         pieceAttributes = Database.FindPieceAttributes(collection.name);
-        piece = new Piece(collection, loc, pieceAttributes.oreCost, IsAlly);
+        piece = new Piece(collection, loc, pieceAttributes.oreCost, IsAlly, original);
         if (pieceAttributes.trigger != null) trigger = Instantiate(pieceAttributes.trigger);
         if (trigger != null) trigger.piece = piece; // remove the if when all completed
         GetComponentInChildren<Image>().sprite = pieceAttributes.image;

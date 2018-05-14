@@ -10,4 +10,8 @@ public class TacticAttributes : ScriptableObject {
     public int goldCost, oreCost;
     public Sprite image;
     public TacticTrigger trigger;
+
+    public bool LessThan(TacticAttributes attributes) { return new Tactic(this) > new Tactic(attributes); }
+    public bool Equals(TacticAttributes attributes) { return new Tactic(this) == new Tactic(attributes); }
+    public bool GreaterThan(TacticAttributes attributes) { return new Tactic(this) > new Tactic(attributes); }
 }

@@ -117,6 +117,6 @@ public class OnEnterPlayerMatching : MonoBehaviour
             if(InfoLoader.user.lastLineupSelected != -1)
                 lineupObjects[InfoLoader.user.lastLineupSelected].GetComponent<Image>().sprite = lineupObjects[InfoLoader.user.lastLineupSelected].GetComponent<Button>().spriteState.disabledSprite;
         }
-        InfoLoader.user.lastLineupSelected = number;
+        InfoLoader.user.SetLastLineupSelected(number);
     }
 }

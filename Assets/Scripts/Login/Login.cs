@@ -8,8 +8,9 @@ using UnityEngine.EventSystems;
 public class Login : MonoBehaviour
 {
     public InputField inputEmail, inputPassword;
+    public Text connectingDots;
     public GameObject createAccountPanel, emptyEmail, wrongPassword, emptyPassword;
-    public GameObject settingsPanel, forgotPasswordPanel, networkError;
+    public GameObject settingsPanel, forgotPasswordPanel, networkError, connecting;
 
     // better to support phone number registration
 
@@ -48,9 +49,12 @@ public class Login : MonoBehaviour
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", email);
         infoToPhp.AddField("password", password);
+        gameObject.SetActive(false);
+        StartCoroutine(ChangeConnectingDots());
 
         WWW sendToPhp = new WWW("http://localhost:8888/action_login.php", infoToPhp);
         yield return sendToPhp;
+        StopAllCoroutines();
 
         if (string.IsNullOrEmpty(sendToPhp.error)) //if no error connecting to server
         {
@@ -73,6 +77,7 @@ public class Login : MonoBehaviour
         {
             if(showError) networkError.SetActive(true);
         }
+        gameObject.SetActive(true);
     }
 
     private void login(string email, string password)
@@ -85,6 +90,16 @@ public class Login : MonoBehaviour
             if (emptyPassword.activeSelf) emptyPassword.SetActive(false);
             if (wrongPassword.activeSelf) wrongPassword.SetActive(false);
             SceneManager.LoadScene("Main");
+        }
+    }
+
+    private IEnumerator ChangeConnectingDots()
+    {
+        int count = 0;
+        while (true)
+        {
+            connectingDots.text = "Connecting" + new string('*', count % 6 + 1);
+            yield return new WaitForSeconds(0.5f);
         }
     }
     

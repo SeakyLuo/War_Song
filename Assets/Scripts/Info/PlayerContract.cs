@@ -22,14 +22,25 @@ public class PlayerContract : MonoBehaviour {
         image.sprite = attributes.image;
     }
 
+    public void ChangeCount(int deltaAmount)
+    {
+        gameObject.SetActive(count + deltaAmount > 0);
+        if (gameObject.activeSelf)
+        {
+            count += deltaAmount;
+            counter.text = count.ToString();
+            counter.transform.parent.gameObject.SetActive(count > 1);
+        }
+    }
+
     public void SetCount(int number)
     {
         gameObject.SetActive(number != 0);
         if (gameObject.activeSelf)
         {
             count = number;
-            counter.text = number.ToString();
-            counter.transform.parent.gameObject.SetActive(number > 1);
+            counter.text = count.ToString();
+            counter.transform.parent.gameObject.SetActive(count > 1);
         }
     }
 

@@ -8,20 +8,10 @@ public class ActivateCoinStore : MonoBehaviour {
     public GameObject infoPanel;
     public Text coins;
 
-	public void purchase(int amount)
+	public void Purchase(int amount)
     {
         // Networking
-        InfoLoader.user.coins += amount;
+        InfoLoader.user.ChangeCoins(amount);
         coins.text = InfoLoader.user.coins.ToString();
-    }
-
-    public void ShowInfo()
-    {
-        infoPanel.SetActive(true);
-    }
-
-    public void GotIt()
-    {
-        infoPanel.SetActive(false);
     }
 }

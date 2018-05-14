@@ -46,7 +46,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             {
                 targetContract = selectedObject.transform.parent.gameObject;
                 dragContract.GetComponent<PlayerContract>().SetAttributes(targetContract.GetComponent<PlayerContract>().attributes);
-                targetContract.GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[targetContract.name] - 1);
+                targetContract.GetComponent<PlayerContract>().ChangeCount(-1);
                 dragContract.GetComponent<PlayerContract>().SetCount(1);
                 contractCount = 1;
             }
@@ -57,7 +57,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 int count = InfoLoader.user.contracts[targetContract.name];
                 if(count > 10)
                 {
-                    targetContract.GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[targetContract.name] - 10);
+                    targetContract.GetComponent<PlayerContract>().ChangeCount(-10);
                     dragContract.GetComponent<PlayerContract>().SetCount(10);
                     contractCount = 10;
                 }
@@ -113,7 +113,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void AddContract(ContractAttributes contractAttributes, int contractsCount)
     {
-        InfoLoader.user.contracts[contractAttributes.Name] += contractsCount;
+        InfoLoader.user.ChangeContracts(contractAttributes.Name, contractsCount);
         contractSlots[contractName.IndexOf(contractAttributes.Name)].GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[contractAttributes.Name]);
     }
 
@@ -140,7 +140,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void SetCards()
     {
-        InfoLoader.user.contracts[targetContract.name] -= contractCount;
+        InfoLoader.user.ChangeContracts(targetContract.name, -contractCount);
         List<string> types = Database.FindContractAttributes(targetContract.name).cardTypes;
         for(int i = 0; i < contractCount * 5; i++)
         {
@@ -160,9 +160,12 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 string piece = pieces[Random.Range(0, pieces.Count)];
                 PieceAttributes attributes = Database.FindPieceAttributes(piece);
                 collection = new Collection(attributes);
-                if (luck > 90) collection.health += (int) Mathf.Ceil(collection.health * 0.2f);
+                if (luck > 85) collection.health += (int)Mathf.Ceil(collection.health * 0.1f);
+                if (luck > 90) collection.health += (int) Mathf.Ceil(collection.health * 0.1f);
                 if (luck > 95) collection.health += (int)Mathf.Ceil(collection.health * 0.1f);
-                cardView.transform.Find("Card" + i.ToString()).GetComponent<CardInfo>().SetAttributes(attributes);
+                CardInfo cardInfo = cardView.transform.Find("Card" + i.ToString()).GetComponent<CardInfo>();
+                cardInfo.SetAttributes(attributes);
+                cardInfo.SetHealth(collection.health);
             }
             InfoLoader.user.AddCollection(collection);
         }

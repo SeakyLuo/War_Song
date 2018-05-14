@@ -9,7 +9,6 @@ public class GameTacticGesture : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     private GameObject tacticObj;
     private Button button;
-    private TacticTrigger trigger;
     private float prevClick = 0;
     private float doubleClickInterval = 1;
 
@@ -19,7 +18,6 @@ public class GameTacticGesture : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         tacticObj = transform.Find("Tactic").gameObject;
         button = GetComponent<Button>();
-        trigger = tacticObj.GetComponent<TacticInfo>().trigger;
     }
 
     public void UseTactic(int caller)
@@ -29,12 +27,12 @@ public class GameTacticGesture : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (OnEnterGame.current_tactic != -1 && targets.Count != 0) Resume();
         else
         {
-            // double click doesn't work well
+            TacticTrigger trigger = tacticObj.GetComponent<TacticInfo>().trigger;
             if (!trigger.needsTarget && Time.time - prevClick < doubleClickInterval)
             {
                 if (!GameController.ChangeOre(-trigger.tactic.oreCost) || !GameController.ChangeCoin(-trigger.tactic.goldCost)) return;
                 trigger.Activate();
-                gameObject.SetActive(false);
+                GameController.RemoveTactic(trigger.tactic);
             }
             else
             {

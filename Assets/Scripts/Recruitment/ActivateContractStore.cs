@@ -60,7 +60,7 @@ public class ActivateContractStore : MonoBehaviour {
         int price = int.Parse(priceText.text);
         if (InfoLoader.user.coins >= price)
         {
-            InfoLoader.user.coins -= price;
+            InfoLoader.user.ChangeCoins(-price);
             playerCoinsAmount.text = InfoLoader.user.coins.ToString();
             contractsManager.AddContract(current_contract, contractsCount);
             successfulPurchase.SetActive(true);

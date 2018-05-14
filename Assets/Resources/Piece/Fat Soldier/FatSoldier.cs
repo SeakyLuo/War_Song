@@ -7,6 +7,6 @@ public class FatSoldier : Trigger
 	public override void EndOfGame()
     {
         if (piece.active && GameInfo.victory == InfoLoader.playerID)
-            InfoLoader.user.coins += 1;
+            InfoLoader.user.ChangeCoins(1);
     }
 }

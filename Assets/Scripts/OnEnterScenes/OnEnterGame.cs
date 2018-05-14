@@ -11,7 +11,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     public static int current_tactic = -1;
 
     public GameInfo gameInfo;
-    public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, freezeText, winReward;
+    public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
     public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel;
     public GameObject history, boardInfoCard , trapInfoCard, enemyInfoCard, playerFlag, enemyFlag, freezeImage;
     public Transform tacticBag;
@@ -24,7 +24,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     [HideInInspector] public BoardSetup boardSetup;
 
     private static Lineup lineup;
-    private static List<Transform> tacticObjs;
+    public static List<Transform> tacticObjs;
     private static List<Button> tacticButtons;
     private static List<TacticTrigger> tacticTriggers;
     private static Dictionary<String, int> credits = new Dictionary<string, int>()
@@ -39,9 +39,9 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     void Start () {
         lineup = InfoLoader.user.lineups[InfoLoader.user.lastLineupSelected];
         // Set GameInfo
-        gameInfo = new GameInfo(lineup, InfoLoader.user.playerID, new EnemyLineup(), 100000000); // should be downloading a GameInfo
+        gameInfo = new GameInfo(lineup, InfoLoader.playerID, new EnemyLineup(), 100000000); // should be downloading a GameInfo
         //GameInfo.JsonToClass();
-        InfoLoader.user.gameID = GameInfo.gameID;
+        InfoLoader.user.SetGameID(GameInfo.gameID);
         board = Instantiate(Resources.Load<GameObject>("Board/" + lineup.boardName + "/Board"));
         board.transform.SetSiblingIndex(1);
         boardSetup = board.GetComponent<BoardSetup>();
@@ -72,7 +72,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             Transform tacticSlot = tacticBag.Find(String.Format("TacticSlot{0}", i));
             tacticButtons.Add(tacticSlot.GetComponent<Button>());
             tacticObjs.Add(tacticSlot.Find("Tactic"));
-            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(Database.FindTacticAttributes(lineup.tactics[i].tacticName));
+            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(Database.FindTacticAttributes(lineup.tactics[i].tacticName), true);
             tacticTriggers.Add(tacticObjs[i].GetComponent<TacticInfo>().trigger);
         }
         StartCoroutine(Timer());
@@ -87,7 +87,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             {
                 victoryImage.SetActive(false);
                 winReward.SetActive(true);
-                InfoLoader.user.coins++;
+                InfoLoader.user.ChangeCoins(1);
                 return;
             }
             GameInfo.gameOver = false;
@@ -124,23 +124,21 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         GameInfo.victory = InfoLoader.playerID;
         victoryImage.SetActive(true);
-        InfoLoader.user.total.Win();
+        InfoLoader.user.Win();
         GameOver();
     }
-
     public void Defeat()
     {
         GameInfo.victory = GameInfo.TheOtherPlayer();
         defeatImage.SetActive(true);
-        InfoLoader.user.total.Lost();
+        InfoLoader.user.Lose();
         GameOver();
     }
-
     public void Draw()
     {
         GameInfo.victory = -1;
         drawImage.SetActive(true);
-        InfoLoader.user.total.Draw();
+        InfoLoader.user.Draw();
         GameOver();
     }
 
@@ -158,12 +156,19 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         // CalculateNewRank(); // should be done by server
         foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
         {
-            if (GameInfo.IsAllyAlive(pair.Value)) continue;
-            if (pair.Value.health > 0 && --pair.Value.health == 0)
+            bool alive = false;
+            foreach(Piece piece in GameInfo.activePieces[InfoLoader.playerID])
+                if (piece.original && piece.GetCastle() == pair.Key)
+                {
+                    alive = true;
+                    lineup.cardLocations[pair.Key] = piece.collection;
+                    break;
+                }
+            if (!alive && pair.Value.health > 0 && --pair.Value.health == 0)
             {
                 int index = InfoLoader.user.FindCollection(pair.Value);
-                InfoLoader.user.collection.RemoveAt(index);
-                int next = InfoLoader.user.FindCollectionWithName(pair.Value.name);
+                InfoLoader.user.RemoveCollection(index);
+                int next = InfoLoader.user.FindCollection(pair.Value.name);
                 if (next != -1) lineup.cardLocations[pair.Key] = InfoLoader.user.collection[next];
                 else lineup.cardLocations[pair.Key] = Collection.StandardCollection(pair.Value.type);
             }
@@ -171,14 +176,12 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         foreach(Tactic tactic in lineup.tactics)
         {
             if (GameInfo.unusedTactics[InfoLoader.playerID].Contains(tactic)) continue;
-            int index = InfoLoader.user.FindCollectionWithName(tactic.tacticName);
-            if (index != -1)
-            {
-                if (--InfoLoader.user.collection[index].count == 0)
-                    InfoLoader.user.collection.RemoveAt(index);
-            }
+            int index = InfoLoader.user.FindCollection(tactic.tacticName);
+            if (index != -1) InfoLoader.user.ChangeCollectionCount(index, -1);
             else lineup.complete = false;
         }
+        InfoLoader.user.ModifyLineup(lineup, InfoLoader.user.lastLineupSelected);
+        // upload
     }
 
     public void Concede()
@@ -205,16 +208,13 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         endTurnText.text = "Your Turn";
         //StartCoroutine(ShowYourTurn());
-        GameInfo.actions[InfoLoader.user.playerID] = 1;
+        GameInfo.actions[InfoLoader.playerID] = 1;
         foreach (KeyValuePair<Vector2Int, GameObject> pair in boardSetup.pieces)
         {
             Trigger trigger = pair.Value.GetComponent<PieceInfo>().trigger;
             if (trigger != null) trigger.StartOfTurn();
         }
-        // Set tactic interactable
-        for(int i = 0; i < LineupBuilder.tacticsLimit; i++)
-            if(tacticObjs[i].gameObject.activeSelf)
-                tacticButtons[i].interactable = tacticTriggers[i].Activatable();
+        SetTacticInteractable();
     }
     private IEnumerator ShowYourTurn(float time = 1.5f)
     {
@@ -246,13 +246,27 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             Draw();
             return;
         }
-        if (GameInfo.actions[InfoLoader.user.playerID] > 1) endTurnButton.interactable = true;
+        if (GameInfo.actions[InfoLoader.playerID] > 1)
+        {
+            endTurnButton.interactable = true;
+            endTurnText.text = "End Turn";
+        }
+        else
+        {
+            endTurnButton.interactable = false;
+            endTurnText.text = "Your Turn";
+        }
         GameInfo.time = GameInfo.maxTime;
         StartCoroutine(EnemyTurn());
     }
 
     public IEnumerator EnemyTurn()
     {
+        // Set Button interactable
+        SetTacticInteractable(false);
+        endTurnButton.interactable = false;
+        endTurnText.text = "Enemy Turn";
+
         GameEvent gameEvent = new GameEvent();
         // WWWForm
         while (false) // fetching enemy response // should return "" if no response
@@ -281,6 +295,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             trapInfoCard.GetComponent<TrapInfo>().SetAttributes(trap, GameInfo.traps[location].Value);
             trap.trigger.Activate(location);
             GameInfo.traps.Remove(location);
+            // upload
             AddToHistory(gameEvent);
             StartCoroutine(ShowTrapInfo());
         }
@@ -295,6 +310,67 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         explosion.SetActive(false);
     }
 
+    public void AddTactic(Tactic tactic)
+    {
+        int count = GameInfo.unusedTactics[InfoLoader.playerID].Count;
+        if (count == LineupBuilder.tacticsLimit) StartCoroutine(ShowFullTacticBag());
+        else
+        {
+            GameInfo.AddTactic(tactic);
+            tacticObjs[count].parent.gameObject.SetActive(true);
+            int index = 0;
+            if (count != 0)
+            {
+                index = GameInfo.unusedTactics[InfoLoader.playerID].IndexOf(tactic);
+                for (int i = count; i > index; i--)
+                {
+                    TacticInfo tacticInfo = tacticObjs[i - 1].GetComponent<TacticInfo>();
+                    tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, tacticInfo.tactic.original);
+                }
+            }
+            TacticAttributes tacticAttributes = Database.FindTacticAttributes(tactic.tacticName);
+            tacticObjs[index].GetComponent<TacticInfo>().SetAttributes(tacticAttributes, false);
+            tacticTriggers.Insert(index, tacticAttributes.trigger);
+            SetTacticInteractable();
+        }
+    }
+
+    public void RemoveTactic(Tactic tactic)
+    {
+        int index = GameInfo.FindTactic(tactic.tacticName, InfoLoader.playerID);
+        int count = GameInfo.unusedTactics[InfoLoader.playerID].Count;
+        if (count > 1)
+        {
+            for (int i = index; i < count - 1; i++)
+            {
+                TacticInfo tacticInfo = tacticObjs[i + 1].GetComponent<TacticInfo>();
+                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, tacticInfo.tactic.original);
+            }
+        }
+        else tacticObjs[0].GetComponent<TacticInfo>().Clear();
+        tacticTriggers.RemoveAt(index);
+        tacticObjs[count - 1].parent.gameObject.SetActive(false);
+        GameInfo.RemoveTactic(index);
+        SetTacticInteractable();
+        CancelTacticHighlight();
+    }
+
+    public void SetTacticInteractable(bool interactable = true)
+    {
+        for (int i = 0; i < tacticTriggers.Count; i++)
+            tacticButtons[i].interactable = interactable && tacticTriggers[i].Activatable();
+    }
+
+    public void ChangeTacticOreCost(int index, int deltaAmount)
+    {
+        tacticObjs[index].GetComponent<TacticInfo>().ChangeOreCost(deltaAmount);
+    }
+
+    public void ChangeTacticGoldCost(int index, int deltaAmount)
+    {
+        tacticObjs[index].GetComponent<TacticInfo>().ChangeGoldCost(deltaAmount);
+    }
+
     public void AddToHistory(GameEvent gameEvent)
     {
 
@@ -302,9 +378,9 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void AskTrigger(Trigger trigger_para, string message)
     {
-        if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= GameInfo.ores[InfoLoader.user.playerID])
+        if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= GameInfo.ores[InfoLoader.playerID])
         {
-            GameInfo.actions[InfoLoader.user.playerID]++;
+            GameInfo.actions[InfoLoader.playerID]++;
             trigger = trigger_para;
             triggerMessage = message;
             boardInfoCard.SetActive(false);
@@ -325,7 +401,13 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         trigger = null;
         triggerMessage = "";
         askTriggerPanel.SetActive(false);
-        if(--GameInfo.actions[InfoLoader.user.playerID] == 0) NextTurn();
+        if (--GameInfo.actions[InfoLoader.playerID] == 0) NextTurn();
+    }
+    private IEnumerator ShowFullTacticBag(float time = 1.5f)
+    {
+        fullTacticBag.SetActive(true);
+        yield return new WaitForSeconds(time);
+        fullTacticBag.SetActive(false);
     }
     public void ShowPieceFrozen()
     {
@@ -359,7 +441,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     }
     public void SetOreText()
     {
-        oreText.text = GameInfo.ores[InfoLoader.user.playerID].ToString();
+        oreText.text = GameInfo.ores[InfoLoader.playerID].ToString();
     }
     public void SetCoinText()
     {
