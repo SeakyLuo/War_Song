@@ -13,11 +13,11 @@ public class ContractInfo : MonoBehaviour {
         image.sprite = attributes.image;
     }
 
-    public void SetContract(ContractAttributes contract)
+    public void SetAttributes(ContractAttributes contractAttributes)
     {
-        attributes = contract;
-        image.sprite = contract.image;
-        contractName.text = contract.Name;
+        attributes = contractAttributes;
+        image.sprite = attributes.image;
+        contractName.text = attributes.Name;
     }
 
 }

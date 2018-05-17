@@ -14,13 +14,10 @@ public class InfoLoader : MonoBehaviour {
         if (!called)
         {
             database = new Database();
-            user = new CheatAccount(); // This line should be
-                                       // user = new UserInfo();
-                                       // download Json
-                                       // user.JsonToClass();
-            //UserInfo player = UserInfo.JsonToClass()
+            //user = new CheatAccount();
+            user = new UserInfo();
+            user.Download();
             playerID = user.playerID;
-            //UserInfo.ClassToJson(user);
             called = true;
         }
     }

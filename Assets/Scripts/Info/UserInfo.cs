@@ -25,7 +25,7 @@ public class UserInfo {
         collection = new List<Collection>();
         lineups = new List<Lineup>();
         contracts = new Dictionary<string, int>(){
-            { "Standard Contract", 0},
+            { "Standard Contract", 1},
             { "Artillery Seller", 0},
             { "Human Resource", 0},
             { "Animal Smuggler", 0},
@@ -63,66 +63,78 @@ public class UserInfo {
         {
             for (int i = 0; i < collection.Count - 1; i++)
             {
+                if (insert.Equals(collection[i]))
+                {
+                    collection[i].count += insert.count;
+                    Upload();
+                    return;
+                }
                 if (insert > collection[i] && insert < collection[i + 1])
                 {
                     index = i + 1;
                     break;
                 }
-                else if (insert.Equals(collection[i]))
-                {
-                    collection[i].count += insert.count;
-                    return;
-                }
             }
         }
         collection.Insert(index, insert);
+        Upload();
     }
     public void RemoveCollection(int index)
     {
         collection.RemoveAt(index);
+        Upload();
     }
     public void RemoveCollection(Collection remove)
     {
         collection.Remove(remove);
+        Upload();
     }
     public void ChangeCollectionCount(int index, int deltaAmount)
     {
         if (--InfoLoader.user.collection[index].count == 0) InfoLoader.user.RemoveCollection(index);
+        Upload();
     }
 
     public void ChangeCoins(int deltaAmount)
     {
         coins += deltaAmount;
-        // upload()
+        Upload();
     }
     public void AddLineup(Lineup lineup)
     {
         lineups.Add(lineup);
+        Upload();
     }
     public void ModifyLineup(Lineup lineup, int index)
     {
         lineups[index] = lineup;
+        Upload();
     }
     public void RemoveLineup(int index)
     {
         lineups.RemoveAt(index);
+        Upload();
     }
     public void SetLastLineupSelected(int index = -1)
     {
         lastLineupSelected = index;
+        Upload();
     }
-    public void SetPreferredBoard(string boardName = "StandardBoard")
+    public void SetPreferredBoard(string boardName = "Standard Board")
     {
         preferredBoard = boardName;
+        Upload();
     }
     public void SetGameID(int GameId)
     {
         gameID = GameId;
+        Upload();
     }
     public void ChangeContracts(string contractName, int deltaAmount)
     {
         if (contracts.ContainsKey(contractName)) contracts[contractName] += deltaAmount;
         else contracts.Add(contractName, deltaAmount);
+        Upload();
     }
     public void Win()
     {
@@ -146,22 +158,28 @@ public class UserInfo {
     {
         return JsonUtility.FromJson<UserInfo>(json);
     }
-    public IEnumerator Upload(UserInfo user)
+    public IEnumerator Upload()
     {
-        //user.username = "Connor";
-        string userJson = ClassToJson(user); //convert class to json string
-
         WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
-        infoToPhp.AddField("userName", user.username);
-        infoToPhp.AddField("userJson", userJson);
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+        infoToPhp.AddField("userJson", ClassToJson(this));
 
         WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
         yield return sendToPhp;
     }
-    public void DownloadLatestJson(UserInfo user)
+    public void Download()
     {
-        //will test after upload is correct
-        
+        Download(this);
+    }
+    private IEnumerator Download(UserInfo user)
+    {
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+
+        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
+        yield return sendToPhp;
+
+        user = JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
     }
 }
 
@@ -176,7 +194,7 @@ public class CheatAccount:UserInfo
             new Collection("Tame an Elephant"),new Collection("Purchase a Horse"), new Collection("King's Guardian","Advisor", 3),new Collection("Protect the King", 8),
             new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100), new Collection("Space Witch", "General", 2, 20),
             new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("Secret Plan", 3),new Collection("Place a Flag",20),
-            new Collection("No Way", 100), new Collection("Qin Shihuang", "General"), new Collection("Xiao He", "General"),new Collection("Turret","Cannon"),
+            new Collection("No Way", 100), new Collection("King of the Dead", "General"), new Collection("The Ore King", "General"),new Collection("Turret","Cannon"),
             new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build a Cannon"),new Collection("Betrayal", 5),
             new Collection("Build a Chariot"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
         };

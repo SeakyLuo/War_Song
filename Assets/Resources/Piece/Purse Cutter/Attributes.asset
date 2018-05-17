@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Purse Cutter
   type: Soldier
-  description: Coin +1 when entering enemy region.
+  description: Coins +1 when entering enemy castles.
   oreCost: 0
   health: 1
   image: {fileID: 21300000, guid: 1e8d84ec86bdaba4ba5a22a41a82dc4f, type: 3}

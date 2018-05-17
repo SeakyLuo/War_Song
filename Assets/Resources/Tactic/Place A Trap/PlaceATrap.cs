@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlaceATrap : TacticTrigger {
     public override void Activate(Vector2Int location)
     {
-        GameController.PlaceTrap(location, Database.trapList[Random.Range(0, Database.traps.Count)], InfoLoader.user.playerID);
+        GameController.PlaceTrap(location, Database.RandomTrap(), InfoLoader.user.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

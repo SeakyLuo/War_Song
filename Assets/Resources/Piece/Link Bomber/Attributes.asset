@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Link Bomber
   type: Cannon
-  description: 'Link: Destroy an attackable'
+  description: 'Link: Throw a trap to an attackable and trigger it'
   oreCost: 4
   health: 2
   image: {fileID: 21300000, guid: 577801e00628e3f4e8fd821d2d3903c2, type: 3}
-  trigger: {fileID: 0}
+  trigger: {fileID: 11400000, guid: 8905f5d8e6bff994aab1a22ff0c1a54a, type: 2}

@@ -30,8 +30,9 @@ public class Database {
         FindAttributes("Standard Piece");
         FindAttributes("Piece");
         FindAttributes("Tactic");
+        FindAttributes("Board");
         FindAttributes("Trap");
-        FindAttributes("Contract");;
+        FindAttributes("Contract");
     }
 
     private void FindAttributes(string type)
@@ -78,6 +79,8 @@ public class Database {
             }
         }
     }
+
+    public static string RandomTrap() { return trapList[Random.Range(0, trapList.Count)]; }
 
     public static BoardAttributes FindBoardAttributes(string boardName) { return boards[boardName]; }
     public static PieceAttributes FindPieceAttributes(string pieceName)

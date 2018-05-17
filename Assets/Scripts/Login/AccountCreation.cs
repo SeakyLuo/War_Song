@@ -58,19 +58,25 @@ public class AccountCreation : MonoBehaviour {
         infoToPhp.AddField("email", email.text);
         infoToPhp.AddField("password", password.text);
         infoToPhp.AddField("userName", playerName.text);
+        infoToPhp.AddField("userJson", UserInfo.ClassToJson(new UserInfo()));
 
         WWW sendToPhp = new WWW("http://localhost:8888/action_reg.php", infoToPhp);
         yield return sendToPhp;
-        Debug.Log(sendToPhp.error);
+
         if(sendToPhp.error.Contains("Cannot connect"))
         {
             networkError.SetActive(true);
         }
         else if (string.IsNullOrEmpty(sendToPhp.error))
         {
-            if (sendToPhp.text.Contains("Error Could not create."))
+            if (sendToPhp.text.Contains("User Exists"))
             {
+                email.text = "";
                 accountExists.SetActive(true);
+            }
+            else if (sendToPhp.text.Contains("Error Could not create."))
+            {
+                networkError.SetActive(true);
             }
             else
             {
@@ -81,12 +87,6 @@ public class AccountCreation : MonoBehaviour {
                 StartCoroutine(transform.parent.Find("Login").GetComponent<Login>().RequestLogin(email.text, password.text));
             }
         }
-    }
-
-    public void CloseAccountExists()
-    {
-        email.text = "";
-        accountExists.SetActive(false);
     }
 
     public void Agree()

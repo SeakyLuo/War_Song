@@ -349,13 +349,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efad9c1912558f645a670cfcd08bead3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardGeneral: {fileID: 11400000, guid: 772eb50b4e4be3b4ea94fc23af08dd3c, type: 2}
-  standardAdvisor: {fileID: 11400000, guid: 6e99b3258323a8b43bcde9f95c0583bd, type: 2}
-  standardElephant: {fileID: 11400000, guid: 45b74712e9c5ee849bc526909bfe57e5, type: 2}
-  standardHorse: {fileID: 11400000, guid: ba6a64014763c9243922b81e56030dd0, type: 2}
-  standardChariot: {fileID: 11400000, guid: f05a58499661d5448a6eee15148899da, type: 2}
-  standardCannon: {fileID: 11400000, guid: 45f60d512d8c32a46a8b183c616693e2, type: 2}
-  standardSoldier: {fileID: 11400000, guid: 05fe3d23c854d9f44b7292c7fb43ce68, type: 2}
 --- !u!1 &64866154 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1973397966384274, guid: 6b4b8898f9da8484fb41693e8722fc8c,
@@ -488,7 +481,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -2939,7 +2932,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3526,7 +3519,8 @@ CanvasRenderer:
 --- !u!1 &1370216518
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 1700850721933334, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
@@ -3543,7 +3537,8 @@ GameObject:
 --- !u!224 &1370216519
 RectTransform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 224809437034082650, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1370216518}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -3561,7 +3556,8 @@ RectTransform:
 --- !u!114 &1370216520
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 114872470822173838, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1370216518}
   m_Enabled: 1
@@ -3594,7 +3590,8 @@ MonoBehaviour:
 --- !u!222 &1370216521
 CanvasRenderer:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 222823261715983324, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1370216518}
 --- !u!224 &1454395829 stripped
@@ -4316,7 +4313,8 @@ CanvasRenderer:
 --- !u!1 &1756618014
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 1954650877680494, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
@@ -4334,7 +4332,8 @@ GameObject:
 --- !u!224 &1756618015
 RectTransform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 224824594852757320, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1756618014}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -4352,7 +4351,8 @@ RectTransform:
 --- !u!114 &1756618016
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 114205360274031788, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1756618014}
   m_Enabled: 1
@@ -4366,7 +4366,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -4404,7 +4404,8 @@ MonoBehaviour:
 --- !u!114 &1756618017
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 114630880753818332, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1756618014}
   m_Enabled: 1
@@ -4431,7 +4432,8 @@ MonoBehaviour:
 --- !u!222 &1756618018
 CanvasRenderer:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 222156583311896790, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1756618014}
 --- !u!1 &1801332040
@@ -4667,7 +4669,8 @@ CanvasRenderer:
 --- !u!1 &1940537100
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 1297853265342704, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
@@ -4684,7 +4687,8 @@ GameObject:
 --- !u!224 &1940537101
 RectTransform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 224988887799483988, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1940537100}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
@@ -4704,7 +4708,8 @@ RectTransform:
 --- !u!114 &1940537102
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 114625729777408664, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1940537100}
   m_Enabled: 1
@@ -4731,7 +4736,8 @@ MonoBehaviour:
 --- !u!222 &1940537103
 CanvasRenderer:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 222245388736919158, guid: 80d3adb63d523354b9c8569a5408237a,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1940537100}
 --- !u!1 &1946755891

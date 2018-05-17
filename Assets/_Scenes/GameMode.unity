@@ -1382,11 +1382,6 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224403553078852038, guid: f8f777b2e4dad66418c2b9605225ecff,
     type: 2}
   m_PrefabInternal: {fileID: 127567148}
---- !u!1 &127567150 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1617907982638410, guid: f8f777b2e4dad66418c2b9605225ecff,
-    type: 2}
-  m_PrefabInternal: {fileID: 127567148}
 --- !u!1 &128944868
 GameObject:
   m_ObjectHideFlags: 0
@@ -14666,7 +14661,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1442907344}
   m_Layer: 0
-  m_Name: BoardInfoCard
+  m_Name: PieceInfoCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15927,9 +15922,9 @@ MonoBehaviour:
   explosion: {fileID: 1936309529}
   askTriggerPanel: {fileID: 541561989}
   history: {fileID: 1376939479}
-  boardInfoCard: {fileID: 127567150}
+  pieceInfoCard: {fileID: 1442907343}
   trapInfoCard: {fileID: 2042261810}
-  enemyInfoCard: {fileID: 1985965689}
+  showInfoCard: {fileID: 1985965689}
   playerFlag: {fileID: 1921896282260376, guid: 0bcd98025d97a0f4da5a09b7163d07c3, type: 2}
   enemyFlag: {fileID: 1544663805608062, guid: a93d1c00ebaa5cc4c85c4017e7a002c3, type: 2}
   freezeImage: {fileID: 1200219820674464, guid: 9497ab4bf67474a47b673d900ee98277,
@@ -19008,7 +19003,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 1617907982638410, guid: f8f777b2e4dad66418c2b9605225ecff, type: 2}
       propertyPath: m_Name
-      value: InfoCard
+      value: TacticInfoCard
       objectReference: {fileID: 0}
     - target: {fileID: 224403553078852038, guid: f8f777b2e4dad66418c2b9605225ecff,
         type: 2}
@@ -21570,7 +21565,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1617907982638410, guid: f8f777b2e4dad66418c2b9605225ecff, type: 2}
       propertyPath: m_Name
-      value: EnemyCard
+      value: InfoCard
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f8f777b2e4dad66418c2b9605225ecff, type: 2}

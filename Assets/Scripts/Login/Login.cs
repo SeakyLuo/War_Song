@@ -18,10 +18,10 @@ public class Login : MonoBehaviour
     void Start () {
         // If already has an account saved
         string email = PlayerPrefs.GetString("email"),
-                password = PlayerPrefs.GetString("password");
+               password = PlayerPrefs.GetString("password");
         if (email != "" && password != "")
-            login(email, password);
-            //StartCoroutine(RequestLogin(email, password, false));
+            //login(email, password);
+            StartCoroutine(RequestLogin(email, password, false));
 	}
 
     private void Update()
@@ -40,8 +40,8 @@ public class Login : MonoBehaviour
             return;
         }
         emptyPassword.SetActive(false);
-        login(inputEmail.text, inputPassword.text);
-        //StartCoroutine(RequestLogin(inputEmail.text, inputPassword.text));
+        //login(inputEmail.text, inputPassword.text);
+        StartCoroutine(RequestLogin(inputEmail.text, inputPassword.text));
     }
 
     public IEnumerator RequestLogin(string email, string password, bool showError = true)  //connect with server, and VERIFY credentials
@@ -49,12 +49,12 @@ public class Login : MonoBehaviour
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", email);
         infoToPhp.AddField("password", password);
-        gameObject.SetActive(false);
-        StartCoroutine(ChangeConnectingDots());
+        //gameObject.SetActive(false);
+        //StartCoroutine(ChangeConnectingDots());
 
         WWW sendToPhp = new WWW("http://localhost:8888/action_login.php", infoToPhp);
         yield return sendToPhp;
-        StopAllCoroutines();
+        //StopAllCoroutines();
 
         if (string.IsNullOrEmpty(sendToPhp.error)) //if no error connecting to server
         {
@@ -77,7 +77,7 @@ public class Login : MonoBehaviour
         {
             if(showError) networkError.SetActive(true);
         }
-        gameObject.SetActive(true);
+       // gameObject.SetActive(true);
     }
 
     private void login(string email, string password)

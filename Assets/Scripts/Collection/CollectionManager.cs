@@ -8,10 +8,15 @@ public class CollectionManager : MonoBehaviour {
     public Dictionary<string, int> pageLimits = new Dictionary<string, int>();
     public KeyValuePair<string, int> currentPage, notFound = new KeyValuePair<string, int>("", 0);
     public Vector3 raise = new Vector3(0, 0, 10);
-    public GameObject clearSearch, searchPanel, selectedBoardPanel, createLineupPanel;
-    public Text TitleText, pageText;
+    public GameObject clearSearch, searchPanel, selectedBoardPanel, createLineupPanel, noCollectionPanel;
+    public Transform tabsObj;
+    public Button createLineupButton;
+    public Text TitleText, pageText, createLineupButtonText;
     public InputField searchByInput;
-    
+
+    private static GameObject[] tabs;
+
+    private List<string> types;
     private List<Collection> displayCollections, searchedCollections;
     private Dictionary<string, List<Collection>> collectionDict = new Dictionary<string, List<Collection>>();
     private Dictionary<string, List<Collection>> originalDict = new Dictionary<string, List<Collection>>();
@@ -20,17 +25,18 @@ public class CollectionManager : MonoBehaviour {
                 searchByOreValue = -1, 
                 searchByHealthValue = -1;
     private string searchByKeyword = "";
-    private static GameObject[] tabs = new GameObject[Database.types.Count];
     private GameObject[] cards;
     private Text[] counters;
 
     // Use this for initialization
     void Start () {
+        types = Database.types;
+        tabs = new GameObject[types.Count];
         cards = new GameObject[cardsPerPage];
         counters = new Text[cardsPerPage];
-        foreach (string type in Database.types)
+        foreach (string type in types)
         {
-            pageLimits.Add(type, 1);
+            pageLimits.Add(type, 0);
             collectionDict.Add(type, new List<Collection>());
             originalDict.Add(type, new List<Collection>());
         }
@@ -40,16 +46,15 @@ public class CollectionManager : MonoBehaviour {
             cards[i] = slot.Find("Card").gameObject;
             counters[i] = slot.Find("Count/CountText").GetComponent<Text>();
         }
-        for (int i = 0; i < Database.types.Count; i++)
-        {
-            tabs[i] = GameObject.Find("Tabs/" + Database.types[i]);
-            tabs[i].SetActive(true);
-        }
+        for (int i = 0; i < types.Count; i++)
+            tabs[i] = tabsObj.Find(types[i]).gameObject;
+
         LoadUserCollections();
+        SetPageLimits();
+        ShowNoCollection(InfoLoader.user.collection.Count == 0);
         foreach (Collection collection in displayCollections)
             originalDict[collection.type].Add(collection);
-        SetPageLimits();
-        SetCurrentPage("General", 1);
+        if (InfoLoader.user.collection.Count != 0) SetCurrentPage(FirstPage());
     }
 
     public void AddCollection(Collection collection)
@@ -71,6 +76,7 @@ public class CollectionManager : MonoBehaviour {
             collectionDict[collection.type].Add(collection);
             SetPageLimits();
         }
+        ShowNoCollection(false);
     }
 
     public bool RemoveCollection(Collection collection)
@@ -91,6 +97,7 @@ public class CollectionManager : MonoBehaviour {
             collectionDict[found.type].Remove(found);
             SetPageLimits();
         }
+        ShowNoCollection(InfoLoader.user.collection.Count == 0);
         return true;
     }
 
@@ -98,6 +105,7 @@ public class CollectionManager : MonoBehaviour {
     {
         LoadUserCollections();
         SetPageLimits();
+        ShowNoCollection(InfoLoader.user.collection.Count == 0);
     }
 
     private void LoadUserCollections()
@@ -107,24 +115,27 @@ public class CollectionManager : MonoBehaviour {
     }
     private void LoadCollections()
     {
-        foreach (KeyValuePair<string, List<Collection>> pair in collectionDict)
-            pair.Value.Clear();
+        foreach (string type in types)
+            collectionDict[type].Clear();
         foreach (Collection collection in displayCollections)
             collectionDict[collection.type].Add(collection);
     }
 
-    private void SetPageLimits(string type = "")
+    private void SetPageLimits()
     {
         int count;
-        foreach (KeyValuePair<string, List<Collection>> item in collectionDict)
+        for(int i = 0; i < types.Count; i++)
         {
-            count = item.Value.Count;
+            count = collectionDict[types[i]].Count;
             if (count > 0)
             {
+                tabs[i].SetActive(true);
+                // don't try to optimize the following 2 lines idiot!
                 if (count % cardsPerPage == 0) count = (int)Mathf.Floor(count / cardsPerPage);
                 else count = (int)Mathf.Floor(count / cardsPerPage) + 1;
             }
-            pageLimits[item.Key] = count;            
+            else tabs[i].SetActive(false);
+            pageLimits[types[i]] = count;
         }
     }
 
@@ -132,16 +143,16 @@ public class CollectionManager : MonoBehaviour {
     {
         // Hightlight Tab
         if (currentPage.Key != "" || type != "")
-            for (int i = 0; i < Database.types.Count; i++)
-                if (Database.types[i] != currentPage.Key)
+            for (int i = 0; i < types.Count; i++)
+                if (types[i] != currentPage.Key)
                 {
                     ColorBlock colorBlock = tabs[i].GetComponent<Button>().colors;
                     if(currentPage.Key != null && currentPage.Key != "") // Only used when initializing
-                        tabs[Database.types.IndexOf(currentPage.Key)].GetComponent<Button>().colors = colorBlock; // Resume tab
+                        tabs[types.IndexOf(currentPage.Key)].GetComponent<Button>().colors = colorBlock; // Resume tab
                     if(type != "")
                     {
                         colorBlock.normalColor = Color.white;
-                        tabs[Database.types.IndexOf(type)].GetComponent<Button>().colors = colorBlock;
+                        tabs[types.IndexOf(type)].GetComponent<Button>().colors = colorBlock;
                     }
                     break;
                 }
@@ -159,13 +170,39 @@ public class CollectionManager : MonoBehaviour {
     {
         cardsPerPage = number;
         SetPageLimits();
-        if (currentPage.Value > pageLimits[currentPage.Key])
-            SetCurrentPage(currentPage.Key, pageLimits[currentPage.Key]);
+        if (pageLimits[currentPage.Key] != 0)
+        {
+            if (currentPage.Value > pageLimits[currentPage.Key])
+                SetCurrentPage(currentPage.Key, pageLimits[currentPage.Key]);
+        }
+        else
+        {
+            int tab = types.IndexOf(currentPage.Key);
+            int index = tab;
+            while(index > 0)
+            {
+                if (pageLimits[types[--index]] != 0)
+                {
+                    SetCurrentPage(types[index], pageLimits[types[index]]);
+                    return;
+                }
+            }
+            index = tab;
+            while(index < types.Count - 1)
+            {
+                if (pageLimits[types[++index]] != 0)
+                {
+                    SetCurrentPage(types[index], pageLimits[types[index]]);
+                    return;
+                }
+            }
+            ShowNoCollection(true);
+        }
     }
 
     public KeyValuePair<string, int> FirstPage()
     {
-        foreach (string type in Database.types)
+        foreach (string type in types)
             if (pageLimits[type] != 0)
                 return new KeyValuePair<string, int>(type, 1);
         return notFound;
@@ -173,10 +210,18 @@ public class CollectionManager : MonoBehaviour {
 
     public KeyValuePair<string, int> LastPage()
     {
-        for (int i = Database.types.Count - 1; i >= 0; i--)
-            if (pageLimits[Database.types[i]] != 0)
-                return new KeyValuePair<string, int>(Database.types[i], pageLimits[Database.types[i]]);
+        for (int i = types.Count - 1; i >= 0; i--)
+            if (pageLimits[types[i]] != 0)
+                return new KeyValuePair<string, int>(types[i], pageLimits[types[i]]);
         return notFound;
+    }
+
+    public void ShowNoCollection(bool noCollection)
+    {
+        noCollectionPanel.SetActive(noCollection);
+        createLineupButton.interactable = !noCollection;
+        if (noCollection) createLineupButtonText.text = "No Allies";
+        else createLineupButtonText.text = "Create Lineup";
     }
 
     public void ShowCurrentPage()
@@ -194,7 +239,7 @@ public class CollectionManager : MonoBehaviour {
         // Calculate Page Number
         string type = currentPage.Key;
         pageNumber = currentPage.Value;
-        foreach (string cardType in Database.types)
+        foreach (string cardType in types)
         {
             if (cardType != type) pageNumber += pageLimits[cardType];
             else break;
@@ -234,10 +279,10 @@ public class CollectionManager : MonoBehaviour {
         int page = currentPage.Value;
         if (currentPage.Value == 1)
         {
-            int index = Database.types.IndexOf(type) - 1;
+            int index = types.IndexOf(type) - 1;
             while (true)
             {
-                type = Database.types[index];
+                type = types[index];
                 page = pageLimits[type];
                 if (page != 0 || index == 0) break;
                 index--;
@@ -253,12 +298,12 @@ public class CollectionManager : MonoBehaviour {
         int page = currentPage.Value;
         if (currentPage.Value == pageLimits[type])
         {
-            int index = Database.types.IndexOf(type) + 1;
+            int index = types.IndexOf(type) + 1;
             while (true)
             {
-                type = Database.types[index];
+                type = types[index];
                 page = 1;
-                if (pageLimits[type] != 0 || index == Database.types.Count - 1) break;
+                if (pageLimits[type] != 0 || index == types.Count - 1) break;
                 index++;
             }
         }
@@ -279,10 +324,10 @@ public class CollectionManager : MonoBehaviour {
         displayCollections = searchedCollections;
         LoadCollections();
         SetPageLimits();
-        for (int i = Database.types.Count - 1; i >= 0; i--)
+        for (int i = types.Count - 1; i >= 0; i--)
         {
             // only show tab with result
-            if (collectionDict[Database.types[i]].Count == 0) tabs[i].SetActive(false);
+            if (collectionDict[types[i]].Count == 0) tabs[i].SetActive(false);
             else tabs[i].SetActive(true);
         }
         SetCurrentPage(FirstPage());

@@ -65,10 +65,12 @@ public class BoardAttributes : ScriptableObject {
     public List<Vector2Int> EnemyChariotCastle() { return new List<Vector2Int> { erloc1, erloc2 }; }
     public List<Vector2Int> EnemyCannonCastle() { return new List<Vector2Int> { ecloc1, ecloc2 }; }
     public List<Vector2Int> EnemySoldierCastle() { return new List<Vector2Int> { esloc1, esloc2, esloc3, esloc4, esloc5 }; }
+    public List<Vector2Int> EnemyCastles() { return new List<Vector2Int> { ealoc1, ealoc2, eeloc1, eeloc2, ehloc1, ehloc2, erloc1, erloc2, ecloc1, ecloc2, esloc1, esloc2, esloc3, esloc4, esloc5, egloc }; }
     public bool InAllyField(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y <= allyField; }
     public bool InPalace(int x, int y) { return palaceDownLeft.x <= x && x <= palaceUpperRight.x && palaceDownLeft.y <= y && y <= palaceUpperRight.y; }
     public bool InEnemyPalace(int x, int y) { return enemyPalaceDownLeft.x <= x && x <= enemyPalaceUpperRight.x && enemyPalaceDownLeft.y <= y && y <= enemyPalaceUpperRight.y; }
     public bool InEnemyRegion(int x, int y) { return 0 <= x && x < boardWidth && enemyField <= y && y < boardHeight; }
+    public bool InEnemyCastle(int x, int y) { return EnemyCastles().Contains(new Vector2Int(x, y)); }
     public bool AtEnemyBottom(int x, int y) { return 0 <= x && x < boardWidth && y == boardHeight; }
     public bool InBoard(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y < boardHeight; }
 }

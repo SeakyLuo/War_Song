@@ -11,7 +11,7 @@ public class TacticAttributes : ScriptableObject {
     public Sprite image;
     public TacticTrigger trigger;
 
-    public bool LessThan(TacticAttributes attributes) { return new Tactic(this) > new Tactic(attributes); }
+    public static bool operator <(TacticAttributes attributes1, TacticAttributes attributes2) { return new Tactic(attributes1) < new Tactic(attributes2); }
     public bool Equals(TacticAttributes attributes) { return new Tactic(this) == new Tactic(attributes); }
-    public bool GreaterThan(TacticAttributes attributes) { return new Tactic(this) > new Tactic(attributes); }
+    public static bool operator >(TacticAttributes attributes1, TacticAttributes attributes2) { return new Tactic(attributes1) > new Tactic(attributes2); }
 }

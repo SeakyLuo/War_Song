@@ -7,7 +7,7 @@ public class SetCursor : MonoBehaviour
     public static bool cursorSwitched = false;
 
     public CollectionManager collectionManager;
-    public GameObject selectBoardPanel, createLineupPanel;
+    public GameObject selectBoardPanel, createLineupPanel, noCollectionPanel;
     public BoardManager boardManager;
     public RectTransform board;
 	public Texture2D leftCursor, rightCursor, dragCursor;
@@ -16,8 +16,8 @@ public class SetCursor : MonoBehaviour
     private float lowerBound, upperBound, newLowerBound;
 
 	private void Start(){
-		lRight = 150;
-		rLeft = 1280;
+		lRight = 100;
+		rLeft = 1340;
 		rRight = GetComponent<RectTransform> ().rect.width;
         lowerBound = transform.position.y + GetComponent<RectTransform>().rect.y;
         upperBound = transform.position.y - GetComponent<RectTransform>().rect.y;
@@ -26,6 +26,7 @@ public class SetCursor : MonoBehaviour
 
 	private void Update()
 	{
+        if (noCollectionPanel.activeSelf) return;
         if (selectBoardPanel.activeSelf)
         {
             if (boardManager.currentBoard > 0 && InLeft())

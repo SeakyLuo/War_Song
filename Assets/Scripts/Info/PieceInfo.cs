@@ -17,7 +17,7 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void Start()
     {
-        PieceInfoCard = GameObject.Find("BoardInfoCard");
+        PieceInfoCard = GameObject.Find("PieceInfoCard");
         card = PieceInfoCard.transform.Find("Canvas/Card").gameObject;
     }
 

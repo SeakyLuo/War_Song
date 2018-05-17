@@ -6,6 +6,6 @@ public class Cripple : Trigger
 {
     public override void Revenge()
     {
-        GameController.PlaceTrap(piece.location, Database.trapList[Random.Range(0, Database.traps.Count)], InfoLoader.user.playerID);
+        GameController.PlaceTrap(piece.location, Database.RandomTrap(), InfoLoader.user.playerID);
     }
 }

@@ -40,6 +40,7 @@ public class LineupBuilder : MonoBehaviour {
     private void OnDisable()
     {
         collectionManager.SetCardsPerPage(8);
+
         collectionManager.ShowCurrentPage();
     }
 
@@ -107,24 +108,24 @@ public class LineupBuilder : MonoBehaviour {
         totalOreCost += attributes.oreCost;
         totalGoldCost += attributes.goldCost;
         int index = 0;
-        if (current_tactics == 0 || attributes.LessThan(tacticAttributes[0])) index = 0;
-        else if (attributes.GreaterThan(tacticAttributes[current_tactics - 1])) index = current_tactics;
+        if (current_tactics == 0 || attributes < tacticAttributes[0]) index = 0;
+        else if (attributes > tacticAttributes[current_tactics - 1]) index = current_tactics;
         else
         {
             for (int i = 0; i < current_tactics - 1; i++)
             {
-                if (attributes.GreaterThan(tacticAttributes[i]) && attributes.LessThan(tacticAttributes[i + 1]))
+                if (attributes > tacticAttributes[i] && attributes < tacticAttributes[i + 1])
                 {
                     index = i + 1;
                     break;
                 }
             }
         }
-        lineup.tactics.Insert(index, new Tactic(attributes, true));
+        lineup.tactics.Insert(index, new Tactic(attributes));
         tacticAttributes.Insert(index, attributes);
         tacticObjs[current_tactics++].SetActive(true);
         for (int i = index; i < current_tactics; i++)
-            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i], true);
+            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i]);
         SetTexts();
     }
 

@@ -5,20 +5,21 @@ using UnityEngine.UI;
 
 public class ActivateContractStore : MonoBehaviour {
 
-    public GameObject popupInputAmountWindow, displayContractsPanel, contractPanel, contractPrefab, standardContract, unsuccessfulPurchase, successfulPurchase;
+    public GameObject popupInputAmountWindow, displayContractsPanel, standardContract, unsuccessfulPurchase, successfulPurchase, notEnoughCoins, invalidAmount;
     public Text priceText, contractsAmount, playerCoinsAmount, contractDescription;
     public InputField inputField;
+    public ContractsManager contractsManager;
 
-    private ContractAttributes current_contract;
+    private GameObject currentContract;
+    private ContractAttributes contractAttributes;
     private int many_contracts = 5, contractsCount = 1;
-    private List<GameObject> contracts = new List<GameObject>();
-    private ContractsManager contractsManager;
+    private List<GameObject> contracts;
 
     public void Start()
     {
+        contracts = new List<GameObject>();
         ChooseContract(standardContract);
         LoadContract();
-        contractsManager = contractPanel.GetComponent<ContractsManager>();
     }
 
     public void ConfirmInput()
@@ -26,9 +27,14 @@ public class ActivateContractStore : MonoBehaviour {
         if (inputField.text != "")
         {
             contractsCount = int.Parse(inputField.text);
-            priceText.text = (contractsCount * current_contract.price).ToString();
-            contractsAmount.text = contractsCount.ToString() + " Contract";
-            if (contractsCount > 1) contractsAmount.text += "s";
+            if(contractsCount == 0)
+            {
+                inputField.text = "";
+                invalidAmount.SetActive(true);
+                return;
+            }
+            priceText.text = (contractsCount * contractAttributes.price).ToString();
+            contractsAmount.text = "Amount: " + contractsCount.ToString();
             int contractsNumber = contracts.Count;
             if (contractsCount > contracts.Count)
             {
@@ -49,10 +55,11 @@ public class ActivateContractStore : MonoBehaviour {
 
     public void ChooseContract(GameObject contract)
     {
-        current_contract = contract.GetComponent<ContractInfo>().attributes;
-        priceText.text = (current_contract.price * contractsCount).ToString();
-        contractDescription.text = current_contract.description;
-        foreach(GameObject obj in contracts) obj.GetComponent<PlayerContract>().SetAttributes(current_contract);
+        currentContract = contract.transform.Find("Image").gameObject;
+        contractAttributes = contract.GetComponent<ContractInfo>().attributes;
+        priceText.text = (contractAttributes.price * contractsCount).ToString();
+        contractDescription.text = contractAttributes.description;
+        foreach(GameObject obj in contracts) obj.GetComponent<Image>().sprite = contractAttributes.image;
     }
 
     public void Purchase()
@@ -62,21 +69,19 @@ public class ActivateContractStore : MonoBehaviour {
         {
             InfoLoader.user.ChangeCoins(-price);
             playerCoinsAmount.text = InfoLoader.user.coins.ToString();
-            contractsManager.AddContract(current_contract, contractsCount);
+            contractsManager.AddContract(contractAttributes, contractsCount);
             successfulPurchase.SetActive(true);
-            // Show Purchase Successful
         }
         else
         {
-            unsuccessfulPurchase.SetActive(true);
-            // Show Purchase Unsuccessful
+            notEnoughCoins.SetActive(true);
         }
     }
 
     private void LoadContract()
     {
-        GameObject contract = Instantiate(contractPrefab, displayContractsPanel.transform);
-        contract.GetComponent<PlayerContract>().SetAttributes(current_contract);
+        GameObject contract = Instantiate(currentContract, displayContractsPanel.transform);
+        contract.GetComponent<Image>().sprite = contractAttributes.image;
         contracts.Add(contract);
     }
 }

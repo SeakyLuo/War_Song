@@ -13,7 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Treasure Horse
   type: Horse
-  description: 'Link: Ore +1'
+  description: 'Link: Coins +1'
   oreCost: 0
   health: 3
   image: {fileID: 21300000, guid: b8795695762eaad41a95857c315037de, type: 3}
+  trigger: {fileID: 11400000, guid: 0fc9e2d7d728a7e48b4784b02519eecd, type: 2}

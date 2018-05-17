@@ -56,4 +56,9 @@ public class OnEnterCollections : MonoBehaviour
         else
             SceneManager.LoadScene(InfoLoader.switchSceneCaller);
     }
+
+    public void Recruit()
+    {
+        SceneManager.LoadScene("Recruitment");
+    }
 }

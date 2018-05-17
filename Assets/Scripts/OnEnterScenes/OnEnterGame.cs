@@ -13,7 +13,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     public GameInfo gameInfo;
     public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
     public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel;
-    public GameObject history, boardInfoCard , trapInfoCard, enemyInfoCard, playerFlag, enemyFlag, freezeImage;
+    public GameObject history, pieceInfoCard , trapInfoCard, showInfoCard, playerFlag, enemyFlag, freezeImage;
     public Transform tacticBag;
     public Button endTurnButton;
     public Text roundCount, timer, modeName;
@@ -144,7 +144,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void GameOver()
     {
-        boardInfoCard.SetActive(false);
+        pieceInfoCard.SetActive(false);
         GameInfo.time = GameInfo.maxTime;
         GameInfo.gameOver = true;
         if (settingsPanel.activeSelf) settingsPanel.SetActive(false);
@@ -376,14 +376,16 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     }
 
-    public void AskTrigger(Trigger trigger_para, string message)
+    public void AskTrigger(Piece piece, Trigger trigger_para, string message)
     {
         if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= GameInfo.ores[InfoLoader.playerID])
         {
             GameInfo.actions[InfoLoader.playerID]++;
             trigger = trigger_para;
             triggerMessage = message;
-            boardInfoCard.SetActive(false);
+            pieceInfoCard.SetActive(false);
+            showInfoCard.SetActive(true);
+            showInfoCard.GetComponent<CardInfo>().SetAttributes(piece.collection);
             askTriggerPanel.SetActive(true);
         }
     }
@@ -391,6 +393,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         if (triggerMessage == "BloodThirsty") trigger.BloodThirsty();
         else if (triggerMessage == "AfterMove") trigger.AfterMove();
+        else if (triggerMessage == "InEnemyCastle") trigger.InEnemyCastle();
         else if (triggerMessage == "InEnemyRegion") trigger.InEnemyRegion();
         else if (triggerMessage == "InEnemyPalace") trigger.InEnemyPalace();
         else if (triggerMessage == "AtEnemyBottom") trigger.AtEnemyBottom();
@@ -401,6 +404,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         trigger = null;
         triggerMessage = "";
         askTriggerPanel.SetActive(false);
+        showInfoCard.SetActive(false);
         if (--GameInfo.actions[InfoLoader.playerID] == 0) NextTurn();
     }
     private IEnumerator ShowFullTacticBag(float time = 1.5f)

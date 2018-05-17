@@ -17,8 +17,8 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
 
 	// Use this for initialization
 	void Start () {
-        canvasCamera = gameObject.GetComponent<Canvas>().worldCamera;
-        rectTransform = gameObject.GetComponent<RectTransform>();
+        canvasCamera = GetComponent<Canvas>().worldCamera;
+        rectTransform = GetComponent<RectTransform>();
         playerCoinsAmount.text = InfoLoader.user.coins.ToString();
         closeObjects = new GameObject[] { infoPanel, contractStore, coinStore };
     }

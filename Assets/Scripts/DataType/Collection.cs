@@ -108,11 +108,11 @@ public class Collection
         }
         else
         {
-            int typeIndex = Database.types.IndexOf(collection1.type), collection2TypeIndex = Database.types.IndexOf(collection2.type);
-            return (typeIndex < collection2TypeIndex) ||
-                   (typeIndex == collection2TypeIndex && collection1.oreCost < collection2.oreCost) ||
-                   (typeIndex == collection2TypeIndex && collection1.oreCost == collection2.oreCost && collection1.name.CompareTo(collection2.name) < 0) ||
-                   (typeIndex == collection2TypeIndex && collection1.name == collection2.name && collection1.health < collection2.health);
+            int typeIndex = Database.types.IndexOf(collection1.type), typeIndex2 = Database.types.IndexOf(collection2.type);
+            return (typeIndex < typeIndex2) ||
+                   (typeIndex == typeIndex2 && collection1.oreCost < collection2.oreCost) ||
+                   (typeIndex == typeIndex2 && collection1.oreCost == collection2.oreCost && collection1.name.CompareTo(collection2.name) < 0) ||
+                   (typeIndex == typeIndex2 && collection1.name == collection2.name && collection1.health < collection2.health);
         }
     }
 
@@ -123,6 +123,6 @@ public class Collection
 
     public bool Equals(Collection collection)
     {
-        return type == collection.type && oreCost == collection.oreCost && name == collection.name && health == collection.health;
+        return name == collection.name && health == collection.health;
     }
 }

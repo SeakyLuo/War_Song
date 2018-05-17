@@ -70,7 +70,7 @@ public class GameController : MonoBehaviour {
                     MovementController.validLocs = pieceInfo.ValidLoc();
                     MovementController.DrawPathDots();
                 }
-                else if (MovementController.selected != null)
+                else if (MovementController.selected != null && !ActivateAbility.activated)
                 {
                     Vector2Int location;
                     if (hitObj.name == "Piece") location = InfoLoader.StringToVec2(hitObj.transform.parent.name);
