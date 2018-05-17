@@ -12,8 +12,8 @@ Mac and Linux not recommended.
 Usage:
 1. Download the zip file called "build.zip"
 2. Unpack it.
-3. Open "build.exe" if using Windows, "build.app" if Mac.
-4. Select your resolution (Strongly recommend 1920*1080 on Windows)
+3. Open "build.exe".
+4. Select your resolution (Strongly recommend 1920*1080 by unchecking Windowed)
 5. Click "Play" and enjoy!
 
 Note:
