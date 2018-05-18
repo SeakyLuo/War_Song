@@ -203,7 +203,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &19951520
 RectTransform:
   m_ObjectHideFlags: 0
@@ -217,7 +217,7 @@ RectTransform:
   - {fileID: 863825704}
   - {fileID: 1074627423}
   m_Father: {fileID: 902363129}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1073,7 +1073,7 @@ RectTransform:
   - {fileID: 1116792899}
   - {fileID: 413942576}
   m_Father: {fileID: 902363129}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1126,7 +1126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputEmail: {fileID: 434652019}
   inputPassword: {fileID: 1321461000}
-  connectingDots: {fileID: 0}
+  connectingDots: {fileID: 988871704}
   createAccountPanel: {fileID: 1184856570}
   emptyEmail: {fileID: 1462505559}
   wrongPassword: {fileID: 1036565340}
@@ -1134,7 +1134,7 @@ MonoBehaviour:
   settingsPanel: {fileID: 1307400337}
   forgotPasswordPanel: {fileID: 413942575}
   networkError: {fileID: 1600072998}
-  connecting: {fileID: 0}
+  connecting: {fileID: 19951519}
 --- !u!1 &285566588
 GameObject:
   m_ObjectHideFlags: 0
@@ -2702,7 +2702,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Wrong!
+  m_Text: Incorrect!
 --- !u!222 &443570629
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5489,9 +5489,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1614812990}
-  - {fileID: 19951520}
   - {fileID: 277711123}
   - {fileID: 1184856571}
+  - {fileID: 19951520}
   - {fileID: 1471596750}
   - {fileID: 1307400338}
   - {fileID: 1307474942}
@@ -7108,7 +7108,7 @@ RectTransform:
   - {fileID: 1372840748}
   - {fileID: 80100918}
   m_Father: {fileID: 902363129}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7168,10 +7168,10 @@ MonoBehaviour:
   confirmPasswordWarn: {fileID: 1895110504}
   playerNameWarn: {fileID: 761343892}
   networkError: {fileID: 1600072998}
-  accountExists: {fileID: 0}
+  accountExists: {fileID: 1139610276}
   confirmCreation: {fileID: 1314618053}
-  login: {fileID: 980601033}
   readAgreement: {fileID: 490897722}
+  login: {fileID: 277711126}
 --- !u!1 &1218251469
 GameObject:
   m_ObjectHideFlags: 0

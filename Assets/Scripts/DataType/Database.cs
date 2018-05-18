@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -22,6 +21,7 @@ public class Database {
     };
     public static List<string> boardList = new List<string>();
     public static List<string> trapList = new List<string>();
+    public static List<string> contractList = new List<string>();
 
     public static List<string> missionList = new List<string>();
 
@@ -76,11 +76,12 @@ public class Database {
             {
                 ContractAttributes attributes = LoadContractAttributes(folder);
                 contracts.Add(attributes.Name, attributes);
+                contractList.Add(attributes.Name);
             }
         }
     }
 
-    public static string RandomTrap() { return trapList[Random.Range(0, trapList.Count)]; }
+    public static string RandomTrap() { return trapList[UnityEngine.Random.Range(0, trapList.Count)]; }
 
     public static BoardAttributes FindBoardAttributes(string boardName) { return boards[boardName]; }
     public static PieceAttributes FindPieceAttributes(string pieceName)
@@ -101,4 +102,7 @@ public class Database {
     public static TacticAttributes LoadTacticAttributes(string tacticName) { return Resources.Load<TacticAttributes>("Tactic/" + tacticName + "/Attributes"); }
     public static TrapAttributes LoadTrapAttributes(string trapName) { return Resources.Load<TrapAttributes>("Trap/" + trapName + "/Attributes"); }
     public static ContractAttributes LoadContractAttributes(string contractName) { return Resources.Load<ContractAttributes>("Contract/" + contractName + "/Attributes"); }
+
+    public static string Vec2ToString(Vector2Int vec) { return vec.x.ToString() + vec.y.ToString(); }
+    public static Vector2Int StringToVec2(string loc) { return new Vector2Int((int)System.Char.GetNumericValue(loc[0]), (int)System.Char.GetNumericValue(loc[1])); }
 }

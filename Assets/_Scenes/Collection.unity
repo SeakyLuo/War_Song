@@ -6902,9 +6902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2d5c5c03d8d7d409063590bd4f015c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collections: {fileID: 370393593}
   selectBoardPanel: {fileID: 1588430935}
-  myLineup: {fileID: 933391179}
   copyReminder: {fileID: 1759182860}
   fullReminder: {fileID: 1015176936}
   sameTacticReminder: {fileID: 697159782}
@@ -6912,6 +6910,8 @@ MonoBehaviour:
   totalOreCostText: {fileID: 2028051684}
   totalGoldCostText: {fileID: 1396414654}
   inputField: {fileID: 1362396441}
+  collectionManager: {fileID: 370393597}
+  lineupsManager: {fileID: 933391183}
 --- !u!1 &676950874
 GameObject:
   m_ObjectHideFlags: 0

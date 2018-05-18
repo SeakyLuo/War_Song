@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -19,7 +17,7 @@ public class OnEnterRecruitment : MonoBehaviour, IPointerClickHandler {
 	void Start () {
         canvasCamera = GetComponent<Canvas>().worldCamera;
         rectTransform = GetComponent<RectTransform>();
-        playerCoinsAmount.text = InfoLoader.user.coins.ToString();
+        playerCoinsAmount.text = Login.user.coins.ToString();
         closeObjects = new GameObject[] { infoPanel, contractStore, coinStore };
     }
 

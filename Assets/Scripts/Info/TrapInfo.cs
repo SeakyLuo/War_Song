@@ -15,7 +15,7 @@ public class TrapInfo : MonoBehaviour {
         nameText.text = trap.name;
         descriptionText.text = trap.description;
         image.sprite = trap.image;
-        if (creator == InfoLoader.user.playerID) background.sprite = allyBackground;
+        if (creator == Login.playerID) background.sprite = allyBackground;
         else background.sprite = enemyBackground;
     }
 }

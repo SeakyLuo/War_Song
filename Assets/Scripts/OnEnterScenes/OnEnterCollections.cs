@@ -54,7 +54,7 @@ public class OnEnterCollections : MonoBehaviour
         else if (selectBoardPanel.activeSelf)
             selectBoardPanel.SetActive(false);
         else
-            SceneManager.LoadScene(InfoLoader.switchSceneCaller);
+            SceneManager.LoadScene(SwitchScenes.switchSceneCaller);
     }
 
     public void Recruit()

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(fileName = "Trigger", menuName = "PieceTrigger")]
+//[UnityEngine.CreateAssetMenu(fileName = "Trigger", menuName = "PieceTrigger")]
 public class Trigger: ScriptableObject {
 
-    public bool activatable = false;
+    public int effectiveRound = 1;
     public int limitedUse = -1; // -1 if unlimited
+    public bool activatable = false;
     public bool bloodThirsty = false;
     public bool afterMove = false;
     public bool inEnemyRegion = false;
@@ -33,6 +34,7 @@ public class Trigger: ScriptableObject {
     public virtual void BloodThirsty() { } // triggered when kills someone
     public virtual List<Vector2Int> ValidLocs(bool link = false) { return MovementController.ValidLocs(piece.location.x, piece.location.y, piece.GetPieceType(), link); }
     public virtual List<Vector2Int> ValidTargets() { return new List<Vector2Int>(); }  // Offers the location of targets
+    public virtual void Passive() { } // For instance, your tacitics cost 1 Ore less
     public virtual void StartOfTurn() { }
     public virtual void EndOfTurn() { }
     public virtual void AfterMove() { }

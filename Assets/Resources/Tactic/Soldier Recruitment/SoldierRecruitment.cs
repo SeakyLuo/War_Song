@@ -12,7 +12,7 @@ public class SoldierRecruitment : TacticTrigger {
     {
         List<Vector2Int> target = new List<Vector2Int>();
         foreach (Vector2Int loc in GameController.FindCastles("Soldier"))
-            if (!GameInfo.board.ContainsKey(loc))
+            if (!OnEnterGame.gameInfo.board.ContainsKey(loc))
                 target.Add(loc);
         return target;
     }

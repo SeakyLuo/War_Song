@@ -2,42 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class UserInfo {
 
     public static int maxWinPerDay = 10;
 
     public string username;
     public int playerID;
-    public List<Collection> collection;
-    public List<Lineup> lineups;
-    public Dictionary<string,int> contracts;
-    public int coins, rank, lastLineupSelected, winsToday;
-    public Stats total;
-    public Dictionary<string, Stats> boardResult;
-    public List<Mission> missions;
+    public List<Collection> collection = new List<Collection>();
+    public List<Lineup> lineups = new List<Lineup>();
+    public Dictionary<string,int> contracts = new Dictionary<string, int>();
+    public List<int> contractCount = new List<int>();
+    public int coins = 0;
+    public int rank = 0;
+    public int lastLineupSelected = -1;
+    public int winsToday = 0;
+    public Stats total = new Stats();
+    public Dictionary<string, Stats> boardResults = new Dictionary<string, Stats>();
+    public List<Mission> missions = new List<Mission>();
     public string preferredBoard = "Standard Board";
     public string lastModeSelected = "";
     public int gameID;
 
-    public UserInfo()
+    public UserInfo(string playerName, int playerId)
     {
-        username = "WarSong Account";
-        collection = new List<Collection>();
-        lineups = new List<Lineup>();
-        contracts = new Dictionary<string, int>(){
-            { "Standard Contract", 1},
-            { "Artillery Seller", 0},
-            { "Human Resource", 0},
-            { "Animal Smuggler", 0},
-            { "Wise Elder", 0}
-        };
-        coins = 0;
-        rank = 0;
-        lastLineupSelected = -1;
-        winsToday = 0;
-        total = new Stats(0,0,0);
-        missions = new List<Mission>();
-        preferredBoard = "Standard Board";
+        username = playerName;
+        playerID = playerId;
+        foreach (string contract in Database.contractList)
+        {
+            contractCount.Add(0);
+            contracts.Add(contract, 0);
+        }
+        foreach (string board in Database.boardList)
+            boardResults.Add(board, new Stats());
     }
 
     public int FindCollection(string name)
@@ -54,7 +51,7 @@ public class UserInfo {
         return -1;
     }
 
-    public void AddCollection(Collection insert)
+    public void AddCollection(Collection insert, bool upload = true)
     {
         int index = 0;
         if (collection.Count == 0 || insert < collection[0]) index = 0;
@@ -77,7 +74,7 @@ public class UserInfo {
             }
         }
         collection.Insert(index, insert);
-        Upload();
+        if(upload) Upload();
     }
     public void RemoveCollection(int index)
     {
@@ -91,10 +88,9 @@ public class UserInfo {
     }
     public void ChangeCollectionCount(int index, int deltaAmount)
     {
-        if (--InfoLoader.user.collection[index].count == 0) InfoLoader.user.RemoveCollection(index);
+        if (--collection[index].count == 0) RemoveCollection(index);
         Upload();
     }
-
     public void ChangeCoins(int deltaAmount)
     {
         coins += deltaAmount;
@@ -103,22 +99,22 @@ public class UserInfo {
     public void AddLineup(Lineup lineup)
     {
         lineups.Add(lineup);
-        Upload();
+        //Upload();
     }
     public void ModifyLineup(Lineup lineup, int index)
     {
         lineups[index] = lineup;
-        Upload();
+        //Upload();
     }
     public void RemoveLineup(int index)
     {
         lineups.RemoveAt(index);
-        Upload();
+        //Upload();
     }
     public void SetLastLineupSelected(int index = -1)
     {
         lastLineupSelected = index;
-        Upload();
+        //Upload();
     }
     public void SetPreferredBoard(string boardName = "Standard Board")
     {
@@ -132,6 +128,7 @@ public class UserInfo {
     }
     public void ChangeContracts(string contractName, int deltaAmount)
     {
+        contractCount[ContractsManager.contractName.IndexOf(contractName)] += deltaAmount;
         if (contracts.ContainsKey(contractName)) contracts[contractName] += deltaAmount;
         else contracts.Add(contractName, deltaAmount);
         Upload();
@@ -140,14 +137,24 @@ public class UserInfo {
     {
         total.Win();
         winsToday++;
+        Upload();
     }
     public void Lose()
     {
         total.Lose();
+        Upload();
     }
     public void Draw()
     {
-        InfoLoader.user.total.Draw();
+        total.Draw();
+        Upload();
+    }
+
+    public void SetContracts() { contracts = new Dictionary<string, int>(); for (int i = 0; i < 5; i++) contracts.Add(ContractsManager.contractName[i],contractCount[i]); }
+    public void SetData() { SetContracts(); }
+    public string ToJson()
+    {
+        return "";
     }
 
     public static string ClassToJson(UserInfo user)
@@ -158,42 +165,36 @@ public class UserInfo {
     {
         return JsonUtility.FromJson<UserInfo>(json);
     }
-    public IEnumerator Upload()
+    public void Upload()
     {
         WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
         infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
         infoToPhp.AddField("userJson", ClassToJson(this));
 
-        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
-        yield return sendToPhp;
+        WWW sendToPhp = new WWW("http://47.151.234.225/update_userinfo.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
     }
-    public void Download()
-    {
-        Download(this);
-    }
-    private IEnumerator Download(UserInfo user)
+    public static UserInfo Download()
     {
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
 
-        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
-        yield return sendToPhp;
+        WWW sendToPhp = new WWW("http://47.151.234.225/download_userinfo.php", infoToPhp);
 
-        user = JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
+        while (!sendToPhp.isDone) { }
+        return JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
     }
 }
 
 public class CheatAccount:UserInfo
 {
-    public CheatAccount():base()
+    public CheatAccount():base("WarSong CheatAccount", 12345789)
     {
-        username = "WarSong CheatAccount";
-        playerID = 12345789;
         Collection[] cheat = {  new Collection("Space Witch", "General"), new Collection("Fat Soldier", "Soldier",4),new Collection("Cripple","Cannon",3),new Collection("Dark Bargain", 5),
             new Collection("Soldier Recruitment",5), new Collection("Seek for Advisors"), new Collection("Greeeeeat Elephant","Elephant",3),new Collection("Place a Trap", 5),
-            new Collection("Tame an Elephant"),new Collection("Purchase a Horse"), new Collection("King's Guardian","Advisor", 3),new Collection("Protect the King", 8),
+            new Collection("Tame an Elephant"),new Collection("Purchase a Horse"), new Collection("King's Guard","Advisor", 3),new Collection("Protect the King", 8),
             new Collection("Monster Hunter","Chariot",4),new Collection("Treasure Horse","Horse",100), new Collection("Space Witch", "General", 2, 20),
-            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Zhuge Liang", "General"), new Collection("Secret Plan", 3),new Collection("Place a Flag",20),
+            new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Wisest Elder", "General"), new Collection("Secret Plan", 3),new Collection("Place a Flag",20),
             new Collection("No Way", 100), new Collection("King of the Dead", "General"), new Collection("The Ore King", "General"),new Collection("Turret","Cannon"),
             new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build a Cannon"),new Collection("Betrayal", 5),
             new Collection("Build a Chariot"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
@@ -226,7 +227,7 @@ public class CheatAccount:UserInfo
                 new Dictionary<Vector2Int, Collection>()
                 {
                     {new Vector2Int(4,0), new Collection("Space Witch", "General",1 , 9) },
-                    {new Vector2Int(3,0), new Collection("King's Guardian","Advisor", 1, 4) },{new Vector2Int(5,0), new Collection("King's Guardian","Advisor") },
+                    {new Vector2Int(3,0), new Collection("King's Guard","Advisor", 1, 4) },{new Vector2Int(5,0), new Collection("King's Guard","Advisor") },
                     {new Vector2Int(2,0), new Collection("Greeeeeat Elephant", "Elephant") },{new Vector2Int(6,0), new Collection("Greeeeeat Elephant", "Elephant")},
                     {new Vector2Int(1,0), new Collection("Horse Rider","Horse") },{new Vector2Int(7,0), new Collection("Horse Rider","Horse") },
                     {new Vector2Int(0,0), new Collection("Monster Hunter","Chariot") },{new Vector2Int(8,0), new Collection("Monster Hunter","Chariot") },
@@ -273,6 +274,7 @@ public class CheatAccount:UserInfo
             { "Animal Smuggler", 5},
             { "Wise Elder", 1}
         };
+        contractCount = new List<int> { 1111, 111, 11, 5, 1 };
         coins = 99999;
         rank = 9999;
         lastLineupSelected = 1;

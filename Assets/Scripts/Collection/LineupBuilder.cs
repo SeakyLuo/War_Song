@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LineupBuilder : MonoBehaviour {
     // Recommend Tactics || Random Tactics
-
-    public GameObject collections, selectBoardPanel, myLineup, copyReminder, fullReminder, sameTacticReminder;
-    public Text tacticsCountText, totalOreCostText, totalGoldCostText;
-    public InputField inputField;
     public static int tacticsLimit = 10, current_tactics = 0;
     public static Lineup copy = new Lineup();
 
-    private Lineup lineup = new Lineup();
-    private CollectionManager collectionManager;
-    private LineupsManager lineupsManager;
+    public GameObject selectBoardPanel, copyReminder, fullReminder, sameTacticReminder;
+    public Text tacticsCountText, totalOreCostText, totalGoldCostText;
+    public InputField inputField;
+    public CollectionManager collectionManager;
+    public LineupsManager lineupsManager;
+
+    private Lineup lineup;
     private Transform board, lineupBoard;
     private BoardInfo boardInfo;
     private GameObject[] tacticObjs;
@@ -24,7 +23,7 @@ public class LineupBuilder : MonoBehaviour {
 
     private void Awake()
     {
-        collectionManager = collections.GetComponent<CollectionManager>();
+        lineup = new Lineup();
         tacticObjs = GameObject.FindGameObjectsWithTag("Tactic");
         foreach (GameObject obj in tacticObjs) obj.SetActive(false);
         lineup.lineupName = "Custom Lineup";
@@ -40,13 +39,11 @@ public class LineupBuilder : MonoBehaviour {
     private void OnDisable()
     {
         collectionManager.SetCardsPerPage(8);
-
         collectionManager.ShowCurrentPage();
     }
 
     void Start()
     {
-        lineupsManager = myLineup.GetComponent<LineupsManager>();
         board = transform.Find("BoardPanel/Board");
         lineupBoard = board.Find("LineupBoard(Clone)");
         boardInfo = lineupBoard.GetComponent<BoardInfo>();
@@ -61,7 +58,7 @@ public class LineupBuilder : MonoBehaviour {
     {
         Vector2Int location = LineupBoardGestureHandler.FindLoc(loc);
         string cardType,
-               locName = InfoLoader.Vec2ToString(location);
+               locName = Database.Vec2ToString(location);
         if (boardInfo.locationType.TryGetValue(locName, out cardType) && cardType == cardInfo.GetCardType())
             PieceAdder(cardInfo, location, location.x, location.y);
     }
@@ -113,13 +110,11 @@ public class LineupBuilder : MonoBehaviour {
         else
         {
             for (int i = 0; i < current_tactics - 1; i++)
-            {
                 if (attributes > tacticAttributes[i] && attributes < tacticAttributes[i + 1])
                 {
                     index = i + 1;
                     break;
                 }
-            }
         }
         lineup.tactics.Insert(index, new Tactic(attributes));
         tacticAttributes.Insert(index, attributes);
@@ -156,7 +151,7 @@ public class LineupBuilder : MonoBehaviour {
                 tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1], true);
         }
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
-        lineup.tactics.Remove(remove);
+        lineup.tactics.RemoveAt(index);
         tacticAttributes.RemoveAt(index);                   
         tacticObjs[--current_tactics].SetActive(false);
         SetTexts();        

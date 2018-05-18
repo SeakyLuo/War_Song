@@ -65,10 +65,10 @@ public class ActivateContractStore : MonoBehaviour {
     public void Purchase()
     {
         int price = int.Parse(priceText.text);
-        if (InfoLoader.user.coins >= price)
+        if (Login.user.coins >= price)
         {
-            InfoLoader.user.ChangeCoins(-price);
-            playerCoinsAmount.text = InfoLoader.user.coins.ToString();
+            Login.user.ChangeCoins(-price);
+            playerCoinsAmount.text = Login.user.coins.ToString();
             contractsManager.AddContract(contractAttributes, contractsCount);
             successfulPurchase.SetActive(true);
         }

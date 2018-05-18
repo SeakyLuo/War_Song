@@ -20,14 +20,14 @@ public class LineupsManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        lineupsCount = InfoLoader.user.lineups.Count;
+        lineupsCount = Login.user.lineups.Count;
         if (lineupsCount == lineupsLimit) createLineupButton.SetActive(false);
         for (int i = 0; i < lineupsLimit; i++)
         {
             if (i < lineupsCount)
             {                
-                lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
-                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[i].general).image;
+                lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].general).image;
             }
             else lineupObjects[i].SetActive(false);
         }
@@ -44,7 +44,7 @@ public class LineupsManager : MonoBehaviour {
             if (lineup.lineupName == CUSTOMLINEUP)
             {
                 int customLineupCount = 1;
-                foreach (Lineup l in InfoLoader.user.lineups)
+                foreach (Lineup l in Login.user.lineups)
                     if (l.lineupName.StartsWith(CUSTOMLINEUP) && l.boardName == lineup.boardName)
                     {
                         if (l.lineupName != CUSTOMLINEUP && l.lineupName != CUSTOMLINEUP + customLineupCount.ToString())
@@ -53,9 +53,9 @@ public class LineupsManager : MonoBehaviour {
                         lineup.lineupName = CUSTOMLINEUP + customLineupCount.ToString();
                     }
             }
-            InfoLoader.user.AddLineup(lineup);
+            Login.user.AddLineup(lineup);
             lineupObjects[lineupsCount].SetActive(true);
-            lineupObjects[lineupsCount].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[lineupsCount].general).image;
+            lineupObjects[lineupsCount].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[lineupsCount].general).image;
             lineupObjects[lineupsCount++].GetComponentInChildren<Text>().text = lineup.lineupName;
             myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
             if (lineupsCount == lineupsLimit) createLineupButton.SetActive(false);
@@ -64,8 +64,8 @@ public class LineupsManager : MonoBehaviour {
         }
         else
         {
-            InfoLoader.user.ModifyLineup(lineup, modifyLineup);
-            lineupObjects[modifyLineup].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[modifyLineup].general).image;
+            Login.user.ModifyLineup(lineup, modifyLineup);
+            lineupObjects[modifyLineup].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[modifyLineup].general).image;
             lineupObjects[modifyLineup].GetComponentInChildren<Text>().text = lineup.lineupName;
             modifyLineup = -1;
         }
@@ -76,11 +76,11 @@ public class LineupsManager : MonoBehaviour {
         // bug
         if (modifyLineup != -1)
         {
-            if (InfoLoader.user.lastLineupSelected == modifyLineup) InfoLoader.user.SetLastLineupSelected(-1);
-            InfoLoader.user.RemoveLineup(modifyLineup);
+            if (Login.user.lastLineupSelected == modifyLineup) Login.user.SetLastLineupSelected(-1);
+            Login.user.RemoveLineup(modifyLineup);
             lineupObjects[--lineupsCount].SetActive(false);
             for (int i = modifyLineup; i < lineupsCount; i++)
-                lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
+                lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
             myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
             modifyLineup = -1;
             ResizeLineup();
@@ -90,15 +90,15 @@ public class LineupsManager : MonoBehaviour {
     public void OpenLineup(int number)
     {
         modifyLineup = number;        
-        boardManager.LoadBoard(InfoLoader.user.lineups[number]);
+        boardManager.LoadBoard(Login.user.lineups[number]);
         createLineupPanel.SetActive(true);
-        lineupBuilder.SetLineup(InfoLoader.user.lineups[number]);
+        lineupBuilder.SetLineup(Login.user.lineups[number]);
     }
 
     private void ResizeLineup()
     {
         GridLayoutGroup gridLayoutGroup = lineupView.GetComponent<GridLayoutGroup>();
-        int count = InfoLoader.user.lineups.Count + 1;
+        int count = Login.user.lineups.Count + 1;
         if (createLineupButton.activeSelf) count++;
         lineupView.GetComponent<RectTransform>().sizeDelta = new Vector2
         (

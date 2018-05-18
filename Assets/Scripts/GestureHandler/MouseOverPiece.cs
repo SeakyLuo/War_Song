@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class MouseOverPiece : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -12,7 +11,7 @@ public class MouseOverPiece : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         infoCard = transform.parent.parent.parent.parent.parent.Find("InfoCard").gameObject;
         boardInfo = transform.parent.GetComponent<BoardInfo>();
-        nameLoc = InfoLoader.StringToVec2(gameObject.name);
+        nameLoc = Database.StringToVec2(gameObject.name);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

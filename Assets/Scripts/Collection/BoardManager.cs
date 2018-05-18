@@ -22,9 +22,9 @@ public class BoardManager : MonoBehaviour {
 
     private void Start()
     {
-        boardAttributes = new List<BoardAttributes>() { Database.FindBoardAttributes(InfoLoader.user.preferredBoard) };
+        boardAttributes = new List<BoardAttributes>() { Database.FindBoardAttributes(Login.user.preferredBoard) };
         foreach (string boardName in Database.boardList)
-            if(boardName != InfoLoader.user.preferredBoard)
+            if(boardName != Login.user.preferredBoard)
                 boardAttributes.Add(Database.FindBoardAttributes(boardName));
         DisplayBoardSelectionInterface();
     }
@@ -62,7 +62,7 @@ public class BoardManager : MonoBehaviour {
     {
         if (boardAttributes[currentBoard].available)
         {
-            InfoLoader.user.SetPreferredBoard(boardAttributes[currentBoard].Name);
+            Login.user.SetPreferredBoard(boardAttributes[currentBoard].Name);
         }
     }
 

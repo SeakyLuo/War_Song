@@ -16,7 +16,7 @@ public class SpaceWitch : Trigger {
             for(int j = MovementController.boardAttributes.palaceDownLeft.y; j <= MovementController.boardAttributes.palaceUpperRight.y; j++)
             {
                 Vector2Int target = new Vector2Int(i, j);
-                if (!GameInfo.board.ContainsKey(target)) targets.Add(target);
+                if (!OnEnterGame.gameInfo.board.ContainsKey(target)) targets.Add(target);
             }
         return targets;
     }

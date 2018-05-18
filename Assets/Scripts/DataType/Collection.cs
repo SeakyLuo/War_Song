@@ -8,8 +8,7 @@ public class Collection
     public string type = "";
     public int count = 1;
     public int health = 0;
-
-    private int oreCost = 0; //tmp
+    public int oreCost = 0; //tmp
 
     public static Collection General = StandardCollection("General");
     public static Collection Advisor = StandardCollection("Advisor");
@@ -101,11 +100,7 @@ public class Collection
     public static bool operator < (Collection collection1, Collection collection2)
     {
         if(collection1.type == "Tactic" && collection2.type == collection1.type)
-        {
-            return (collection1.oreCost< collection2.oreCost) ||
-                   (collection1.oreCost == collection2.oreCost && collection1.health < collection2.health) ||
-                   (collection1.oreCost == collection2.oreCost && collection1.health == collection2.health && collection1.name.CompareTo(collection2.name) < 0);
-        }
+            return new Tactic(collection1) < new Tactic(collection2);
         else
         {
             int typeIndex = Database.types.IndexOf(collection1.type), typeIndex2 = Database.types.IndexOf(collection2.type);
@@ -123,6 +118,9 @@ public class Collection
 
     public bool Equals(Collection collection)
     {
+        if (collection.type == "Tactic") return name == collection.name;
         return name == collection.name && health == collection.health;
     }
+
+    public bool IsStandard() { return name.StartsWith("Standard "); }
 }

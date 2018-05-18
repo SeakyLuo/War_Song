@@ -2,6 +2,6 @@
 
     public override void Revenge()
     {
-        GameController.Eliminate(GameInfo.board[piece.location]);
+        GameController.Eliminate(OnEnterGame.gameInfo.board[piece.location]);
     }
 }

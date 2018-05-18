@@ -5,7 +5,7 @@ public class WisestElder : Trigger
 {
     public override void Activate()
     {
-        List<Tactic> usedTactics = GameInfo.usedTactics[InfoLoader.playerID];
+        List<Tactic> usedTactics = OnEnterGame.gameInfo.usedTactics[Login.playerID];
         GameController.AddTactic(usedTactics[Random.Range(0, usedTactics.Count)]);
     }
 }

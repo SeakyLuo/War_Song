@@ -22,12 +22,13 @@ public class Tactic {
         original = Original;
     }
 
-    //public static bool operator == (Tactic tactic1, Tactic tactic2)
-    //{
-    //    return tactic1.oreCost == tactic2.oreCost && tactic1.goldCost == tactic2.goldCost && tactic1.tacticName == tactic2.tacticName && tactic1.original == tactic2.original;
-    //}
-
-    //public static bool operator !=(Tactic tactic1, Tactic tactic2) { return !(tactic1 == tactic2); }
+    public Tactic(Collection collection)
+    {
+        tacticName = collection.name;
+        oreCost = collection.oreCost;
+        goldCost = collection.health;
+        original = true;
+    }
 
     public static bool operator < (Tactic tactic1, Tactic tactic2)
     {
@@ -36,5 +37,5 @@ public class Tactic {
                 (tactic1.oreCost == tactic2.oreCost && tactic1.goldCost == tactic2.goldCost && tactic1.tacticName.CompareTo(tactic2.tacticName) < 0);
     }
 
-    public static bool operator >(Tactic tactic1, Tactic tactic2) { return !(tactic1 < tactic2) && tactic1 != tactic2; } // Because tactics can't be the same.
+    public static bool operator >(Tactic tactic1, Tactic tactic2) { return !(tactic1 < tactic2); } // Because tactics can't be the same.
 }

@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class GameInfo
 {
-    public static Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
-    public static Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
-    public static Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
-    public static Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
-    public static Dictionary<int, List<Tactic>> unusedTactics;
-    public static Dictionary<int, List<Tactic>> usedTactics;
-    public static Dictionary<int, List<Piece>> activePieces;
-    public static Dictionary<int, List<Piece>> inactivePieces;
+    public Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
+    public Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
+    public Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
+    public Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
+    public Dictionary<int, List<Tactic>> unusedTactics;
+    public Dictionary<int, List<Tactic>> usedTactics;
+    public Dictionary<int, List<Piece>> activePieces;
+    public Dictionary<int, List<Piece>> inactivePieces;
 
-    public static string boardName;
-    public static int firstPlayer; //player ID
-    public static int secondPlayer;
-    public static Dictionary<int, Lineup> lineups;
-    public static Dictionary<int, int> ores;
-    public static Dictionary<int, int> actions;
-    public static int round = 1;
-    public static int time = 90;
-    public static int maxTime = 90;
-    public static int gameID;
-    public static bool gameStarts = false;
-    public static bool gameOver = false;
-    public static int victory = -1; // -1 if draw, otherwise playerID
+    public string boardName;
+    public int firstPlayer; //player ID
+    public int secondPlayer;
+    public Dictionary<int, Lineup> lineups;
+    public Dictionary<int, int> ores;
+    public Dictionary<int, int> actions;
+    public int round = 1;
+    public int time = 90;
+    public int maxTime = 90;
+    public int gameID;
+    public bool gameStarts = false;
+    public bool gameOver = false;
+    public int victory = -1; // -1 if draw, otherwise playerID
 
     public GameInfo(Lineup playerLineup, int playerID, Lineup enemyLineup, int enemyID)
     {
@@ -70,39 +71,39 @@ public class GameInfo
         };
         gameStarts = true;
     }
-    public static int TheOtherPlayer()
+    public int TheOtherPlayer()
     {
-        if (firstPlayer == InfoLoader.playerID) return secondPlayer;
+        if (firstPlayer == Login.playerID) return secondPlayer;
         else return firstPlayer;
     }
 
-    public static void AddPiece(Piece piece, bool reactivate = false)
+    public void AddPiece(Piece piece, bool reactivate = false)
     {
         piece.active = true;
         board.Add(piece.GetCastle(), piece);
         if (piece.isAlly)
         {
-            activePieces[InfoLoader.playerID].Add(piece);
-            if (reactivate) inactivePieces[InfoLoader.playerID].Remove(piece);
+            activePieces[Login.playerID].Add(piece);
+            if (reactivate) inactivePieces[Login.playerID].Remove(piece);
         }
         else
         {
-            activePieces[InfoLoader.playerID].Add(piece);
-            if (reactivate) inactivePieces[InfoLoader.playerID].Remove(piece);
+            activePieces[Login.playerID].Add(piece);
+            if (reactivate) inactivePieces[Login.playerID].Remove(piece);
         }
         if (castles.ContainsKey(piece.GetCastle())) castles[piece.GetCastle()].Add(piece);
         else castles.Add(piece.GetCastle(), new List<Piece> { piece });
-        // upload
+        Upload();
     }
 
-    public static void RemovePiece(Piece piece)
+    public void RemovePiece(Piece piece)
     {
         piece.active = false;
         board.Remove(piece.location);
         if (piece.isAlly)
         {
-            activePieces[InfoLoader.playerID].Remove(piece);
-            inactivePieces[InfoLoader.playerID].Add(piece);
+            activePieces[Login.playerID].Remove(piece);
+            inactivePieces[Login.playerID].Add(piece);
         }
         else
         {
@@ -110,18 +111,18 @@ public class GameInfo
             inactivePieces[TheOtherPlayer()].Add(piece);
         }
         castles[piece.location].Remove(piece);
-        // upload
+        Upload();
     }
 
-    public static void AddTactic(Tactic tactic)
+    public void AddTactic(Tactic tactic)
     {
         int index = 0;
-        List<Tactic> tactics = unusedTactics[InfoLoader.playerID];
+        List<Tactic> tactics = unusedTactics[Login.playerID];
         if (tactics.Count == 0 || tactic < tactics[0]) index = 0;
         else if (tactic > tactics[tactics.Count - 1]) index = tactics.Count;
         else
         {
-            for (int i = 0; i < unusedTactics[InfoLoader.playerID].Count - 1; i++)
+            for (int i = 0; i < unusedTactics[Login.playerID].Count - 1; i++)
             {
                 if (tactic > tactics[i] && tactic < tactics[i+1])
                 {
@@ -130,18 +131,18 @@ public class GameInfo
                 }
             }
         }
-        unusedTactics[InfoLoader.playerID].Insert(index, tactic);
-        // upload
+        unusedTactics[Login.playerID].Insert(index, tactic);
+        Upload();
     }
 
-    public static void RemoveTactic(int index)
+    public void RemoveTactic(int index)
     {
-        usedTactics[InfoLoader.playerID].Add(unusedTactics[InfoLoader.playerID][index]);
-        unusedTactics[InfoLoader.playerID].RemoveAt(index);
-        // upload
+        usedTactics[Login.playerID].Add(unusedTactics[Login.playerID][index]);
+        unusedTactics[Login.playerID].RemoveAt(index);
+        Upload();
     }
 
-    public static int FindTactic(string tacticName, int playerID)
+    public int FindTactic(string tacticName, int playerID)
     {
         List<Tactic> tactics = unusedTactics[playerID];
         for (int i = 0; i < tactics.Count; i++)
@@ -150,7 +151,7 @@ public class GameInfo
         return -1;
     }
 
-    public static void SetOrder(int player1, int player2)
+    public void SetOrder(int player1, int player2)
     {
         if(Random.Range(1,2)%2 == 1)
         {
@@ -162,25 +163,32 @@ public class GameInfo
             firstPlayer = player2;
             secondPlayer = player1;
         }
-
+        Upload();
     }
 
-    public static void SetGameID(int value)
+    public void SetGameID(int value)
     {
         gameID = value;
         //firstPlayer.gameID = gameID
         //secondPlayer.gameID = gameID
+        Upload();
     }
 
-    public static void Move(Vector2Int from, Vector2Int to)
+    public void Move(Vector2Int from, Vector2Int to)
     {
         Piece piece = board[from];
         board.Remove(from);
         board.Add(to, piece);
-        // upload
+        Upload();
     }
 
-    public static void Clear()
+    public void ChangeOre(int deltaAmount)
+    {
+        ores[Login.playerID] += deltaAmount;
+        Upload();
+    }
+
+    public void Clear()
     {
         board.Clear();
         unusedTactics.Clear();
@@ -199,5 +207,25 @@ public class GameInfo
     public static GameInfo JsonToClass(string json)
     {
         return JsonUtility.FromJson<GameInfo>(json);
+    }
+    public void Upload()
+    {
+        return;
+        WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+        infoToPhp.AddField("userJson", ClassToJson(this));
+
+        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
+    }
+    public static GameInfo Download()
+    {
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+
+        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
+
+        while (!sendToPhp.isDone) { }
+        return JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
     }
 }

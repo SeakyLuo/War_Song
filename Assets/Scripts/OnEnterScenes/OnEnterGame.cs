@@ -9,8 +9,8 @@ using System;
 public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 {
     public static int current_tactic = -1;
+    public static GameInfo gameInfo;
 
-    public GameInfo gameInfo;
     public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
     public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel;
     public GameObject history, pieceInfoCard , trapInfoCard, showInfoCard, playerFlag, enemyFlag, freezeImage;
@@ -37,25 +37,25 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     // Use this for initialization
     void Start () {
-        lineup = InfoLoader.user.lineups[InfoLoader.user.lastLineupSelected];
+        lineup = Login.user.lineups[Login.user.lastLineupSelected];
         // Set GameInfo
-        gameInfo = new GameInfo(lineup, InfoLoader.playerID, new EnemyLineup(), 100000000); // should be downloading a GameInfo
-        //GameInfo.JsonToClass();
-        InfoLoader.user.SetGameID(GameInfo.gameID);
+        gameInfo = new GameInfo(lineup, Login.playerID, new EnemyLineup(), 100000000); // should be downloading a GameInfo
+        //gameInfo.JsonToClass();
+        Login.user.SetGameID(gameInfo.gameID);
         board = Instantiate(Resources.Load<GameObject>("Board/" + lineup.boardName + "/Board"));
         board.transform.SetSiblingIndex(1);
         boardSetup = board.GetComponent<BoardSetup>();
         boardSetup.Setup(lineup, true);  // Set up Player Lineup
-        boardSetup.Setup(GameInfo.lineups[GameInfo.TheOtherPlayer()], false);  // Set up Enemy Lineup
+        boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], false);  // Set up Enemy Lineup
         // Set up Player Info
-        playerName.text = InfoLoader.user.username;
-        playerWin.text = "Win%: "+InfoLoader.user.total.percentage.ToString();
-        playerRank.text = "Rank: " + InfoLoader.user.rank.ToString();
+        playerName.text = Login.user.username;
+        playerWin.text = "Win%: " + Login.user.total.percentage.ToString();
+        playerRank.text = "Rank: " + Login.user.rank.ToString();
         // Set up Opponent Info
         opponentName.text = "Opponent";
         opponentWin.text = "Win%: 80.00";
         opponentRank.text = "Rank: 9900";
-        modeName.text = InfoLoader.user.lastModeSelected;
+        modeName.text = Login.user.lastModeSelected;
         foreach (KeyValuePair<Vector2Int, GameObject> pair in boardSetup.pieces)
         {
             Trigger trigger = pair.Value.GetComponent<PieceInfo>().trigger;
@@ -81,20 +81,18 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (GameInfo.gameOver)
+        if (!gameInfo.gameOver) return;
+        if (victoryImage.activeSelf && Login.user.winsToday <= UserInfo.maxWinPerDay)
         {
-            if (victoryImage.activeSelf && InfoLoader.user.winsToday <= UserInfo.maxWinPerDay)
-            {
-                victoryImage.SetActive(false);
-                winReward.SetActive(true);
-                InfoLoader.user.ChangeCoins(1);
-                return;
-            }
-            GameInfo.gameOver = false;
-            SceneManager.LoadScene("PlayerMatching");
-            GameInfo.Clear();
-            Destroy(board);
+            victoryImage.SetActive(false);
+            winReward.SetActive(true);
+            Login.user.ChangeCoins(1);
+            return;
         }
+        gameInfo.gameOver = false;
+        SceneManager.LoadScene("PlayerMatching");
+        gameInfo.Clear();
+        Destroy(board);
     }
 
     private IEnumerator GameStartAnimation()
@@ -109,44 +107,45 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         while (true)
         {
-            if (GameInfo.gameOver) break;
-            string seconds = (GameInfo.time % 60).ToString();
+            if (gameInfo.gameOver) break;
+            string seconds = (gameInfo.time % 60).ToString();
             if (seconds.Length == 1) seconds = "0" + seconds;
-            timer.text = (GameInfo.time / 60).ToString() + ":" + seconds;
-            if (GameInfo.time < 15) timer.color = Color.red;
+            timer.text = (gameInfo.time / 60).ToString() + ":" + seconds;
+            if (gameInfo.time < 15) timer.color = Color.red;
             else timer.color = Color.white;
             yield return new WaitForSeconds(1.0f);
-            if (--GameInfo.time < 0) NextTurn();
+            if (--gameInfo.time < 0) NextTurn();
         }
     }
 
     public void Victory()
     {
-        GameInfo.victory = InfoLoader.playerID;
+        gameInfo.victory = Login.playerID;
         victoryImage.SetActive(true);
-        InfoLoader.user.Win();
+        Login.user.Win();
         GameOver();
     }
     public void Defeat()
     {
-        GameInfo.victory = GameInfo.TheOtherPlayer();
+        gameInfo.victory = gameInfo.TheOtherPlayer();
         defeatImage.SetActive(true);
-        InfoLoader.user.Lose();
+        Login.user.Lose();
         GameOver();
     }
     public void Draw()
     {
-        GameInfo.victory = -1;
+        gameInfo.victory = -1;
         drawImage.SetActive(true);
-        InfoLoader.user.Draw();
+        Login.user.Draw();
         GameOver();
     }
 
     public void GameOver()
     {
+        Login.user.SetGameID(-1);
         pieceInfoCard.SetActive(false);
-        GameInfo.time = GameInfo.maxTime;
-        GameInfo.gameOver = true;
+        gameInfo.time = gameInfo.maxTime;
+        gameInfo.gameOver = true;
         if (settingsPanel.activeSelf) settingsPanel.SetActive(false);
         foreach(KeyValuePair<Vector2Int,GameObject> pair in boardSetup.pieces)
         {
@@ -157,7 +156,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
         {
             bool alive = false;
-            foreach(Piece piece in GameInfo.activePieces[InfoLoader.playerID])
+            foreach(Piece piece in gameInfo.activePieces[Login.playerID])
                 if (piece.original && piece.GetCastle() == pair.Key)
                 {
                     alive = true;
@@ -166,21 +165,21 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 }
             if (!alive && pair.Value.health > 0 && --pair.Value.health == 0)
             {
-                int index = InfoLoader.user.FindCollection(pair.Value);
-                InfoLoader.user.RemoveCollection(index);
-                int next = InfoLoader.user.FindCollection(pair.Value.name);
-                if (next != -1) lineup.cardLocations[pair.Key] = InfoLoader.user.collection[next];
+                int index = Login.user.FindCollection(pair.Value);
+                Login.user.RemoveCollection(index);
+                int next = Login.user.FindCollection(pair.Value.name);
+                if (next != -1) lineup.cardLocations[pair.Key] = Login.user.collection[next];
                 else lineup.cardLocations[pair.Key] = Collection.StandardCollection(pair.Value.type);
             }
         }
         foreach(Tactic tactic in lineup.tactics)
         {
-            if (GameInfo.unusedTactics[InfoLoader.playerID].Contains(tactic)) continue;
-            int index = InfoLoader.user.FindCollection(tactic.tacticName);
-            if (index != -1) InfoLoader.user.ChangeCollectionCount(index, -1);
+            if (gameInfo.unusedTactics[Login.playerID].Contains(tactic)) continue;
+            int index = Login.user.FindCollection(tactic.tacticName);
+            if (index != -1) Login.user.ChangeCollectionCount(index, -1);
             else lineup.complete = false;
         }
-        InfoLoader.user.ModifyLineup(lineup, InfoLoader.user.lastLineupSelected);
+        Login.user.ModifyLineup(lineup, Login.user.lastLineupSelected);
         // upload
     }
 
@@ -192,9 +191,9 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     private void CalculateNewRank()
     {
         int credit = 0;
-        foreach(Piece piece in GameInfo.activePieces[InfoLoader.playerID])
+        foreach(Piece piece in gameInfo.activePieces[Login.playerID])
             credit += credits[piece.GetPieceType()];
-        foreach (Piece piece in GameInfo.inactivePieces[GameInfo.TheOtherPlayer()])
+        foreach (Piece piece in gameInfo.inactivePieces[gameInfo.TheOtherPlayer()])
             credit += credits[piece.GetPieceType()];
     }
 
@@ -208,7 +207,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         endTurnText.text = "Your Turn";
         //StartCoroutine(ShowYourTurn());
-        GameInfo.actions[InfoLoader.playerID] = 1;
+        gameInfo.actions[Login.playerID] = 1;
         foreach (KeyValuePair<Vector2Int, GameObject> pair in boardSetup.pieces)
         {
             Trigger trigger = pair.Value.GetComponent<PieceInfo>().trigger;
@@ -240,13 +239,13 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 trigger.EndOfTurn();
             }
         }
-        roundCount.text = (++GameInfo.round).ToString();
-        if (GameInfo.round == 150)
+        roundCount.text = (++gameInfo.round).ToString();
+        if (gameInfo.round == 150)
         {
             Draw();
             return;
         }
-        if (GameInfo.actions[InfoLoader.playerID] > 1)
+        if (gameInfo.actions[Login.playerID] > 1)
         {
             endTurnButton.interactable = true;
             endTurnText.text = "End Turn";
@@ -256,7 +255,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             endTurnButton.interactable = false;
             endTurnText.text = "Your Turn";
         }
-        GameInfo.time = GameInfo.maxTime;
+        gameInfo.time = gameInfo.maxTime;
         StartCoroutine(EnemyTurn());
     }
 
@@ -286,15 +285,15 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void TriggerTrap(Vector2Int location)
     {
-        if (GameInfo.traps.ContainsKey(location))
+        if (gameInfo.traps.ContainsKey(location))
         {
             GameEvent gameEvent = new GameEvent();
             explosion.transform.position = new Vector3(location.x * MovementController.scale, location.y * MovementController.scale, -3);
             explosion.transform.SetParent(boardSetup.boardCanvas);
-            TrapAttributes trap = Database.FindTrapAttributes(GameInfo.traps[location].Key);
-            trapInfoCard.GetComponent<TrapInfo>().SetAttributes(trap, GameInfo.traps[location].Value);
+            TrapAttributes trap = Database.FindTrapAttributes(gameInfo.traps[location].Key);
+            trapInfoCard.GetComponent<TrapInfo>().SetAttributes(trap, gameInfo.traps[location].Value);
             trap.trigger.Activate(location);
-            GameInfo.traps.Remove(location);
+            gameInfo.traps.Remove(location);
             // upload
             AddToHistory(gameEvent);
             StartCoroutine(ShowTrapInfo());
@@ -312,16 +311,16 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void AddTactic(Tactic tactic)
     {
-        int count = GameInfo.unusedTactics[InfoLoader.playerID].Count;
+        int count = gameInfo.unusedTactics[Login.playerID].Count;
         if (count == LineupBuilder.tacticsLimit) StartCoroutine(ShowFullTacticBag());
         else
         {
-            GameInfo.AddTactic(tactic);
+            gameInfo.AddTactic(tactic);
             tacticObjs[count].parent.gameObject.SetActive(true);
             int index = 0;
             if (count != 0)
             {
-                index = GameInfo.unusedTactics[InfoLoader.playerID].IndexOf(tactic);
+                index = gameInfo.unusedTactics[Login.playerID].IndexOf(tactic);
                 for (int i = count; i > index; i--)
                 {
                     TacticInfo tacticInfo = tacticObjs[i - 1].GetComponent<TacticInfo>();
@@ -337,8 +336,8 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void RemoveTactic(Tactic tactic)
     {
-        int index = GameInfo.FindTactic(tactic.tacticName, InfoLoader.playerID);
-        int count = GameInfo.unusedTactics[InfoLoader.playerID].Count;
+        int index = gameInfo.FindTactic(tactic.tacticName, Login.playerID);
+        int count = gameInfo.unusedTactics[Login.playerID].Count;
         if (count > 1)
         {
             for (int i = index; i < count - 1; i++)
@@ -350,7 +349,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
         tacticTriggers.RemoveAt(index);
         tacticObjs[count - 1].parent.gameObject.SetActive(false);
-        GameInfo.RemoveTactic(index);
+        gameInfo.RemoveTactic(index);
         SetTacticInteractable();
         CancelTacticHighlight();
     }
@@ -378,9 +377,9 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void AskTrigger(Piece piece, Trigger trigger_para, string message)
     {
-        if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= GameInfo.ores[InfoLoader.playerID])
+        if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= gameInfo.ores[Login.playerID])
         {
-            GameInfo.actions[InfoLoader.playerID]++;
+            gameInfo.actions[Login.playerID]++;
             trigger = trigger_para;
             triggerMessage = message;
             pieceInfoCard.SetActive(false);
@@ -405,7 +404,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         triggerMessage = "";
         askTriggerPanel.SetActive(false);
         showInfoCard.SetActive(false);
-        if (--GameInfo.actions[InfoLoader.playerID] == 0) NextTurn();
+        if (--gameInfo.actions[Login.playerID] == 0) NextTurn();
     }
     private IEnumerator ShowFullTacticBag(float time = 1.5f)
     {
@@ -445,10 +444,10 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     }
     public void SetOreText()
     {
-        oreText.text = GameInfo.ores[InfoLoader.playerID].ToString();
+        oreText.text = gameInfo.ores[Login.playerID].ToString();
     }
     public void SetCoinText()
     {
-        coinText.text = InfoLoader.user.coins.ToString();
+        coinText.text = Login.user.coins.ToString();
     }
 }

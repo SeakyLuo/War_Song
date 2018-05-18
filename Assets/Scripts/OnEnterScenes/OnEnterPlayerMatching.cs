@@ -15,31 +15,31 @@ public class OnEnterPlayerMatching : MonoBehaviour
 
     private void Start()
     {
-        rank.text = InfoLoader.user.rank.ToString();
-        int lineupsCount = InfoLoader.user.lineups.Count;
+        rank.text = Login.user.rank.ToString();
+        int lineupsCount = Login.user.lineups.Count;
         for (int i = 0; i < LineupsManager.lineupsLimit; i++)
         {
             xs[i] = lineupObjects[i].transform.Find("Unavailable").gameObject;
             if (i < lineupsCount)
             {
-                lineupObjects[i].GetComponentInChildren<Text>().text = InfoLoader.user.lineups[i].lineupName;
-                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(InfoLoader.user.lineups[i].general).image;
-                lineupObjects[i].GetComponent<Button>().interactable = InfoLoader.user.lineups[i].complete;
-                xs[i].SetActive(!InfoLoader.user.lineups[i].complete);
+                lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].general).image;
+                lineupObjects[i].GetComponent<Button>().interactable = Login.user.lineups[i].complete;
+                xs[i].SetActive(!Login.user.lineups[i].complete);
             }
             else lineupObjects[i].SetActive(false);
         }
-        if (InfoLoader.user.lastLineupSelected == -1)
+        if (Login.user.lastLineupSelected == -1)
         {
             launchWarText.SetActive(false);
             launchWar.interactable = false;
         }
         else
         {
-            lineupObjects[InfoLoader.user.lastLineupSelected].GetComponent<Button>().Select();
+            lineupObjects[Login.user.lastLineupSelected].GetComponent<Button>().Select();
         }
-        SelectLineup(InfoLoader.user.lastLineupSelected);
-        switch (InfoLoader.user.lastModeSelected)
+        SelectLineup(Login.user.lastLineupSelected);
+        switch (Login.user.lastModeSelected)
         {
             case "":
                 RankedMode();
@@ -66,20 +66,20 @@ public class OnEnterPlayerMatching : MonoBehaviour
 
     public void EnterCollection()
     {
-        InfoLoader.switchSceneCaller = SceneManager.GetActiveScene().name;
+        SwitchScenes.switchSceneCaller = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene("Collection");
     }
 
     public void RankedMode()
     {
-        InfoLoader.user.lastModeSelected = "Ranked Mode";
+        Login.user.lastModeSelected = "Ranked Mode";
         rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.pressedSprite;
         casualMode.GetComponent<Image>().sprite = casualMode.spriteState.disabledSprite;
     }
 
     public void CasualMode()
     {
-        InfoLoader.user.lastModeSelected = "Casual Mode";
+        Login.user.lastModeSelected = "Casual Mode";
         rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.disabledSprite;
         casualMode.GetComponent<Image>().sprite = casualMode.spriteState.pressedSprite;
     }
@@ -114,9 +114,9 @@ public class OnEnterPlayerMatching : MonoBehaviour
                 launchWar.interactable = true;
             }
             lineupObjects[number].GetComponent<Image>().sprite = lineupObjects[number].GetComponent<Button>().spriteState.highlightedSprite;
-            if(InfoLoader.user.lastLineupSelected != -1)
-                lineupObjects[InfoLoader.user.lastLineupSelected].GetComponent<Image>().sprite = lineupObjects[InfoLoader.user.lastLineupSelected].GetComponent<Button>().spriteState.disabledSprite;
+            if(Login.user.lastLineupSelected != -1)
+                lineupObjects[Login.user.lastLineupSelected].GetComponent<Image>().sprite = lineupObjects[Login.user.lastLineupSelected].GetComponent<Button>().spriteState.disabledSprite;
         }
-        InfoLoader.user.SetLastLineupSelected(number);
+        Login.user.SetLastLineupSelected(number);
     }
 }

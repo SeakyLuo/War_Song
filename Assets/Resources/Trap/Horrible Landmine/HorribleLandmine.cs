@@ -6,6 +6,6 @@ public class HorribleLandmine : TacticTrigger {
 
     public override void Activate(Vector2Int location)
     {
-        GameController.Eliminate(GameInfo.board[location]);
+        GameController.Eliminate(OnEnterGame.gameInfo.board[location]);
     }
 }

@@ -2,6 +2,6 @@
 
     public override void StartOfGame()
     {
-        GameController.ChangeOre(10);
+        OnEnterGame.gameInfo.ChangeOre(10);
     }
 }

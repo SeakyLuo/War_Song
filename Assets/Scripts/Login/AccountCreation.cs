@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,8 +6,9 @@ public class AccountCreation : MonoBehaviour {
 
     public InputField email, password, confirmPassword, playerName;
     public GameObject emailWarn, passwordWarn, confirmPasswordWarn, playerNameWarn, networkError, accountExists;
-    public Button confirmCreation, login;
+    public Button confirmCreation;
     public Toggle readAgreement;
+    public Login login;
 
     private bool goodEmail = false, goodPassword = false, matchPassword = false, goodPlayerName = false;
 
@@ -48,26 +48,17 @@ public class AccountCreation : MonoBehaviour {
 
     public void ConfirmCreation()
     {
-        StartCoroutine(Register());
-    }
-
-    public IEnumerator Register()
-    {
         // create an account in the server
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", email.text);
         infoToPhp.AddField("password", password.text);
         infoToPhp.AddField("userName", playerName.text);
-        infoToPhp.AddField("userJson", UserInfo.ClassToJson(new UserInfo()));
+        infoToPhp.AddField("userJson", UserInfo.ClassToJson(new UserInfo(playerName.text, GeneratePlayerID()))); //new CheatAccount();
 
-        WWW sendToPhp = new WWW("http://localhost:8888/action_reg.php", infoToPhp);
-        yield return sendToPhp;
+        WWW sendToPhp = new WWW("http://47.151.234.225/action_reg.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
 
-        if(sendToPhp.error.Contains("Cannot connect"))
-        {
-            networkError.SetActive(true);
-        }
-        else if (string.IsNullOrEmpty(sendToPhp.error))
+        if (string.IsNullOrEmpty(sendToPhp.error))
         {
             if (sendToPhp.text.Contains("User Exists"))
             {
@@ -83,10 +74,24 @@ public class AccountCreation : MonoBehaviour {
                 PlayerPrefs.SetString("email", email.text);
                 PlayerPrefs.SetString("password", password.text);
 
+                login.RequestLogin(email.text, password.text);
                 CancelCreation();
-                StartCoroutine(transform.parent.Find("Login").GetComponent<Login>().RequestLogin(email.text, password.text));
             }
         }
+        else if (sendToPhp.error.Contains("Cannot connect"))
+        {
+            networkError.SetActive(true);
+        }
+    }
+
+    public int GeneratePlayerID()
+    {
+        return 10000000;
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("playerID", "playerID");
+        WWW sendToPhp = new WWW("http://47.151.234.225/action_reg.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
+        return int.Parse(sendToPhp.text) + 10000000;        
     }
 
     public void Agree()

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public static List<string> contractName = new List<string>()
+    public static List<string> contractName = new List<string>() // can't use database.contractlist because of order
     {
         "Standard Contract", "Artillery Seller", "Human Resource", "Animal Smuggler", "Wise Elder"
     };
@@ -26,7 +26,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     // Use this for initialization
     private void Start()
     {
-        foreach (KeyValuePair<string, int> pair in InfoLoader.user.contracts)
+        foreach (KeyValuePair<string, int> pair in Login.user.contracts)
             if (pair.Value != 0)
                 contractSlots[contractName.IndexOf(pair.Key)].GetComponent<PlayerContract>().SetCount(pair.Value);
     }
@@ -54,7 +54,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             {
                 targetContract = selectedObject.transform.parent.parent.gameObject;
                 dragContract.GetComponent<PlayerContract>().SetAttributes(targetContract.GetComponent<PlayerContract>().attributes);
-                int count = InfoLoader.user.contracts[targetContract.name];
+                int count = Login.user.contracts[targetContract.name];
                 if(count > 10)
                 {
                     targetContract.GetComponent<PlayerContract>().ChangeCount(-10);
@@ -96,10 +96,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             }
             else
             {
-                if (warned)
-                {
-                    Use10Contracts();
-                }
+                if (warned) Use10Contracts();
                 else
                 {
                     use10Contracts.SetActive(true);
@@ -113,14 +110,14 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void AddContract(ContractAttributes contractAttributes, int contractsCount)
     {
-        InfoLoader.user.ChangeContracts(contractAttributes.Name, contractsCount);
-        contractSlots[contractName.IndexOf(contractAttributes.Name)].GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[contractAttributes.Name]);
+        Login.user.ChangeContracts(contractAttributes.Name, contractsCount);
+        contractSlots[contractName.IndexOf(contractAttributes.Name)].GetComponent<PlayerContract>().SetCount(Login.user.contracts[contractAttributes.Name]);
     }
 
     public void CancelUse10Contract()
     {
         use10Contracts.SetActive(false);
-        targetContract.GetComponent<PlayerContract>().SetCount(InfoLoader.user.contracts[targetContract.name]);
+        targetContract.GetComponent<PlayerContract>().SetCount(Login.user.contracts[targetContract.name]);
         warned = false;
     }
 
@@ -140,7 +137,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void SetCards()
     {
-        InfoLoader.user.ChangeContracts(targetContract.name, -contractCount);
+        Login.user.ChangeContracts(targetContract.name, -contractCount);
         List<string> types = Database.FindContractAttributes(targetContract.name).cardTypes;
         for(int i = 0; i < contractCount * 5; i++)
         {
@@ -167,8 +164,9 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 cardInfo.SetAttributes(attributes);
                 cardInfo.SetHealth(collection.health);
             }
-            InfoLoader.user.AddCollection(collection);
+            Login.user.AddCollection(collection, false);
         }
+        Login.user.Upload();
         contractCount = 0;
     }
 

@@ -51,10 +51,10 @@ public class CollectionManager : MonoBehaviour {
 
         LoadUserCollections();
         SetPageLimits();
-        ShowNoCollection(InfoLoader.user.collection.Count == 0);
+        ShowNoCollection(Login.user.collection.Count == 0);
         foreach (Collection collection in displayCollections)
             originalDict[collection.type].Add(collection);
-        if (InfoLoader.user.collection.Count != 0) SetCurrentPage(FirstPage());
+        if (Login.user.collection.Count != 0) SetCurrentPage(FirstPage());
     }
 
     public void AddCollection(Collection collection)
@@ -72,7 +72,7 @@ public class CollectionManager : MonoBehaviour {
         if (!found)
         {
             collection.count = 1;
-            if(!collection.name.StartsWith("Standard ")) InfoLoader.user.AddCollection(collection);
+            if(!collection.IsStandard()) Login.user.AddCollection(collection);
             collectionDict[collection.type].Add(collection);
             SetPageLimits();
         }
@@ -82,22 +82,25 @@ public class CollectionManager : MonoBehaviour {
     public bool RemoveCollection(Collection collection)
     {
         Collection found = new Collection();
-        foreach(Collection c in collectionDict[collection.type])
-            if(c.name == collection.name && c.health == collection.health)
-            {                
-                found = c;
-                found.count--;
+        List<Collection> collectionList = collectionDict[collection.type];
+        for (int i = 0; i < collectionList.Count; i++)
+        {
+            if (collectionList[i].name == collection.name && collectionList[i].health == collection.health)
+            {
+                found = collectionList[i];
+                if (found.count == 1)
+                {
+                    Login.user.collection.Remove(found);
+                    displayCollections.Remove(found);
+                    collectionDict[found.type].Remove(found);
+                    SetPageLimits();
+                }
+                else --found.count;
                 break;
             }
-        if (found.IsEmpty()) return false;
-        if (found.count == 0)
-        {
-            InfoLoader.user.collection.Remove(found);
-            displayCollections.Remove(found);
-            collectionDict[found.type].Remove(found);
-            SetPageLimits();
         }
-        ShowNoCollection(InfoLoader.user.collection.Count == 0);
+        if (found.IsEmpty()) return false;
+        ShowNoCollection(Login.user.collection.Count == 0);
         return true;
     }
 
@@ -105,12 +108,12 @@ public class CollectionManager : MonoBehaviour {
     {
         LoadUserCollections();
         SetPageLimits();
-        ShowNoCollection(InfoLoader.user.collection.Count == 0);
+        ShowNoCollection(Login.user.collection.Count == 0);
     }
 
     private void LoadUserCollections()
     {
-        displayCollections = InfoLoader.user.collection;
+        displayCollections = Login.user.collection;
         LoadCollections();
     }
     private void LoadCollections()
@@ -335,7 +338,7 @@ public class CollectionManager : MonoBehaviour {
     }
     public void Search(string word = "", int gold = -1, int ore = -1, int health = -1)
     {
-        searchedCollections = InfoLoader.user.collection;
+        searchedCollections = Login.user.collection;
         if (word == "" && gold == -1 && ore == -1 && health == -1)
         {
             word = searchByKeyword;

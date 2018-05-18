@@ -42,7 +42,7 @@ public class MovementController : MonoBehaviour
             float posZ = -1;
             if (FindAt(path) == 'E') posZ -= selected.transform.localScale.z;
             GameObject copy = Instantiate(pathDot);
-            copy.name = InfoLoader.Vec2ToString(path);
+            copy.name = Database.Vec2ToString(path);
             copy.transform.position = new Vector3(path.x * scale, path.y * scale, posZ);
             if (oldLocation.transform.position == copy.transform.position) oldLocation.SetActive(false);
             pathDots.Add(copy);
@@ -52,7 +52,7 @@ public class MovementController : MonoBehaviour
     public static void KillAt(Vector2Int loc)
     {
         Piece enemy;
-        if (GameInfo.board.TryGetValue(loc, out enemy) && !enemy.isAlly)
+        if (OnEnterGame.gameInfo.board.TryGetValue(loc, out enemy) && !enemy.isAlly)
         {
             GameController.Eliminate(enemy);
             if (enemy.GetPieceType() == "General")
@@ -103,15 +103,15 @@ public class MovementController : MonoBehaviour
     private static void Move(GameObject target, Vector2Int from, Vector2Int to)
     {
         /// Set Location Data
-        GameInfo.Move(from, to);
+        OnEnterGame.gameInfo.Move(from, to);
         target.GetComponent<PieceInfo>().piece.location = to;
-        target.transform.parent = boardCanvas.Find(InfoLoader.Vec2ToString(to));
+        target.transform.parent = boardCanvas.Find(Database.Vec2ToString(to));
         target.transform.localPosition = Vector3.Lerp(target.transform.localPosition, new Vector3(0, 0, target.transform.position.z), speed);
         GameObject fromObject = boardSetup.pieces[from];
         boardSetup.pieces.Remove(from);
         boardSetup.pieces.Add(to, fromObject);
 
-        if (GameInfo.traps.ContainsKey(to)) onEnterGame.TriggerTrap(to);
+        if (OnEnterGame.gameInfo.traps.ContainsKey(to)) onEnterGame.TriggerTrap(to);
         // need to add game events
         Trigger trigger = target.GetComponent<PieceInfo>().trigger;
         onEnterGame.AskTrigger(pieceInfo.piece, trigger, "AfterMove");
@@ -119,6 +119,8 @@ public class MovementController : MonoBehaviour
         else if (boardAttributes.InEnemyPalace(to.x, to.y)) onEnterGame.AskTrigger(pieceInfo.piece, trigger, "InEnemyPalace");
         else if (boardAttributes.InEnemyCastle(to.x, to.y)) onEnterGame.AskTrigger(pieceInfo.piece, trigger, "InEnemyCastle");
         else if (boardAttributes.AtEnemyBottom(to.x,to.y)) onEnterGame.AskTrigger(pieceInfo.piece, trigger, "AtEnemyBottom");
+
+        OnEnterGame.gameInfo.Upload();
     }
 
     public static void Move(Piece piece, Vector2Int from, Vector2Int to)
@@ -141,7 +143,7 @@ public class MovementController : MonoBehaviour
             for (int j = 0; j < boardAttributes.boardHeight; j++)
             {
                 Vector2Int loc = new Vector2Int(i, j);
-                if (!GameInfo.board.ContainsKey(loc)) unoccupied.Add(loc);
+                if (!OnEnterGame.gameInfo.board.ContainsKey(loc)) unoccupied.Add(loc);
             }
         return unoccupied;
     }
@@ -149,7 +151,7 @@ public class MovementController : MonoBehaviour
     {
         int x = (int)Mathf.Floor(obj.transform.position.x / scale);
         int y = (int)Mathf.Floor(obj.transform.position.y / scale);
-        return ValidLocs(x, y, obj.GetComponent<PieceInfo>().GetPieceType());  //GameInfo.board[new Vector2Int(x, y)].GetPieceType()
+        return ValidLocs(x, y, obj.GetComponent<PieceInfo>().GetPieceType());  //OnEnterGame.gameInfo.board[new Vector2Int(x, y)].GetPieceType()
     }
     public static List<Vector2Int> ValidLocs(int x, int y, string type, bool link = false)
     {
@@ -581,7 +583,7 @@ public class MovementController : MonoBehaviour
     {
         string type = piece.GetPieceType();
         Vector2Int location = piece.location;
-        foreach (Piece ally in GameInfo.activePieces[InfoLoader.playerID])
+        foreach (Piece ally in OnEnterGame.gameInfo.activePieces[Login.playerID])
             if (ally.GetPieceType() == type && locations.Contains(ally.location) && boardSetup.pieces[ally.location].GetComponent<PieceInfo>().trigger.ValidLocs(true).Contains(location))
                 return true;
         return false;
@@ -591,14 +593,14 @@ public class MovementController : MonoBehaviour
     public static char FindAt(int x, int y) { return FindAt(new Vector2Int(x, y)); }
     private static char FindAt(Vector2Int loc)
     {
-        if (GameInfo.board.ContainsKey(loc))
+        if (OnEnterGame.gameInfo.board.ContainsKey(loc))
         {
-            if (GameInfo.board[loc].isAlly) return 'A'; // Ally
+            if (OnEnterGame.gameInfo.board[loc].isAlly) return 'A'; // Ally
             else return 'E'; // Enemy
         }
-        else if (GameInfo.flags.ContainsKey(loc))
+        else if (OnEnterGame.gameInfo.flags.ContainsKey(loc))
         {
-            if (GameInfo.flags[loc] == InfoLoader.playerID) return 'T';   // True
+            if (OnEnterGame.gameInfo.flags[loc] == Login.playerID) return 'T';   // True
             else return 'F'; // False
         }
         return 'B';

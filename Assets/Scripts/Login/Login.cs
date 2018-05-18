@@ -1,27 +1,33 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
 
 public class Login : MonoBehaviour
 {
+    public static UserInfo user;
+    public static int playerID;
+
     public InputField inputEmail, inputPassword;
     public Text connectingDots;
     public GameObject createAccountPanel, emptyEmail, wrongPassword, emptyPassword;
     public GameObject settingsPanel, forgotPasswordPanel, networkError, connecting;
 
+    private static bool called = false;
+
     // better to support phone number registration
 
-    // Use this for initialization
     void Start () {
+        if (!called)
+        {
+            new Database();
+            called = true;
+        }
         // If already has an account saved
         string email = PlayerPrefs.GetString("email"),
                password = PlayerPrefs.GetString("password");
         if (email != "" && password != "")
-            //login(email, password);
-            StartCoroutine(RequestLogin(email, password, false));
+            RequestLogin(email, password, false);
 	}
 
     private void Update()
@@ -40,28 +46,33 @@ public class Login : MonoBehaviour
             return;
         }
         emptyPassword.SetActive(false);
-        //login(inputEmail.text, inputPassword.text);
-        StartCoroutine(RequestLogin(inputEmail.text, inputPassword.text));
+        RequestLogin(inputEmail.text, inputPassword.text);
     }
 
-    public IEnumerator RequestLogin(string email, string password, bool showError = true)  //connect with server, and VERIFY credentials
+    public void RequestLogin(string email, string password, bool showError = true)  //connect with server, and VERIFY credentials
     {
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", email);
         infoToPhp.AddField("password", password);
-        //gameObject.SetActive(false);
-        //StartCoroutine(ChangeConnectingDots());
 
-        WWW sendToPhp = new WWW("http://localhost:8888/action_login.php", infoToPhp);
-        yield return sendToPhp;
-        //StopAllCoroutines();
+        connecting.SetActive(true);
+        StartCoroutine(ChangeConnectingDots());
+
+        WWW sendToPhp = new WWW("http://47.151.234.225/action_login.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
+        StopAllCoroutines();
 
         if (string.IsNullOrEmpty(sendToPhp.error)) //if no error connecting to server
         {
             if (sendToPhp.text.Contains("invalid creds"))  //if credentials don't exist 
             {
+                if (!showError)
+                {
+                    PlayerPrefs.SetString("email", "");
+                    PlayerPrefs.SetString("password", "");
+                }
                 inputPassword.text = "";
-                wrongPassword.SetActive(true);
+                wrongPassword.SetActive(showError);
             }
             else                                           //connection and credentials success
             {
@@ -70,27 +81,17 @@ public class Login : MonoBehaviour
                 if (emptyEmail.activeSelf) emptyEmail.SetActive(false);
                 if (emptyPassword.activeSelf) emptyPassword.SetActive(false);
                 if (wrongPassword.activeSelf) wrongPassword.SetActive(false);
+                user = UserInfo.Download();
+                user.SetData();
+                playerID = user.playerID;
                 SceneManager.LoadScene("Main");
             }
         }
         else                                               //connection failure
         {
-            if(showError) networkError.SetActive(true);
+            networkError.SetActive(showError);
         }
-       // gameObject.SetActive(true);
-    }
-
-    private void login(string email, string password)
-    {
-        if(email == "1@1.com" && password == "12345678")
-        {
-            PlayerPrefs.SetString("email", email);
-            PlayerPrefs.SetString("password", password);
-            if (emptyEmail.activeSelf) emptyEmail.SetActive(false);
-            if (emptyPassword.activeSelf) emptyPassword.SetActive(false);
-            if (wrongPassword.activeSelf) wrongPassword.SetActive(false);
-            SceneManager.LoadScene("Main");
-        }
+        connecting.SetActive(false);
     }
 
     private IEnumerator ChangeConnectingDots()

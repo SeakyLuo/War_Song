@@ -41,7 +41,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
             EnableImage(cardImage, false);
             infoCard.SetActive(true);
             infoCard.transform.position = Input.mousePosition;
-            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[InfoLoader.StringToVec2(parent.name)]);
+            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[Database.StringToVec2(parent.name)]);
         }
     }
 
@@ -66,7 +66,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         {
             cardImage.GetComponent<Image>().sprite = null;
             CardInfo newCard = infoCard.GetComponent<CardInfo>();
-            GameObject find = GameObject.Find(InfoLoader.Vec2ToString(FindLoc(Input.mousePosition)));
+            GameObject find = GameObject.Find(Database.Vec2ToString(FindLoc(Input.mousePosition)));
             if (find != null)
             {
                 Transform oldObject = find.transform;
@@ -77,10 +77,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                     PieceAttributes attributes = boardInfo.attributesDict[oldObject.name];                    
                     if (attributes.type == newCard.GetCardType())
                     {
-                        boardInfo.SetCard(attributes, InfoLoader.StringToVec2(parent.name));
+                        boardInfo.SetCard(attributes, Database.StringToVec2(parent.name));
                         cardImage.GetComponent<Image>().sprite = attributes.image;
                         parent = oldObject;
-                        boardInfo.SetCard(newCard.piece, InfoLoader.StringToVec2(parent.name));
+                        boardInfo.SetCard(newCard.piece, Database.StringToVec2(parent.name));
                         oldCardImage.sprite = newCard.piece.image;
                     }
                     else
@@ -101,7 +101,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                 // Drag outside the board.
                 string cardType = newCard.GetCardType();
                 collectionManager.AddCollection(new Collection(newCard.piece));
-                boardInfo.SetStandardCard(cardType, InfoLoader.StringToVec2(parent.name));
+                boardInfo.SetStandardCard(cardType, Database.StringToVec2(parent.name));
                 collectionManager.RemoveCollection(Collection.standardCollectionDict[cardType]);
                 collectionManager.ShowCurrentPage();
                 cardImage.sprite = Database.standardAttributes["Standard " + cardType].image;

@@ -73,7 +73,7 @@ public class ActivateAbility : MonoBehaviour {
             pieceInfo.trigger.Activate();
             onEnterGame.AddToHistory(gameEvent);
             MovementController.PutDownPiece();
-            if (--GameInfo.actions[InfoLoader.playerID] == 0) onEnterGame.NextTurn();
+            if (--OnEnterGame.gameInfo.actions[Login.playerID] == 0) onEnterGame.NextTurn();
         }
         else DrawTargets();
     }
@@ -85,7 +85,7 @@ public class ActivateAbility : MonoBehaviour {
         foreach (Vector2Int loc in targetLocs)
         {
             GameObject copy = Instantiate(targetDot, board);
-            copy.name = InfoLoader.Vec2ToString(loc);
+            copy.name = Database.Vec2ToString(loc);
             copy.transform.position = new Vector3(loc.x * MovementController.scale, loc.y * MovementController.scale, -2.5f);
             targetDots.Add(copy);
         }

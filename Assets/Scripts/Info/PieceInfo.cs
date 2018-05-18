@@ -46,7 +46,7 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (selected || GameInfo.gameOver) return;
+        if (selected || OnEnterGame.gameInfo.gameOver) return;
         card.SetActive(true);
         card.GetComponent<CardInfo>().SetAttributes(pieceAttributes);
         card.GetComponent<CardInfo>().SetPiece(piece);

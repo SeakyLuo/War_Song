@@ -47,8 +47,38 @@ public class GameEvent {
     {
         return JsonUtility.ToJson(gameEvent);
     }
-    public static GameEvent JsonToEvent(string json)
+    public static GameEvent JsonToClass(string json)
     {
         return JsonUtility.FromJson<GameEvent>(json);
+    }
+    public void Upload()
+    {
+        var u = Upload(this);
+        while (u.MoveNext()) { }
+    }
+    private IEnumerator Upload(GameEvent gameEvent)
+    {
+        WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+        infoToPhp.AddField("userJson", ClassToJson(gameEvent));
+
+        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
+        yield return sendToPhp;
+    }
+    public void Download()
+    {
+        var d = Download(this);
+        while (d.MoveNext()) { }
+    }
+    private IEnumerator Download(GameEvent gameEvent)
+    {
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+
+        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
+        yield return sendToPhp;
+
+        while (!sendToPhp.isDone) { }
+        gameEvent = JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
     }
 }

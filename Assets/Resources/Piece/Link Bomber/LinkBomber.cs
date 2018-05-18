@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class LinkBomber : Trigger {
 
     public override void Activate(Vector2Int location)
     {
-        GameController.PlaceTrap(location, Database.RandomTrap(), InfoLoader.playerID);
+        GameController.PlaceTrap(location, Database.RandomTrap(), Login.playerID);
         GameController.onEnterGame.TriggerTrap(location);
     }
 

@@ -6,6 +6,9 @@ public class Stats {
     public int gamesPlayed = 0;
     public int win = 0, lose = 0, draw = 0;
     public double percentage = 0;
+
+    public Stats() { }
+
     public Stats(int winCount, int loseCount, int drawCount)
     {
         win = winCount;
