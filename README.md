@@ -22,4 +22,4 @@ Note:
 3. Our network hasn't had its full functionality yet, so you can't match other players as well but you can enter and eplore the game mode by clicking around. And the response will be slow when using contract in the Recruit. Additionally, the json of Unity has some problems, so you will lose some data after you exit game and login again.
 4. You can get coins as many as possible from the merchant on the left of Recruit (since we have not finish network part yet), and coins can be used as purchasing contracts to get cards. You need to drag your contract to the empty space to get your cards.
 5. There is a GuideBook in the settings panel, but it's not done yet. Please don't open it.
-6. Source code: Aassets/Scripts/
+6. Source code: Assets/Scripts/
