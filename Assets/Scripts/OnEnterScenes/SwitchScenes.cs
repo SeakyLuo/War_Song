@@ -22,7 +22,8 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 
     private void Update()
     {
-        settingsPanel.SetActive(Input.GetKeyUp(KeyCode.Escape));
+        if(Input.GetKeyUp(KeyCode.Escape))
+            settingsPanel.SetActive(true);
     }
 
     public void EnterCollection()

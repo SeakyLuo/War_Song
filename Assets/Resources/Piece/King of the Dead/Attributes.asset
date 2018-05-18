@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: King of the Dead
   type: General
-  description: Randomly Resurrect a Soldier
+  description: Randomly resurrect a Soldier
   oreCost: 4
   health: 20
   image: {fileID: 21300000, guid: 72e0612b4357e3040bfc15004378a083, type: 3}

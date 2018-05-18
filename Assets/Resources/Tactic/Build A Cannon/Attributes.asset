@@ -16,4 +16,4 @@ MonoBehaviour:
   goldCost: 0
   oreCost: 4
   image: {fileID: 21300000, guid: 7c7c3d6cdb167e54c8b82bd1d85ab6cd, type: 3}
-  trigger: {fileID: 0}
+  trigger: {fileID: 11400000, guid: f47d9f16f7478f54bbe4e681c7edc1a0, type: 2}

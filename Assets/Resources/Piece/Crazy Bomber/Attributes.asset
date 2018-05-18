@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Crazy Bombder
   type: Chariot
-  description: Place traps on all the grids he just passed
+  description: Move and place traps on all the grids he just passed
   oreCost: 8
   health: 2
   image: {fileID: 21300000, guid: 55db322dd749e504da2f1e845be54e4a, type: 3}
-  trigger: {fileID: 0}
+  trigger: {fileID: 11400000, guid: cf3767f9aa4d92243803251d3d651944, type: 2}

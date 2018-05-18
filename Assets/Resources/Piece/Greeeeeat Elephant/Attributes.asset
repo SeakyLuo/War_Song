@@ -17,4 +17,4 @@ MonoBehaviour:
   oreCost: 0
   health: 6
   image: {fileID: 21300000, guid: ba13e038e7517ae40b1c2fdbc3880f41, type: 3}
-  trigger: {fileID: 0}
+  trigger: {fileID: 11400000, guid: c51e6f50e0d27c94699f5b63fe570152, type: 2}
