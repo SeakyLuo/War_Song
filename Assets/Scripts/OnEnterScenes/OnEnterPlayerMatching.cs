@@ -1,8 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
+using UnityEngine.Networking;
+using UnityEngine.Networking.Match;
+using System.Net.Sockets;
 
 public class OnEnterPlayerMatching : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class OnEnterPlayerMatching : MonoBehaviour
     public GameObject[] lineupObjects = new GameObject[LineupsManager.lineupsLimit];
 
     private GameObject[] xs = new GameObject[LineupsManager.lineupsLimit];
+    private bool cancel = false;
 
     private void Start()
     {
@@ -88,15 +90,53 @@ public class OnEnterPlayerMatching : MonoBehaviour
     {
         // Upload Lineup Info to the server and match according to the board
         matchingPanel.SetActive(true);
-        // yield wait
+        //Lineup lineup = Login.user.lineups[Login.user.lastLineupSelected];
+
+        //WWWForm infoToPhp = new WWWForm();
+        //infoToPhp.AddField("mode", Login.user.lastModeSelected);
+        //infoToPhp.AddField("boardName", Login.user.lineups[Login.user.lastLineupSelected].boardName);
+        //infoToPhp.AddField("rank", Login.user.rank);
+        //infoToPhp.AddField("playerID", Login.playerID);
+        //infoToPhp.AddField("lineup", JsonUtility.ToJson(lineup));
+
+        //WWW sendToPhp = new WWW("http://47.151.234.225/match.php", infoToPhp);
+
+        //while (!sendToPhp.isDone)
+        //{
+        //    if (cancel)
+        //    {
+        //        cancel = false;
+        //        return;
+        //    }
+        //}
+        //OnEnterGame.gameInfo = GameInfo.JsonToClass(sendToPhp.text);
+
         matchingPanel.SetActive(false);
         LaunchWar();
     }
 
-    public void CancelMatching()
+    //public void Connect()
+    //{
+    //    SocketAsyncEventArgs connectArgs = new SocketAsyncEventArgs();
+    //    connectArgs.UserToken = this.clientSocket;   //关联用户的Socket对象
+    //    connectArgs.RemoteEndPoint = this.hostEndPoint;
+    //    connectArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnConnect);   //注册完成事件
+    //    clientSocket.ConnectAsync(connectArgs);
+    //    autoConnectEvent.WaitOne();   //等待连接结果
+
+    //    SocketError errorCode = connectArgs.SocketError;
+    //    if (errorCode != SocketError.Success)
+    //    {
+    //        throw new SocketException((int)errorCode);
+    //    }
+    //}
+
+    public bool CancelMatching()
     {
+        cancel = true;
         // cancel network matching
         matchingPanel.SetActive(false);
+        return false;
     }
 
     private void LaunchWar()

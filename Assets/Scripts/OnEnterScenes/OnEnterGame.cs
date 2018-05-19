@@ -153,7 +153,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             if (trigger != null) trigger.EndOfGame();
         }
         // CalculateNewRank(); // should be done by server
-        foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
+        foreach (KeyValuePair<Vector2Int, Collection> pair in new Dictionary<Vector2Int, Collection>(lineup.cardLocations))
         {
             bool alive = false;
             foreach(Piece piece in gameInfo.activePieces[Login.playerID])
@@ -172,15 +172,19 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 else lineup.cardLocations[pair.Key] = Collection.StandardCollection(pair.Value.type);
             }
         }
-        foreach(Tactic tactic in lineup.tactics)
+        foreach(Tactic tactic in new List<Tactic>(lineup.tactics))
         {
             if (gameInfo.unusedTactics[Login.playerID].Contains(tactic)) continue;
             int index = Login.user.FindCollection(tactic.tacticName);
             if (index != -1) Login.user.ChangeCollectionCount(index, -1);
-            else lineup.complete = false;
+            else
+            {
+                lineup.tactics.Remove(tactic);
+                lineup.complete = false;
+            }
         }
         Login.user.ModifyLineup(lineup, Login.user.lastLineupSelected);
-        // upload
+        //gameInfo.Upload();
     }
 
     public void Concede()
@@ -256,22 +260,23 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             endTurnText.text = "Your Turn";
         }
         gameInfo.time = gameInfo.maxTime;
-        StartCoroutine(EnemyTurn());
+        EnemyTurn();
     }
 
-    public IEnumerator EnemyTurn()
+    public void EnemyTurn()
     {
         // Set Button interactable
         SetTacticInteractable(false);
         endTurnButton.interactable = false;
         endTurnText.text = "Enemy Turn";
-
-        GameEvent gameEvent = new GameEvent();
+        
+        //WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+        //infoToPhp.AddField("gameID", gameInfo.gameID);
+        //infoToPhp.AddField("playerID", gameInfo.TheOtherPlayer());
+        //WWW sendToPhp = new WWW("http://localhost:8888/gameinfo.php", infoToPhp);
+        //while (!sendToPhp.isDone) { }
         // WWWForm
-        while (false) // fetching enemy response // should return "" if no response
-            yield return new WaitForSeconds(1);
-        GameController.DecodeGameEvent(gameEvent);
-        // decode gameEvent
+        //GameController.DecodeGameEvent(GameEvent.JsonToClass(sendToPhp.text));
         // if trigger enemyCardInfo.GetComponent<CardInfo>().SetAttributes()
         YourTurn();
     }
