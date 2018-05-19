@@ -12,18 +12,18 @@ public class Login : MonoBehaviour
     public Text connectingDots;
     public GameObject createAccountPanel, emptyEmail, wrongPassword, emptyPassword;
     public GameObject settingsPanel, forgotPasswordPanel, networkError, connecting;
+    public Canvas parentCanvas;
 
-    private static bool called = false;
+    private Database database;
+    private Rect rect;
 
     // better to support phone number registration
 
     void Start () {
-        if (!called)
-        {
-            new Database();
-            called = true;
-        }
+        rect = settingsPanel.transform.Find("MainSettings").GetComponent<RectTransform>().rect;
         // If already has an account saved
+        database = new Database();
+        database.Init();
         string email = PlayerPrefs.GetString("email"),
                password = PlayerPrefs.GetString("password");
         if (email != "" && password != "")
@@ -34,6 +34,12 @@ public class Login : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
             settingsPanel.SetActive(true);
+        else if (Input.GetMouseButtonDown(0) && settingsPanel.activeSelf)
+        {
+            Vector3 mousePosition = AdjustedMousePosition();
+            if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
+                settingsPanel.SetActive(false);
+        }
     }
 
     public void ConfirmLogin()
@@ -61,6 +67,7 @@ public class Login : MonoBehaviour
         WWW sendToPhp = new WWW("http://47.151.234.225/action_login.php", infoToPhp);
         while (!sendToPhp.isDone) { }
         StopAllCoroutines();
+        connecting.SetActive(false);
 
         if (string.IsNullOrEmpty(sendToPhp.error)) //if no error connecting to server
         {
@@ -91,7 +98,6 @@ public class Login : MonoBehaviour
         {
             networkError.SetActive(showError);
         }
-        connecting.SetActive(false);
     }
 
     private IEnumerator ChangeConnectingDots()
@@ -99,9 +105,17 @@ public class Login : MonoBehaviour
         int count = 0;
         while (true)
         {
-            connectingDots.text = "Connecting" + new string('*', count % 6 + 1);
+            count = count % 6 + 1;
+            connectingDots.text = "Connecting" + new string('.', count);
             yield return new WaitForSeconds(0.5f);
+
         }
     }
-    
+
+    private Vector2 AdjustedMousePosition()
+    {
+        Vector2 mousePosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
+        return mousePosition;
+    }
 }

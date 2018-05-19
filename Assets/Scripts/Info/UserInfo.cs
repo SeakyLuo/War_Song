@@ -114,7 +114,7 @@ public class UserInfo {
     public void SetLastLineupSelected(int index = -1)
     {
         lastLineupSelected = index;
-        //Upload();
+        //  Upload();
     }
     public void SetPreferredBoard(string boardName = "Standard Board")
     {

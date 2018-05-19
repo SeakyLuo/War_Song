@@ -14552,7 +14552,7 @@ MonoBehaviour:
   logoutPanel: {fileID: 333148601}
   creditsPanel: {fileID: 0}
   guidebookPanel: {fileID: 1466534024}
-  parentCanvas: {fileID: 1787884660}
+  canvas: {fileID: 1787884660}
 --- !u!224 &1434275546
 RectTransform:
   m_ObjectHideFlags: 0

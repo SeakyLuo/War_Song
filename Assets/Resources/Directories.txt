@@ -1,0 +1,59 @@
+Standard Piece/Standard Advisor
+Standard Piece/Standard Cannon
+Standard Piece/Standard Chariot
+Standard Piece/Standard Elephant
+Standard Piece/Standard General
+Standard Piece/Standard Horse
+Standard Piece/Standard Soldier
+Piece/Archbishop
+Piece/Bishop
+Piece/Crazy Bomber
+Piece/Cripple
+Piece/Dreadful Horse
+Piece/Fat Soldier
+Piece/Greeeeeat Elephant
+Piece/Helpful Mage
+Piece/Horse Rider
+Piece/Invincible Guard
+Piece/King of the Dead
+Piece/King's Guard
+Piece/Landmine Engineer
+Piece/Link Bomber
+Piece/Link Soldier
+Piece/Monster Hunter
+Piece/Purse Cutter
+Piece/Revenger
+Piece/Space Witch
+Piece/The Ore King
+Piece/Treasure Horse
+Piece/Turret
+Piece/Wisest Elder
+Tactic/Betrayal
+Tactic/Build a Cannon
+Tactic/Build a Chariot
+Tactic/Buy 1 Get 1 Free
+Tactic/Capitulate
+Tactic/Dark Bargain
+Tactic/Disarm
+Tactic/Minesweeper
+Tactic/No Way
+Tactic/Place a Flag
+Tactic/Place a Trap
+Tactic/Protect the King
+Tactic/Purchase a Horse
+Tactic/Royal Legacy
+Tactic/Secret Plan
+Tactic/Seek for Advisors
+Tactic/Soldier Recruitment
+Tactic/Tame an Elephant
+Tactic/Winner Trophy
+Board/River Board
+Board/Standard Board
+Trap/Freeze Trap
+Trap/Frighten Bomb
+Trap/Horrible Landmine
+Contract/Animal Smuggler
+Contract/Artillery Seller
+Contract/Human Resource
+Contract/Standard Contract
+Contract/Wise Elder

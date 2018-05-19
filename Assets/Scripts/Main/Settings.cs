@@ -1,28 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour, IPointerClickHandler
 {
     public GameObject mainSettingsPanel, optionsPanel, logoutPanel, creditsPanel, guidebookPanel;
-    public Canvas parentCanvas;
+    public Canvas canvas;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if ((logoutPanel != null && logoutPanel.activeSelf) ||
-            (creditsPanel != null && creditsPanel.activeSelf) ||
-            (guidebookPanel != null && guidebookPanel.activeSelf)) return;
+        if (LogoutPanelActive() ||
+            CreditPanelActive() ||
+            GuideBookPanelActive()) return;
         GameObject close = mainSettingsPanel;
         if (optionsPanel.activeSelf) close = optionsPanel;
-        else if (guidebookPanel.activeSelf) close = guidebookPanel;
+        else if (GuideBookPanelActive()) close = guidebookPanel;
         Vector2 mousePosition = AdjustedMousePosition();
         Rect rect = close.GetComponent<RectTransform>().rect;
         // rect.x and rect.y are negative
         if (mousePosition.x < rect.x || mousePosition.x > -rect.x || mousePosition.y < rect.y || mousePosition.y > -rect.y)
         {
-            if (optionsPanel.activeSelf || guidebookPanel.activeSelf) close.SetActive(false);
+            if (optionsPanel.activeSelf || GuideBookPanelActive()) close.SetActive(false);
             else gameObject.SetActive(false);
         }
     }
@@ -31,10 +29,10 @@ public class Settings : MonoBehaviour, IPointerClickHandler
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            if (creditsPanel != null && creditsPanel.activeSelf) creditsPanel.SetActive(false);
+            if (CreditPanelActive()) creditsPanel.SetActive(false);
             else if (optionsPanel.activeSelf) optionsPanel.SetActive(false);
-            else if (guidebookPanel != null && guidebookPanel.activeSelf) guidebookPanel.SetActive(false);
-            else if (logoutPanel != null && logoutPanel.activeSelf) return;
+            else if (GuideBookPanelActive()) guidebookPanel.SetActive(false);
+            else if (LogoutPanelActive()) return;
             else
             {
                 gameObject.SetActive(!gameObject.activeSelf);
@@ -45,7 +43,7 @@ public class Settings : MonoBehaviour, IPointerClickHandler
 
     public void ShowSettings()
     {
-        if (creditsPanel != null && creditsPanel.activeSelf)
+        if (CreditPanelActive())
         {
             creditsPanel.SetActive(false);
             optionsPanel.SetActive(false);            
@@ -66,10 +64,14 @@ public class Settings : MonoBehaviour, IPointerClickHandler
         Application.Quit();
     }
 
+    private bool LogoutPanelActive() { return logoutPanel != null && logoutPanel.activeSelf; }
+    private bool CreditPanelActive() { return creditsPanel != null && creditsPanel.activeSelf; }
+    private bool GuideBookPanelActive() { return guidebookPanel != null && guidebookPanel.activeSelf; }
+
     private Vector2 AdjustedMousePosition()
     {
         Vector2 mousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, Input.mousePosition, parentCanvas.worldCamera, out mousePosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out mousePosition);
         return mousePosition;
     }
 }

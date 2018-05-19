@@ -1135,6 +1135,7 @@ MonoBehaviour:
   forgotPasswordPanel: {fileID: 413942575}
   networkError: {fileID: 1600072998}
   connecting: {fileID: 19951519}
+  parentCanvas: {fileID: 902363128}
 --- !u!1 &285566588
 GameObject:
   m_ObjectHideFlags: 0
@@ -7638,7 +7639,7 @@ MonoBehaviour:
   logoutPanel: {fileID: 0}
   creditsPanel: {fileID: 613984387}
   guidebookPanel: {fileID: 0}
-  parentCanvas: {fileID: 902363128}
+  canvas: {fileID: 902363128}
 --- !u!114 &1307400340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8948,7 +8949,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 0.63235295, g: 0.63235295, b: 0.63235295, a: 1}
     m_HighlightedColor: {r: 1, g: 0, b: 0, a: 1}
@@ -8957,8 +8958,9 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: 0740a690dfe749c4198cca00ec881d99,
+      type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 0740a690dfe749c4198cca00ec881d99, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
