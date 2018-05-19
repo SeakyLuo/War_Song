@@ -6,7 +6,8 @@ https://en.wikipedia.org/wiki/Xiangqi
 
 The game itself will also tell you where you can place your piece. And we have tactics for players to use.
 
-This game only works with Windows and has the best performance with Resolution 1920×1080. It is fairly compatible with 1280×720.
+This game only works with Windows and has the best performance with Resolution 1920×1080. It is somewhat compatible with 1280×720.
+
 Mac and Linux are not supported.
 
 Usage:
