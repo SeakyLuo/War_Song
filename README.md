@@ -10,7 +10,7 @@ This game only works with Windows and has the best performance with Resolution 1
 Mac and Linux are not supported.
 
 Usage:
-1. Download the zip file called "build.zip"
+1. Download the zip file called "Builds.zip"
 2. Unpack it.
 3. Open "build.exe".
 4. Select your resolution (Strongly recommend 1920*1080 by unchecking Windowed)
