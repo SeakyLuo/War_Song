@@ -13,6 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectiveRound: 1
   limitedUse: -1
+  passive: Tactic
   activatable: 0
   bloodThirsty: 0
   afterMove: 0
@@ -27,11 +28,12 @@ MonoBehaviour:
     oreCost: 0
     health: 0
     freeze: 0
+    ownerID: 0
     active: 0
-    isAlly: 0
     original: 0
     collection:
       name: 
       type: 
       count: 1
       health: 0
+      oreCost: 0

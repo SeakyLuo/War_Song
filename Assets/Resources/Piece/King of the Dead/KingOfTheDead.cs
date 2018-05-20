@@ -9,7 +9,7 @@ public class KingOfTheDead : Trigger {
         foreach (Piece piece in OnEnterGame.gameInfo.inactivePieces[Login.playerID])
             if (piece.GetPieceType() == "Soldier")
                 collections.Add(piece.collection);
-        GameController.ResurrectPiece(collections[Random.Range(0, collections.Count)], location, true);
+        GameController.ResurrectPiece(collections[Random.Range(0, collections.Count)], location, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

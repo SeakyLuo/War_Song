@@ -59,7 +59,7 @@ public class GameTacticGesture : MonoBehaviour, IPointerEnterHandler, IPointerEx
         infoCard.SetActive(true);
         CardInfo cardInfo = infoCard.GetComponent<CardInfo>();
         cardInfo.SetAttributes(tacticObj.GetComponent<TacticInfo>().tacticAttributes);
-        cardInfo.SetIsAlly(true);
+        cardInfo.SetOwner(Login.playerID);
         cardInfo.SetTactic(tacticObj.GetComponent<TacticInfo>().tactic);
         infoCard.transform.localPosition = new Vector3(300, transform.localPosition.y, -6.1f); ;
     }

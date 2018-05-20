@@ -4,7 +4,7 @@ using UnityEngine;
 //[UnityEngine.CreateAssetMenu(fileName = "Trigger", menuName = "TacticTrigger")]
 public class TacticTrigger : ScriptableObject
 {
-    public bool needsTarget = true;
+    public bool needsTarget = true; // Number of targets
     public int afterRound = 0;
     public int effectLasts = 1; // Number of rounds this effect will last
     public int effectiveRound = 0; // Effective round number. 0 if effective immediately, 

@@ -46,7 +46,7 @@ Tactic/Secret Plan
 Tactic/Seek for Advisors
 Tactic/Soldier Recruitment
 Tactic/Tame an Elephant
-Tactic/Winner Trophy
+Tactic/Winner's Trophy
 Board/River Board
 Board/Standard Board
 Trap/Freeze Trap

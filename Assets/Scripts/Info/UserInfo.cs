@@ -53,27 +53,7 @@ public class UserInfo {
 
     public void AddCollection(Collection insert, bool upload = true)
     {
-        int index = 0;
-        if (collection.Count == 0 || insert < collection[0]) index = 0;
-        else if (insert > collection[collection.Count - 1]) index = collection.Count;
-        else
-        {
-            for (int i = 0; i < collection.Count - 1; i++)
-            {
-                if (insert.Equals(collection[i]))
-                {
-                    collection[i].count += insert.count;
-                    Upload();
-                    return;
-                }
-                if (insert > collection[i] && insert < collection[i + 1])
-                {
-                    index = i + 1;
-                    break;
-                }
-            }
-        }
-        collection.Insert(index, insert);
+        Collection.InsertCollection(collection, insert);
         if(upload) Upload();
     }
     public void RemoveCollection(int index)
@@ -197,7 +177,7 @@ public class CheatAccount:UserInfo
             new Collection("Greeeeeat Elephant", "Elephant", 3, 5), new Collection("Wisest Elder", "General"), new Collection("Secret Plan", 3),new Collection("Place a Flag",20),
             new Collection("No Way", 100), new Collection("King of the Dead", "General"), new Collection("The Ore King", "General"),new Collection("Turret","Cannon"),
             new Collection("Link Soldier","Soldier",11), new Collection("Buy 1 Get 1 Free",15), new Collection("Build a Cannon"),new Collection("Betrayal", 5),
-            new Collection("Build a Chariot"),new Collection("Winner Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
+            new Collection("Build a Chariot"),new Collection("Winner's Trophy",5),new Collection("Horse Rider","Horse",4),new Collection("Disarm", 11),new Collection("Minesweeper",20)
         };
         foreach (Collection c in cheat) AddCollection(c);
         lineups = new List<Lineup>()
@@ -216,7 +196,7 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
+                    "Minesweeper","Winner's Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
                     "No Way","Seek for Advisors","Tame an Elephant","Purchase a Horse","Build a Chariot"
                 },
                 "Standard Board",
@@ -237,7 +217,7 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Winner Trophy","Buy 1 Get 1 Free","Place a Trap","Disarm","Place a Flag",
+                    "Winner's Trophy","Buy 1 Get 1 Free","Place a Trap","Disarm","Place a Flag",
                     "Secret Plan","Soldier Recruitment","No Way", "Protect the King","Betrayal"
                 },
                 "Standard Board",
@@ -258,7 +238,7 @@ public class CheatAccount:UserInfo
                 },
                 new List<string>()
                 {
-                    "Minesweeper","Winner Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
+                    "Minesweeper","Winner's Trophy","Buy 1 Get 1 Free","Secret Plan","Soldier Recruitment",
                     "Seek for Advisors","Tame an Elephant","Purchase a Horse","Build a Chariot"
                 },
                 "Standard Board",

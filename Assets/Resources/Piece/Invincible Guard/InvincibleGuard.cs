@@ -2,6 +2,6 @@
 
 	public override void BloodThirsty ()
 	{
-        OnEnterGame.gameInfo.actions [Login.playerID]++;
+        OnEnterGame.gameInfo.Act("move", Login.playerID, 1);
 	}
 }

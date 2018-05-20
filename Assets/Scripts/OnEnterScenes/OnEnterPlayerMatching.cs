@@ -4,24 +4,33 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Collections;
 
 public class OnEnterPlayerMatching : MonoBehaviour
 {
-    public Text rank;
-    public Button rankedMode,casualMode,launchWar;
-    public GameObject launchWarText, settingsPanel, matchingPanel;
-    public GameObject[] lineupObjects = new GameObject[LineupsManager.lineupsLimit];
+    public Text rank, tipsText;
+    public Button rankedMode, casualMode, launchWar, cancelMatching;
+    public GameObject launchWarText, settingsPanel, matchingPanel, cancelMatchingText;
+    public Transform lineups;
+    public Slider slider;
 
-    private GameObject[] xs = new GameObject[LineupsManager.lineupsLimit];
+    private static List<string> tips = new List<string> { "Hello", "Have fun"};
+
+    private List<GameObject> lineupObjects;
+    private List<GameObject> xs;
     private bool cancel = false;
 
     private void Start()
     {
         rank.text = Login.user.rank.ToString();
         int lineupsCount = Login.user.lineups.Count;
+        lineupObjects = new List<GameObject>();
+        xs = new List<GameObject>();
         for (int i = 0; i < LineupsManager.lineupsLimit; i++)
         {
-            xs[i] = lineupObjects[i].transform.Find("Unavailable").gameObject;
+            lineupObjects.Add(lineups.transform.Find("Lineup" + i.ToString()).gameObject);
+            xs.Add(lineupObjects[i].transform.Find("Unavailable").gameObject);
             if (i < lineupsCount)
             {
                 lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
@@ -35,10 +44,6 @@ public class OnEnterPlayerMatching : MonoBehaviour
         {
             launchWarText.SetActive(false);
             launchWar.interactable = false;
-        }
-        else
-        {
-            lineupObjects[Login.user.lastLineupSelected].GetComponent<Button>().Select();
         }
         SelectLineup(Login.user.lastLineupSelected);
         switch (Login.user.lastModeSelected)
@@ -88,9 +93,12 @@ public class OnEnterPlayerMatching : MonoBehaviour
 
     public void Match()
     {
-        // Upload Lineup Info to the server and match according to the board
+        // Upload Lineup Info to the server and match according to the board.
+        ChangeTips();
+        CancelInteractable(true);
         matchingPanel.SetActive(true);
-        //Lineup lineup = Login.user.lineups[Login.user.lastLineupSelected];
+        StartCoroutine(ShowProgress());
+        Lineup lineup = Login.user.lineups[Login.user.lastLineupSelected];
 
         //WWWForm infoToPhp = new WWWForm();
         //infoToPhp.AddField("mode", Login.user.lastModeSelected);
@@ -109,7 +117,9 @@ public class OnEnterPlayerMatching : MonoBehaviour
         //        return;
         //    }
         //}
+        //CancelInteractable(false);
         //OnEnterGame.gameInfo = GameInfo.JsonToClass(sendToPhp.text);
+        StopAllCoroutines();
 
         matchingPanel.SetActive(false);
         LaunchWar();
@@ -131,12 +141,38 @@ public class OnEnterPlayerMatching : MonoBehaviour
     //    }
     //}
 
-    public bool CancelMatching()
+    public void CancelMatching()
     {
         cancel = true;
         // cancel network matching
         matchingPanel.SetActive(false);
-        return false;
+        StopAllCoroutines();
+    }
+
+    private IEnumerator ShowProgress()
+    {
+        slider.value = 0;
+        bool flip = false;
+        float increment = 0.02f;
+        while (true)
+        {
+            if (flip) slider.value -= increment;
+            else slider.value += increment;
+            if (slider.value == 1) flip = true;
+            else if (slider.value == 0) flip = false;
+            yield return new WaitForSeconds(increment);
+        }
+    }
+
+    private void ChangeTips()
+    {
+        tipsText.text = tips[Random.Range(0, tips.Count)];
+    }
+
+    private void CancelInteractable(bool interactable)
+    {
+        cancelMatching.interactable = interactable;
+        cancelMatchingText.SetActive(interactable);
     }
 
     private void LaunchWar()

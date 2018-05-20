@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Royal Legacy
-  description: Coin +5 if your General dies.
+  description: Coins +5 if your General dies.
   goldCost: 0
   oreCost: 1
   image: {fileID: 21300000, guid: 1932cb567a2a6dc4aaea32c01ac96aec, type: 3}

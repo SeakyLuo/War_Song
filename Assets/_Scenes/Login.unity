@@ -9158,7 +9158,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: The length of Player Name should be between 2 - 16
+  m_Text: The length of Player Name should be between 2 - 24
 --- !u!222 &1451322404
 CanvasRenderer:
   m_ObjectHideFlags: 0

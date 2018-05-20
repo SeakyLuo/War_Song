@@ -5,7 +5,7 @@ public class Bishop : Trigger {
 
     public override void Activate(Vector2Int location)
     {
-        if(link) GameController.AddPiece(Collection.Advisor, location, true);
+        if(link) GameController.AddPiece(Collection.Advisor, location, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

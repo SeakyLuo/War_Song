@@ -7,7 +7,7 @@ public class Betrayal: TacticTrigger
     {
         Piece enemy = OnEnterGame.gameInfo.board[location];
         // Gain Control
-        GameController.ChangeSide(location, true);
+        GameController.ChangeSide(location, Login.playerID);
         // Join your ally
         if(!OnEnterGame.gameInfo.board[location].IsStandard())
             Login.user.AddCollection(new Collection(enemy.GetName(), enemy.GetPieceType(), 1, enemy.health));

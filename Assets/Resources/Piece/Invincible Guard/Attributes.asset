@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Invincible Guard
   type: Advisor
-  description: 'BloodThirsty: You can move piece again.'
+  description: 'BloodThirsty: You can move piece again this turn'
   oreCost: 2
   health: 2
   image: {fileID: 21300000, guid: abd888e3d094f544296db12938ec7aa4, type: 3}

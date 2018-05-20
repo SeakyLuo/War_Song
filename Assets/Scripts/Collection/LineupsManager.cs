@@ -76,15 +76,20 @@ public class LineupsManager : MonoBehaviour {
         // bug
         if (modifyLineup != -1)
         {
-            if (Login.user.lastLineupSelected == modifyLineup) Login.user.SetLastLineupSelected(-1);
-            Login.user.RemoveLineup(modifyLineup);
-            lineupObjects[--lineupsCount].SetActive(false);
-            for (int i = modifyLineup; i < lineupsCount; i++)
-                lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
-            myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
+            DeleteLineup(modifyLineup);
             modifyLineup = -1;
-            ResizeLineup();
         }       
+    }
+
+    public void DeleteLineup(int number)
+    {
+        if (Login.user.lastLineupSelected == number) Login.user.SetLastLineupSelected(-1);
+        Login.user.RemoveLineup(number);
+        lineupObjects[--lineupsCount].SetActive(false);
+        for (int i = number; i < lineupsCount; i++)
+            lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
+        myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
+        ResizeLineup();
     }
 
     public void OpenLineup(int number)

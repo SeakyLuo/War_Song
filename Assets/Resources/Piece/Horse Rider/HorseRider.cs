@@ -1,13 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class HorseRider : Trigger {
 
 	public override void Activate (Vector2Int location)
 	{
-        //GameController.boardSetup.pieces[location].GetComponent<PieceInfo>().trigger.ValidLocs = MovementController.HorseLoc;
-	}
+        GameController.boardSetup.pieces[location].GetComponent<PieceInfo>().trigger.validLocations = MovementController.HorseLoc;
+    }
 
 	public override List<Vector2Int> ValidTargets ()
 	{

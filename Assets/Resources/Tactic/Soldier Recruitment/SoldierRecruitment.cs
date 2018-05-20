@@ -5,7 +5,7 @@ public class SoldierRecruitment : TacticTrigger {
 
     public override void Activate(Vector2Int loc)
     {
-        GameController.AddPiece(Collection.Soldier, loc, true);
+        GameController.AddPiece(Collection.Soldier, loc, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

@@ -41,7 +41,7 @@ public class AccountCreation : MonoBehaviour {
     public void GoodPlayerName()
     {
         if (playerName.text == "") return;
-        goodPlayerName = (playerName.text.Length >= 2);
+        goodPlayerName = 2 <= playerName.text.Length && playerName.text.Length <= 24;
         playerNameWarn.SetActive(!goodPlayerName);
         confirmCreation.interactable = (goodEmail && goodPassword && matchPassword && goodPlayerName && readAgreement.isOn); ;
     }

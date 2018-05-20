@@ -5,8 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class GameInfo
 {
+    public static Dictionary<string, int> newTurnAction = new Dictionary<string, int> { { "move",1 }, {"ability",1}, {"tactic",1} };
+
     public Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
     public Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
+    public Dictionary<Vector2Int, Trigger> triggers = new Dictionary<Vector2Int, Trigger>();
     public Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
     public Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
     public Dictionary<int, List<Tactic>> unusedTactics;
@@ -15,11 +18,12 @@ public class GameInfo
     public Dictionary<int, List<Piece>> inactivePieces;
 
     public string boardName;
+    public int currentTurn; //player ID
     public int firstPlayer; //player ID
     public int secondPlayer;
     public Dictionary<int, Lineup> lineups;
     public Dictionary<int, int> ores;
-    public Dictionary<int, int> actions;
+    public Dictionary<int, Dictionary<string ,int>> actions;
     public int round = 1;
     public int time = 90;
     public int maxTime = 90;
@@ -30,23 +34,18 @@ public class GameInfo
 
     public GameInfo(Lineup playerLineup, int playerID, Lineup enemyLineup, int enemyID)
     {
+        SetOrder(playerID, enemyID);
         lineups = new Dictionary<int, Lineup>()
         {
             { playerID, playerLineup },
             { enemyID, enemyLineup }
         };
-        SetOrder(playerID, enemyID);
         ores = new Dictionary<int, int>()
         {
             { playerID, 30 },
             { enemyID, 30 }
         };
-        actions = new Dictionary<int, int>()
-        {
-            { playerID, 1 },
-            { enemyID, 1 }
-        };
-
+        ResetActions();
         SetGameID(1);
         boardName = playerLineup.boardName;
         activePieces = new Dictionary<int, List<Piece>>()
@@ -77,11 +76,22 @@ public class GameInfo
         else return firstPlayer;
     }
 
-    public void AddPiece(Piece piece, bool reactivate = false)
+    public void NextTurn()
     {
+        if (currentTurn == firstPlayer) currentTurn = secondPlayer;
+        else currentTurn = firstPlayer;
+        round++;
+        time = maxTime;
+        ResetActions();
+    }
+
+    public void AddPiece(Trigger trigger, bool reactivate = false)
+    {
+        Piece piece = trigger.piece;
         piece.active = true;
         board.Add(piece.GetCastle(), piece);
-        if (piece.isAlly)
+        triggers.Add(piece.GetCastle(), trigger);
+        if (piece.IsAlly())
         {
             activePieces[Login.playerID].Add(piece);
             if (reactivate) inactivePieces[Login.playerID].Remove(piece);
@@ -100,7 +110,8 @@ public class GameInfo
     {
         piece.active = false;
         board.Remove(piece.location);
-        if (piece.isAlly)
+        triggers.Remove(piece.location);
+        if (piece.IsAlly())
         {
             activePieces[Login.playerID].Remove(piece);
             inactivePieces[Login.playerID].Add(piece);
@@ -142,9 +153,17 @@ public class GameInfo
         Upload();
     }
 
-    public int FindTactic(string tacticName, int playerID)
+    public int FindUnusedTactic(string tacticName, int playerID)
     {
         List<Tactic> tactics = unusedTactics[playerID];
+        for (int i = 0; i < tactics.Count; i++)
+            if (tactics[i].tacticName == tacticName)
+                return i;
+        return -1;
+    }
+    public int FindUsedTactic(string tacticName, int playerID)
+    {
+        List<Tactic> tactics = usedTactics[playerID];
         for (int i = 0; i < tactics.Count; i++)
             if (tactics[i].tacticName == tacticName)
                 return i;
@@ -153,7 +172,7 @@ public class GameInfo
 
     public void SetOrder(int player1, int player2)
     {
-        if(Random.Range(1,2)%2 == 1)
+        if (Random.Range(1, 2) % 2 == 1)
         {
             firstPlayer = player1;
             secondPlayer = player2;
@@ -164,6 +183,34 @@ public class GameInfo
             secondPlayer = player1;
         }
         Upload();
+    }
+
+    public void ResetActions(int playerID = -1)
+    {
+        if (playerID == -1) actions = new Dictionary<int, Dictionary<string, int>> { { firstPlayer, newTurnAction }, { secondPlayer, newTurnAction } };
+        else actions[playerID] = newTurnAction;
+    }
+
+    public bool MultiActions(int playerID)
+    {
+        foreach (var item in actions[playerID])
+            if (item.Value > 1)
+                return true;
+        return false;
+    }
+
+    public bool Actable(int playerID)
+    {
+        if (MultiActions(playerID)) return true;
+        foreach (var item in actions[playerID])
+            if (item.Value == 0)
+                return false;
+        return true;
+    }
+
+    public void Act(string action, int playerID, int deltaAmount = -1)
+    {
+        actions[playerID][action] += deltaAmount;
     }
 
     public void SetGameID(int value)
@@ -179,12 +226,15 @@ public class GameInfo
         Piece piece = board[from];
         board.Remove(from);
         board.Add(to, piece);
+        Trigger trigger = triggers[from];
+        triggers.Remove(from);
+        triggers.Add(to, trigger);
         Upload();
     }
 
-    public void ChangeOre(int deltaAmount)
+    public void ChangeOre(int playerID, int deltaAmount)
     {
-        ores[Login.playerID] += deltaAmount;
+        ores[playerID] += deltaAmount;
         Upload();
     }
 
@@ -210,20 +260,19 @@ public class GameInfo
     }
     public void Upload()
     {
-        return;
-        WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
-        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
-        infoToPhp.AddField("userJson", ClassToJson(this));
+        //WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+        //infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+        //infoToPhp.AddField("userJson", ClassToJson(this));
 
-        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
-        while (!sendToPhp.isDone) { }
+        //WWW sendToPhp = new WWW("http://localhost:8888/update_gameinfo.php", infoToPhp);
+        //while (!sendToPhp.isDone) { }
     }
     public static GameInfo Download()
     {
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
 
-        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
+        WWW sendToPhp = new WWW("http://localhost:8888/download_gameinfo.php", infoToPhp);
 
         while (!sendToPhp.isDone) { }
         return JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file

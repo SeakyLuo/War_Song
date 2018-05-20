@@ -5,7 +5,7 @@ public class TameAnElephant : TacticTrigger
 {
     public override void Activate(Vector2Int loc)
     {
-        GameController.AddPiece(Collection.Elephant, loc, true);
+        GameController.AddPiece(Collection.Elephant, loc, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

@@ -2,6 +2,6 @@
 
     public override void StartOfGame()
     {
-        OnEnterGame.gameInfo.ChangeOre(10);
+        OnEnterGame.gameInfo.ChangeOre(Login.playerID, 10);
     }
 }

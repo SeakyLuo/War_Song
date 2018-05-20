@@ -8,8 +8,8 @@ public class Piece
     public int oreCost = 0;
     public int health = 0;
     public int freeze = 0;
+    public int ownerID;
     public bool active = true;
-    public bool isAlly;
     public bool original;
     public Collection collection;
 
@@ -20,7 +20,7 @@ public class Piece
         location = piece.location;
         freeze = piece.freeze;
         active = piece.active;
-        isAlly = piece.isAlly;
+        ownerID = piece.ownerID;
         oreCost = piece.oreCost;
         health = piece.health;
         collection = piece.collection;
@@ -28,30 +28,31 @@ public class Piece
         original = piece.original;
     }
 
-    public Piece(string type, Vector2Int loc, bool IsAlly, bool Original)
+    public Piece(string type, Vector2Int loc, bool IsAlly, int owner, bool Original)
     {
         /// Standard Piece
         collection = Collection.standardCollectionDict[type];
         castle = loc;
         location = loc;
-        isAlly = IsAlly;
+        ownerID = owner;
         original = Original;
     }
 
-    public Piece(Collection setupCollection, Vector2Int loc, int OreCost, bool IsAlly, bool Original)
+    public Piece(Collection setupCollection, Vector2Int loc, int OreCost, int owner, bool Original)
     {
         collection = setupCollection;
         castle = loc;
         location = loc;
         oreCost = OreCost;
         health = setupCollection.health;
-        isAlly = IsAlly;
+        ownerID = owner;
         original = Original;
     }
 
     public string GetName() { return collection.name; }
-    public bool IsStandard() { return collection.name.StartsWith("Standard "); }
     public string GetPieceType() { return collection.type; }
+    public bool IsStandard() { return collection.name.StartsWith("Standard "); }
+    public bool IsAlly() { return ownerID == Login.playerID; }
     public Vector2Int GetCastle() { return castle; }
     public bool IsMinion() { return collection.type != "General"; }
 }

@@ -5,30 +5,38 @@ public class Tactic {
     public int oreCost;
     public int goldCost;
     public bool original = true;
+    public int ownerID;
 
-    public Tactic(TacticAttributes tacticAttributes, bool Original = true)
+    public Tactic(TacticAttributes tacticAttributes, int owner = 0, bool Original = true)
     {
         tacticName = tacticAttributes.Name;
         oreCost = tacticAttributes.oreCost;
         goldCost = tacticAttributes.goldCost;
+        if (owner == 0) ownerID = Login.playerID;
+        else ownerID = owner;
         original = true;
     }
 
-    public Tactic(string name, int OreCost, int GoldCost, bool Original = true)
+    public Tactic(string name, int OreCost, int GoldCost, int owner = 0, bool Original = true)
     {
         tacticName = name;
         oreCost = OreCost;
         goldCost = GoldCost;
+        if (owner == 0) ownerID = Login.playerID;
+        else ownerID = owner;
         original = Original;
     }
 
-    public Tactic(Collection collection)
+    public Tactic(Collection collection, int owner = 0, bool Original = true)
     {
         tacticName = collection.name;
         oreCost = collection.oreCost;
         goldCost = collection.health;
-        original = true;
+        ownerID = owner;
+        original = Original;
     }
+
+    public bool IsAlly() { return ownerID == Login.playerID; }
 
     public static bool operator < (Tactic tactic1, Tactic tactic2)
     {

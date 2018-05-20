@@ -5,7 +5,7 @@ public class PurchaseAHorse : TacticTrigger
 {
     public override void Activate(Vector2Int loc)
     {
-        GameController.AddPiece(Collection.Horse, loc, true);
+        GameController.AddPiece(Collection.Horse, loc, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

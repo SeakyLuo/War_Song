@@ -11,6 +11,7 @@ public class ActivateAbility : MonoBehaviour {
     public static List<Vector2Int> targetLocs = new List<Vector2Int>();
     public static PieceInfo pieceInfo;
     public static Button button;
+    public static string actor;
 
     public GameController gameController;
     public GameObject invalidTarget;
@@ -69,11 +70,12 @@ public class ActivateAbility : MonoBehaviour {
         {
             // if not targets, trigger directly
             if (!GameController.ChangeOre(-pieceInfo.trigger.piece.oreCost)) return;
-            GameEvent gameEvent = new GameEvent();
+            GameEvent gameEvent = new GameEvent("Piece", pieceInfo.piece.GetName(), Piece.noLocation, Piece.noLocation);
             pieceInfo.trigger.Activate();
             onEnterGame.AddToHistory(gameEvent);
             MovementController.PutDownPiece();
-            if (--OnEnterGame.gameInfo.actions[Login.playerID] == 0) onEnterGame.NextTurn();
+            OnEnterGame.gameInfo.Act("ability", Login.playerID);
+            if (!OnEnterGame.gameInfo.Actable(Login.playerID)) onEnterGame.NextTurn();
         }
         else DrawTargets();
     }
@@ -99,6 +101,7 @@ public class ActivateAbility : MonoBehaviour {
 
     public static void ShowTacticTarget(List<Vector2Int> validTargets, int caller, TacticTrigger trigger)
     {
+        actor = "tactic";
         targetLocs = validTargets;
         tacticCaller = caller;
         tacticTrigger = trigger;
@@ -109,6 +112,7 @@ public class ActivateAbility : MonoBehaviour {
     {
         OnEnterGame.CancelTacticHighlight();
         if (pieceInfo.trigger != null && !pieceInfo.trigger.Activatable()) return;
+        actor = "ability";
         targetLocs = pieceInfo.ValidTarget();
         button.interactable = true;
         textObj.SetActive(true);
@@ -118,6 +122,7 @@ public class ActivateAbility : MonoBehaviour {
 
     public static void DeactivateButton()
     {
+        actor = "";
         pieceInfo = null;
         activated = false;
         button.interactable = false;

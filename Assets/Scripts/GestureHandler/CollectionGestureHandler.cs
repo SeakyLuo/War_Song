@@ -10,9 +10,12 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
 
     private BoardInfo boardInfo;
     private LineupBuilder lineupBuilder;
+    private CollectionManager collectionManager;
+    private Collection remove;
 
     private void Start()
     {
+        collectionManager = GetComponent<CollectionManager>();
         lineupBuilder = createLineupPanel.GetComponent<LineupBuilder>();
     }
 
@@ -25,7 +28,12 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
             dragBegins = true;
             infoCard.SetActive(true);
             infoCard.transform.position = Input.mousePosition;
-            infoCard.GetComponent<CardInfo>().SetAttributes(selectedObject.transform.parent.Find("Card").GetComponent<CardInfo>());
+            CardInfo cardInfo = selectedObject.transform.parent.Find("Card").GetComponent<CardInfo>();
+            infoCard.GetComponent<CardInfo>().SetAttributes(cardInfo);
+            if (cardInfo.piece != null) remove = new Collection(cardInfo.piece, 1, cardInfo.GetHealth());
+            else if (cardInfo.tactic != null) remove = new Collection(cardInfo.GetCardName());
+            collectionManager.RemoveCollection(remove);
+            collectionManager.ShowCurrentPage();
         }
     }
 
@@ -44,6 +52,11 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
             lineupBuilder.AddTactic(cardInfo);
         else if (LineupBoardGestureHandler.InBoardRegion(Input.mousePosition) && cardInfo.GetCardType() != "Tactic")
             lineupBuilder.AddPiece(cardInfo, Input.mousePosition);
+        else
+        {
+            collectionManager.AddCollection(remove);
+            collectionManager.ShowCurrentPage();
+        }
         infoCard.SetActive(false);
     }
 
@@ -53,7 +66,12 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
         GameObject selectedObject = eventData.pointerCurrentRaycast.gameObject;
         if (selectedObject.name != CARDSLOTPANEL || !selectedObject.transform.parent.Find("Card").gameObject.activeSelf) return;
         CardInfo cardInfo = selectedObject.transform.parent.Find("Card").GetComponent<CardInfo>();
-        if (cardInfo.GetCardType() == "Tactic") lineupBuilder.AddTactic(cardInfo);      
+        if (cardInfo.GetCardType() == "Tactic")
+        {
+            lineupBuilder.AddTactic(cardInfo);
+            collectionManager.RemoveCollection(new Collection(cardInfo));
+            collectionManager.ShowCurrentPage();
+        }   
         else
         {
             string cardName = cardInfo.GetCardName();
@@ -66,6 +84,8 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
                 {
                     findStandard = true;
                     lineupBuilder.AddPiece(cardInfo, loc);
+                    collectionManager.RemoveCollection(new Collection(cardInfo));
+                    collectionManager.ShowCurrentPage();
                     break;
                 }
             }
@@ -76,6 +96,8 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
                     if (cardName != oldCollection.name || cardInfo.GetHealth() != oldCollection.health)
                     {
                         lineupBuilder.AddPiece(cardInfo, loc);
+                        collectionManager.RemoveCollection(new Collection(cardInfo));
+                        collectionManager.ShowCurrentPage();
                         break;
                     }
                 }

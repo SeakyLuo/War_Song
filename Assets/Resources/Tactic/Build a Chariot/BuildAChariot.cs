@@ -5,7 +5,7 @@ public class BuildAChariot : TacticTrigger
 {
     public override void Activate(Vector2Int loc)
     {
-        GameController.AddPiece(Collection.Chariot, loc, true);
+        GameController.AddPiece(Collection.Chariot, loc, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

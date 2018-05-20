@@ -18,7 +18,7 @@ public class DreadfulHorse : Trigger {
             {
                 if (i == 0 && j == 0) continue;
                 Vector2Int loc = new Vector2Int(piece.location.x + i, piece.location.x + j);
-                if (OnEnterGame.gameInfo.board.ContainsKey(loc) && !OnEnterGame.gameInfo.board[loc].isAlly && OnEnterGame.gameInfo.board[loc].collection.type == "Soldier")
+                if (OnEnterGame.gameInfo.board.ContainsKey(loc) && !OnEnterGame.gameInfo.board[loc].IsAlly() && OnEnterGame.gameInfo.board[loc].collection.type == "Soldier")
                     targets.Add(loc);
             }
         }

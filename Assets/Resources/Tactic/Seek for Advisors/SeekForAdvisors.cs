@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class SeekForAdvisors : TacticTrigger
 {
-
     public override void Activate(Vector2Int loc)
     {
-        GameController.AddPiece(Collection.Advisor, loc, true);
+        GameController.AddPiece(Collection.Advisor, loc, Login.playerID);
     }
 
     public override List<Vector2Int> ValidTargets()

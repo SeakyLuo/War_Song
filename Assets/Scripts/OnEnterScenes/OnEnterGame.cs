@@ -32,6 +32,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         { "Chariot", 8 }, { "Horse", 4}, {"Elephant", 3}, {"Advisor", 2}, {"General", 10}, {"Cannon", 4}, {"Soldier", 2}
     };
 
+    // Used for ask trigger
     private static Trigger trigger;
     private static string triggerMessage;
 
@@ -39,14 +40,14 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     void Start () {
         lineup = Login.user.lineups[Login.user.lastLineupSelected];
         // Set GameInfo
-        gameInfo = new GameInfo(lineup, Login.playerID, new EnemyLineup(), 100000000); // should be downloading a GameInfo
+        gameInfo = new GameInfo(lineup, Login.playerID, new EnemyLineup(), 99999999); // should be downloading a GameInfo
         //gameInfo.JsonToClass();
         Login.user.SetGameID(gameInfo.gameID);
         board = Instantiate(Resources.Load<GameObject>("Board/" + lineup.boardName + "/Board"));
         board.transform.SetSiblingIndex(1);
         boardSetup = board.GetComponent<BoardSetup>();
-        boardSetup.Setup(lineup, true);  // Set up Player Lineup
-        boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], false);  // Set up Enemy Lineup
+        boardSetup.Setup(lineup, Login.playerID);  // Set up Player Lineup
+        boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], 99999999);  // Set up Enemy Lineup
         // Set up Player Info
         playerName.text = Login.user.username;
         playerWin.text = "Win%: " + Login.user.total.percentage.ToString();
@@ -56,11 +57,8 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         opponentWin.text = "Win%: 80.00";
         opponentRank.text = "Rank: 9900";
         modeName.text = Login.user.lastModeSelected;
-        foreach (KeyValuePair<Vector2Int, GameObject> pair in boardSetup.pieces)
-        {
-            Trigger trigger = pair.Value.GetComponent<PieceInfo>().trigger;
-            if (trigger != null) trigger.StartOfGame();
-        }
+        foreach (var item in gameInfo.triggers)
+            item.Value.StartOfGame();
         SetOreText();
         SetCoinText();
         // SetupTactics
@@ -72,8 +70,23 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             Transform tacticSlot = tacticBag.Find(String.Format("TacticSlot{0}", i));
             tacticButtons.Add(tacticSlot.GetComponent<Button>());
             tacticObjs.Add(tacticSlot.Find("Tactic"));
-            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(Database.FindTacticAttributes(lineup.tactics[i].tacticName), true);
+            tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(Database.FindTacticAttributes(lineup.tactics[i].tacticName));
             tacticTriggers.Add(tacticObjs[i].GetComponent<TacticInfo>().trigger);
+        }
+        foreach(var item in gameInfo.triggers)
+        {
+            if (item.Value.passive == "Tactic")
+            {
+                foreach (Tactic tactic in lineup.tactics)
+                    if (item.Value.PassiveCriteria(tactic))
+                        item.Value.Passive(tactic);
+            }
+            else if(item.Value.passive == "Piece")
+            {
+                foreach (var pair in gameInfo.board)
+                    if (item.Value.PassiveCriteria(pair.Value))
+                        item.Value.Passive(pair.Value);
+            }
         }
         StartCoroutine(Timer());
         StartCoroutine(GameStartAnimation());
@@ -134,10 +147,17 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     }
     public void Draw()
     {
-        gameInfo.victory = -1;
-        drawImage.SetActive(true);
-        Login.user.Draw();
-        GameOver();
+        bool playerTrophy = gameInfo.FindUsedTactic("Winner's Trophy", Login.playerID) != -1,
+             enemyTrophy = gameInfo.FindUsedTactic("Winner's Trophy", gameInfo.TheOtherPlayer()) != -1;
+        if (playerTrophy && !enemyTrophy) Victory();
+        else if (!playerTrophy && enemyTrophy) Defeat();
+        else
+        {
+            gameInfo.victory = -1;
+            drawImage.SetActive(true);
+            Login.user.Draw();
+            GameOver();
+        }
     }
 
     public void GameOver()
@@ -209,9 +229,18 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void YourTurn()
     {
-        endTurnText.text = "Your Turn";
+        if (gameInfo.MultiActions(Login.playerID))
+        {
+            endTurnButton.interactable = true;
+            endTurnText.text = "End Turn";
+        }
+        else
+        {
+            endTurnButton.interactable = false;
+            endTurnText.text = "Your Turn";
+        }
         //StartCoroutine(ShowYourTurn());
-        gameInfo.actions[Login.playerID] = 1;
+        gameInfo.ResetActions(Login.playerID);
         foreach (KeyValuePair<Vector2Int, GameObject> pair in boardSetup.pieces)
         {
             Trigger trigger = pair.Value.GetComponent<PieceInfo>().trigger;
@@ -243,33 +272,24 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 trigger.EndOfTurn();
             }
         }
-        roundCount.text = (++gameInfo.round).ToString();
+        gameInfo.NextTurn();
+        roundCount.text = gameInfo.round.ToString();
         if (gameInfo.round == 150)
         {
             Draw();
             return;
         }
-        if (gameInfo.actions[Login.playerID] > 1)
-        {
-            endTurnButton.interactable = true;
-            endTurnText.text = "End Turn";
-        }
-        else
-        {
-            endTurnButton.interactable = false;
-            endTurnText.text = "Your Turn";
-        }
-        gameInfo.time = gameInfo.maxTime;
         EnemyTurn();
     }
 
     public void EnemyTurn()
     {
         // Set Button interactable
+        gameInfo.ResetActions(gameInfo.TheOtherPlayer());
         SetTacticInteractable(false);
         endTurnButton.interactable = false;
         endTurnText.text = "Enemy Turn";
-        
+
         //WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
         //infoToPhp.AddField("gameID", gameInfo.gameID);
         //infoToPhp.AddField("playerID", gameInfo.TheOtherPlayer());
@@ -278,6 +298,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         // WWWForm
         //GameController.DecodeGameEvent(GameEvent.JsonToClass(sendToPhp.text));
         // if trigger enemyCardInfo.GetComponent<CardInfo>().SetAttributes()
+        gameInfo.NextTurn();
         YourTurn();
     }
 
@@ -329,11 +350,11 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 for (int i = count; i > index; i--)
                 {
                     TacticInfo tacticInfo = tacticObjs[i - 1].GetComponent<TacticInfo>();
-                    tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, tacticInfo.tactic.original);
+                    tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, Login.playerID, tacticInfo.tactic.original);
                 }
             }
             TacticAttributes tacticAttributes = Database.FindTacticAttributes(tactic.tacticName);
-            tacticObjs[index].GetComponent<TacticInfo>().SetAttributes(tacticAttributes, false);
+            tacticObjs[index].GetComponent<TacticInfo>().SetAttributes(tacticAttributes, Login.playerID, false);
             tacticTriggers.Insert(index, tacticAttributes.trigger);
             SetTacticInteractable();
         }
@@ -341,14 +362,14 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void RemoveTactic(Tactic tactic)
     {
-        int index = gameInfo.FindTactic(tactic.tacticName, Login.playerID);
+        int index = gameInfo.FindUnusedTactic(tactic.tacticName, Login.playerID);
         int count = gameInfo.unusedTactics[Login.playerID].Count;
         if (count > 1)
         {
             for (int i = index; i < count - 1; i++)
             {
                 TacticInfo tacticInfo = tacticObjs[i + 1].GetComponent<TacticInfo>();
-                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, tacticInfo.tactic.original);
+                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticInfo.tacticAttributes, Login.playerID, tacticInfo.tactic.original);
             }
         }
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
@@ -369,7 +390,6 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         tacticObjs[index].GetComponent<TacticInfo>().ChangeOreCost(deltaAmount);
     }
-
     public void ChangeTacticGoldCost(int index, int deltaAmount)
     {
         tacticObjs[index].GetComponent<TacticInfo>().ChangeGoldCost(deltaAmount);
@@ -384,7 +404,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     {
         if (trigger_para.ReceiveMesseage(message) && trigger_para.piece.oreCost <= gameInfo.ores[Login.playerID])
         {
-            gameInfo.actions[Login.playerID]++;
+            gameInfo.Act("ability", Login.playerID, 1);
             trigger = trigger_para;
             triggerMessage = message;
             pieceInfoCard.SetActive(false);
@@ -409,7 +429,8 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         triggerMessage = "";
         askTriggerPanel.SetActive(false);
         showInfoCard.SetActive(false);
-        if (--gameInfo.actions[Login.playerID] == 0) NextTurn();
+        gameInfo.Act("ability", Login.playerID, -1);
+        if (!gameInfo.Actable(Login.playerID)) NextTurn();
     }
     private IEnumerator ShowFullTacticBag(float time = 1.5f)
     {

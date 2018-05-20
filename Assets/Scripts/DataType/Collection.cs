@@ -30,6 +30,15 @@ public class Collection
 
     public Collection() { }
 
+    public Collection(CardInfo cardInfo)
+    {
+        name = cardInfo.GetCardName();
+        type = cardInfo.GetCardType();
+        count = 1;
+        oreCost = cardInfo.GetOreCost();
+        health = cardInfo.GetHealth();
+    }
+
     public Collection(PieceAttributes attributes, int Count = 1, int Health = 0)
     {
         name = attributes.Name;
@@ -53,6 +62,7 @@ public class Collection
     public Collection(Tactic tactic, int Count = 1)
     {
         name = tactic.tacticName;
+        type = "Tactic";
         count = Count;
         oreCost = tactic.oreCost;
         health = tactic.goldCost;
@@ -90,6 +100,27 @@ public class Collection
     public static Collection StandardCollection(string type)
     {
         return new Collection("Standard " + type, type);
+    }
+
+
+    public static void InsertCollection(List<Collection> collectionList, Collection insert)
+    {
+        int index = 0;
+        if (collectionList.Count == 0 || insert < collectionList[0]) index = 0;
+        else if (collectionList[collectionList.Count - 1] < insert) index = collectionList.Count;
+        else
+            for (int i = 0; i < collectionList.Count - 1; i++)
+                if (insert.Equals(collectionList[i]))
+                {
+                    collectionList[i].count += insert.count;
+                    return;
+                }
+                else if (collectionList[i] < insert && insert < collectionList[i + 1])
+                {
+                    index = i + 1;
+                    break;
+                }
+        collectionList.Insert(index, insert);
     }
 
     public bool IsEmpty()

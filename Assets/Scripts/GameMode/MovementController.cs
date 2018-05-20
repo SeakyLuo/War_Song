@@ -52,7 +52,7 @@ public class MovementController : MonoBehaviour
     public static void KillAt(Vector2Int loc)
     {
         Piece enemy;
-        if (OnEnterGame.gameInfo.board.TryGetValue(loc, out enemy) && !enemy.isAlly)
+        if (OnEnterGame.gameInfo.board.TryGetValue(loc, out enemy) && !enemy.IsAlly())
         {
             GameController.Eliminate(enemy);
             if (enemy.GetPieceType() == "General")
@@ -595,7 +595,7 @@ public class MovementController : MonoBehaviour
     {
         if (OnEnterGame.gameInfo.board.ContainsKey(loc))
         {
-            if (OnEnterGame.gameInfo.board[loc].isAlly) return 'A'; // Ally
+            if (OnEnterGame.gameInfo.board[loc].IsAlly()) return 'A'; // Ally
             else return 'E'; // Enemy
         }
         else if (OnEnterGame.gameInfo.flags.ContainsKey(loc))

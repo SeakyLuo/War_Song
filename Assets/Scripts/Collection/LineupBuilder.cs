@@ -71,8 +71,8 @@ public class LineupBuilder : MonoBehaviour {
         if (newCollection.type == "General") lineup.general = newCollection.name;
         lineup.cardLocations[loc] = newCollection;
         lineupBoard.Find(locName).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
-        collectionManager.RemoveCollection(newCollection);
         collectionManager.AddCollection(boardInfo.cardLocations[loc]);
+        //collectionManager.RemoveCollection(new Collection(cardInfo.piece, 1, cardInfo.GetHealth()));
         collectionManager.ShowCurrentPage();
         boardInfo.SetCard(newCollection, loc);        
     }
@@ -90,7 +90,7 @@ public class LineupBuilder : MonoBehaviour {
             return;
         }
         TacticAdder(cardInfo.tactic);
-        collectionManager.RemoveCollection(new Collection(cardInfo.GetCardName()));
+        //collectionManager.RemoveCollection(new Collection(cardInfo.GetCardName()));
         collectionManager.ShowCurrentPage();
     }
 
@@ -141,14 +141,14 @@ public class LineupBuilder : MonoBehaviour {
 
     private void TacticRemover(TacticAttributes attributes)
     {
-        Tactic remove = new Tactic(attributes, true);
+        Tactic remove = new Tactic(attributes);
         int index = FindTactic(remove.tacticName);
         totalOreCost -= attributes.oreCost;
         totalGoldCost -= attributes.goldCost;
         if (current_tactics > 1)
         {
             for (int i = index; i < current_tactics - 1; i++)
-                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1], true);
+                tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(tacticAttributes[i + 1]);
         }
         else tacticObjs[0].GetComponent<TacticInfo>().Clear();
         lineup.tactics.RemoveAt(index);
@@ -225,7 +225,7 @@ public class LineupBuilder : MonoBehaviour {
             // return cards
             foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
                 collectionManager.AddCollection(pair.Value);
-            foreach (Tactic tactic in lineup.tactics)
+            foreach (Tactic tactic in new List<Tactic>(lineup.tactics))
             {
                 RemoveTactic(tactic);
                 collectionManager.AddCollection(new Collection(tactic));

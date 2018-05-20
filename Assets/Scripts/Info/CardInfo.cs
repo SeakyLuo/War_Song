@@ -14,7 +14,7 @@ public class CardInfo : MonoBehaviour {
     private string cardName, type, description;
     private int cost;
     private int health = 1;
-    private bool isAlly = true;
+    private int ownerID = Login.playerID;
 
     public void SetAttributes(CardInfo cardInfo)
     {
@@ -27,7 +27,7 @@ public class CardInfo : MonoBehaviour {
             healthText.text = health.ToString();
             healthText.color = cardInfo.healthText.color;
         }
-        isAlly = cardInfo.isAlly;
+        ownerID = cardInfo.ownerID;
         background.sprite = cardInfo.background.sprite;
     }
 
@@ -88,7 +88,7 @@ public class CardInfo : MonoBehaviour {
 
     public void SetPiece(Piece setupPiece)
     {
-        SetIsAlly(setupPiece.isAlly);
+        SetOwner(setupPiece.ownerID);
         SetHealth(setupPiece.health);
         cost = setupPiece.oreCost;
         costText.text = cost.ToString();
@@ -140,12 +140,14 @@ public class CardInfo : MonoBehaviour {
     public string GetCardName() { return cardName; }
     public string GetCardType() { return type; }
     public int GetHealth() { return health; }
+    public int GetOreCost() { return cost; }
     public string GetDescription() { return description; }
     public bool IsStandard() { return cardName.StartsWith("Standard "); }
-    public void SetIsAlly(bool value)
+    public bool IsAlly() { return ownerID == Login.playerID; }
+    public void SetOwner(int owner)
     {
-        isAlly = value;
-        if(value) background.sprite = allyBackground;
+        ownerID = owner;
+        if(IsAlly()) background.sprite = allyBackground;
         else background.sprite = enemyBackground;
     }
 }

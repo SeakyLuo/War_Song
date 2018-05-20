@@ -59,38 +59,31 @@ public class CollectionManager : MonoBehaviour {
 
     public void AddCollection(Collection collection)
     {
-        bool found = false;
+        ShowNoCollection(false);
         foreach (Collection target in collectionDict[collection.type])
-        {
-            if (target.name == collection.name && target.health == collection.health)
+            if (collection.Equals(target))
             {
                 target.count++;
-                found = true;
-                break;
+                return;
             }
-        }
-        if (!found)
-        {
-            collection.count = 1;
-            if(!collection.IsStandard()) Login.user.AddCollection(collection);
-            collectionDict[collection.type].Add(collection);
-            SetPageLimits();
-        }
-        ShowNoCollection(false);
+        collection.count = 1;
+        if (!collection.IsStandard()) Login.user.AddCollection(collection);
+        Collection.InsertCollection(collectionDict[collection.type], collection);
+        SetPageLimits();
     }
 
-    public bool RemoveCollection(Collection collection)
+    public bool RemoveCollection(Collection remove)
     {
         Collection found = new Collection();
-        List<Collection> collectionList = collectionDict[collection.type];
+        List<Collection> collectionList = collectionDict[remove.type];
         for (int i = 0; i < collectionList.Count; i++)
         {
-            if (collectionList[i].name == collection.name && collectionList[i].health == collection.health)
+            if (remove.Equals(collectionList[i]))
             {
                 found = collectionList[i];
                 if (found.count == 1)
                 {
-                    Login.user.collection.Remove(found);
+                    Login.user.RemoveCollection(found);
                     displayCollections.Remove(found);
                     collectionDict[found.type].Remove(found);
                     SetPageLimits();
@@ -163,7 +156,6 @@ public class CollectionManager : MonoBehaviour {
         currentPage = new KeyValuePair<string, int>(type, page);
         ShowCurrentPage();
     }
-
     private void SetCurrentPage(KeyValuePair<string, int> page)
     {
         SetCurrentPage(page.Key, page.Value);
