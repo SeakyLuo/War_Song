@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 42906476}
   - component: {fileID: 42906475}
   m_Layer: 5
-  m_Name: Challenges
+  m_Name: Missions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -331,6 +331,7 @@ MonoBehaviour:
   settingsPanel: {fileID: 1717709614}
   optionsPanel: {fileID: 64866154}
   missionToday: {fileID: 185524015}
+  missions: {fileID: 42906474}
   winText: {fileID: 845225195}
   loseText: {fileID: 1801332042}
   drawText: {fileID: 759911184}
@@ -907,12 +908,17 @@ Prefab:
       objectReference: {fileID: 53613889}
     - target: {fileID: 1367203921268202, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
       propertyPath: m_Name
-      value: Challenge4
+      value: Mission4
       objectReference: {fileID: 0}
     - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ChangeMission
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
@@ -2602,12 +2608,17 @@ Prefab:
       objectReference: {fileID: 53613889}
     - target: {fileID: 1367203921268202, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
       propertyPath: m_Name
-      value: Challenge3
+      value: Mission3
       objectReference: {fileID: 0}
     - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ChangeMission
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
@@ -3149,12 +3160,17 @@ Prefab:
       objectReference: {fileID: 53613889}
     - target: {fileID: 1367203921268202, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
       propertyPath: m_Name
-      value: Challenge2
+      value: Mission2
       objectReference: {fileID: 0}
     - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ChangeMission
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
@@ -4131,12 +4147,17 @@ Prefab:
       objectReference: {fileID: 53613889}
     - target: {fileID: 1367203921268202, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
       propertyPath: m_Name
-      value: Challenge1
+      value: Mission1
       objectReference: {fileID: 0}
     - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ChangeMission
+      objectReference: {fileID: 0}
+    - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
@@ -4585,12 +4606,7 @@ Prefab:
       objectReference: {fileID: 53613889}
     - target: {fileID: 1367203921268202, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}
       propertyPath: m_Name
-      value: Challenge0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114892723178226962, guid: 2f1e1bbe29a95d7449764bea63a25151,
-        type: 2}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ChangeMission
+      value: Mission0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2f1e1bbe29a95d7449764bea63a25151, type: 2}

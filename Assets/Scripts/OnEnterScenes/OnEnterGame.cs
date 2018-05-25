@@ -9,12 +9,13 @@ using System;
 public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 {
     public static int current_tactic = -1;
+    public static int history_limit = 10;
     public static GameInfo gameInfo;
 
     public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
     public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel;
-    public GameObject history, pieceInfoCard , trapInfoCard, showInfoCard, playerFlag, enemyFlag, freezeImage;
-    public Transform tacticBag;
+    public GameObject pieceInfoCard , trapInfoCard, showInfoCard, playerFlag, enemyFlag, freezeImage;
+    public Transform tacticBag, history;
     public Button endTurnButton;
     public Text roundCount, timer, modeName;
     public Text playerName, playerWin, playerRank;
@@ -24,7 +25,8 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     [HideInInspector] public BoardSetup boardSetup;
 
     private static Lineup lineup;
-    public static List<Transform> tacticObjs;
+    private static List<GameObject> historySlots;
+    private static List<Transform> tacticObjs;
     private static List<Button> tacticButtons;
     private static List<TacticTrigger> tacticTriggers;
     private static Dictionary<String, int> credits = new Dictionary<string, int>()
@@ -73,6 +75,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             tacticObjs[i].GetComponent<TacticInfo>().SetAttributes(Database.FindTacticAttributes(lineup.tactics[i].tacticName));
             tacticTriggers.Add(tacticObjs[i].GetComponent<TacticInfo>().trigger);
         }
+        for (int i = 0; i < history_limit; i++) historySlots.Add(history.Find("Slot" + i.ToString()).gameObject);
         foreach(var item in gameInfo.triggers)
         {
             if (item.Value.passive == "Tactic")
@@ -397,7 +400,17 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void AddToHistory(GameEvent gameEvent)
     {
-
+        int index = 0;
+        for(int i = 0; i < history_limit; i++)
+            if (!historySlots[i].activeSelf)
+            {
+                historySlots[i].SetActive(true);
+                index = i;
+                break;
+            }
+        for(int i = index + 1; i < history_limit; i++)
+            historySlots[i].GetComponent<MouseOverHistory>().SetAttributes(historySlots[i - 1].GetComponent<MouseOverHistory>().gameEvent);
+        historySlots[index].GetComponent<MouseOverHistory>().SetAttributes(gameEvent);
     }
 
     public void AskTrigger(Piece piece, Trigger trigger_para, string message)

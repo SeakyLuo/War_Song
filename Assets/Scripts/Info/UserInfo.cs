@@ -23,6 +23,7 @@ public class UserInfo {
     public string preferredBoard = "Standard Board";
     public string lastModeSelected = "";
     public int gameID;
+    public bool missionSwitched = false;
 
     public UserInfo(string playerName, int playerId)
     {
@@ -112,6 +113,12 @@ public class UserInfo {
         if (contracts.ContainsKey(contractName)) contracts[contractName] += deltaAmount;
         else contracts.Add(contractName, deltaAmount);
         Upload();
+    }
+    public void ChangeMission(int number)
+    {
+        missions[number] = new Mission(Database.RandomMission());
+        //missionSwitched = true;
+        //Upload();
     }
     public void Win()
     {

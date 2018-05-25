@@ -101,11 +101,15 @@ public class OnEnterPlayerMatching : MonoBehaviour
         Lineup lineup = Login.user.lineups[Login.user.lastLineupSelected];
 
         //WWWForm infoToPhp = new WWWForm();
+        // Match by mode, boardName, (rank [less important])
         //infoToPhp.AddField("mode", Login.user.lastModeSelected);
         //infoToPhp.AddField("boardName", Login.user.lineups[Login.user.lastLineupSelected].boardName);
+        // Return Enemy username, rank and lineup
+        //infoToPhp.AddField("playerName", Login.user.username);
         //infoToPhp.AddField("rank", Login.user.rank);
-        //infoToPhp.AddField("playerID", Login.playerID);
         //infoToPhp.AddField("lineup", JsonUtility.ToJson(lineup));
+
+        //infoToPhp.AddField("playerID", Login.playerID);
 
         //WWW sendToPhp = new WWW("http://47.151.234.225/match.php", infoToPhp);
 

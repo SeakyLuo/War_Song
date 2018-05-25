@@ -2,22 +2,34 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class SwitchScenes : MonoBehaviour, IPointerClickHandler
 {
     public static string switchSceneCaller = "Main";
 
     public GameObject playerInfoPanel, settingsPanel, optionsPanel, missionToday;
+    public Transform missions;
     public Text winText, loseText, drawText, percentageText;
     public Text rank, title, nameText, playerIDText;
 
     private Canvas parentCanvas;
+    private List<GameObject> missionList;
+    private List<GameObject> newMissionButtonList;
 
     private void Start()
     {
         parentCanvas = GetComponent<Canvas>();
         SetPlayerInfo();
         missionToday.SetActive(Login.user.missions.Count != 0);
+        for (int i = 0; i < 5; i++)
+        {
+            Transform mission = missions.Find("Mission" + i.ToString());
+            missionList.Add(mission.Find("Mission").gameObject);
+            missionList[i].SetActive(i < Login.user.missions.Count);
+            newMissionButtonList.Add(mission.Find("NewMission").gameObject);
+            newMissionButtonList[i].SetActive(!Login.user.missionSwitched);
+        }
     }
 
     private void Update()
@@ -51,6 +63,7 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
         title.text = Range.FindTitle(Login.user.rank);
         nameText.text = Login.user.username;
         playerIDText.text = Login.user.playerID.ToString();
+        // SetMissions;
     }
 
     public void ShowPlayerInfo()
@@ -59,9 +72,15 @@ public class SwitchScenes : MonoBehaviour, IPointerClickHandler
         playerInfoPanel.SetActive(true);
     }
 
-    public void ChangeMission()
+    private void SetMissions()
     {
 
+    }
+
+    public void ChangeMission(int number)
+    {
+        Login.user.ChangeMission(number);
+        foreach (GameObject button in newMissionButtonList) button.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)

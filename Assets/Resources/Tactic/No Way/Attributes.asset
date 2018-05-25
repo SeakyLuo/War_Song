@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: No Way
-  description: Your enemy cannot use tactic in 3 rounds.
+  description: Your enemy tactics cost 5 more ores in the next 3 rounds.
   goldCost: 0
   oreCost: 3
   image: {fileID: 21300000, guid: 8a2d09905bd8bad49889563423eef29f, type: 3}

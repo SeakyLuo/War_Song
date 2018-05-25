@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Secret Plan
-  description: 'Round 5: Move an ally Soldier to an enemy Soldier''s castle'
+  description: 'Round 5: Move an ally Soldier to a corresponding enemy Soldier''s
+    castle'
   goldCost: 0
   oreCost: 2
   image: {fileID: 21300000, guid: ae763602dfd6a2145894cbce5f65027b, type: 3}

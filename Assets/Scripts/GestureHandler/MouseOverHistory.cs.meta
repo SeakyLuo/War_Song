@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 8b06ecd7ee7333c4b85c40c563f78d7f
+timeCreated: 1526970754
+licenseType: Free
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - background: {instanceID: 0}
+  - allyBackground: {fileID: 21300000, guid: 6e7f4b3f4ff7d0d4f8e919817a15b3f0, type: 3}
+  - enemyBackground: {fileID: 21300000, guid: f34f778594a3ae8448bac1bf36e9ef52, type: 3}
+  - cardImage: {instanceID: 0}
+  - historyCard: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

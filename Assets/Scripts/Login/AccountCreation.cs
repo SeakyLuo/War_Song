@@ -16,7 +16,7 @@ public class AccountCreation : MonoBehaviour {
     {
         if (email.text == "") return;
         // account exist or email doesn't exist
-        goodEmail = email.text.Contains("@");
+        goodEmail = email.text.Contains("@") && email.text.Contains(".");
         emailWarn.SetActive(!goodEmail);
         confirmCreation.interactable = (goodEmail && goodPassword && matchPassword && goodPlayerName && readAgreement.isOn);
     }

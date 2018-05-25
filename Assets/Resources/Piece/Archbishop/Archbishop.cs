@@ -15,7 +15,7 @@ public class Archbishop : Trigger {
             for (int j = -1; j <= 1; j++){
                 if (i == 0 && j == 0) continue;
                 Vector2Int loc = new Vector2Int(piece.location.x + i, piece.location.x + j);
-                if (OnEnterGame.gameInfo.board.ContainsKey(loc))
+                if (OnEnterGame.gameInfo.board.ContainsKey(loc) && OnEnterGame.gameInfo.Destroyable(loc, "Elephant"))
                     targets.Add(loc);
             }
         }

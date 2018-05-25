@@ -130,22 +130,27 @@ public class GameController : MonoBehaviour {
             piece.ownerID = ownerID;
             OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].Add(piece);
         }
+        OnEnterGame.gameInfo.triggers[location].piece = piece;
+        Passive(OnEnterGame.gameInfo.board[location], ownerID);
         OnEnterGame.gameInfo.Upload();
     }
 
     public static void AddPiece(Collection collection, Vector2Int castle, int ownerID)
     {
         boardSetup.AddPiece(collection, castle, ownerID, false);
+        Passive(OnEnterGame.gameInfo.board[castle], ownerID);
     }
 
     public static void ResurrectPiece(Collection collection, Vector2Int castle, int ownerID)
     {
         boardSetup.AddPiece(collection, castle, ownerID, true, true);
+        Passive(OnEnterGame.gameInfo.board[castle], ownerID);
     }
 
     public static void AddTactic(Tactic tactic)
     {
         onEnterGame.AddTactic(tactic);
+        Passive(tactic, Login.playerID);
     }
 
     public static void RemoveTactic(Tactic tactic)
@@ -160,6 +165,7 @@ public class GameController : MonoBehaviour {
         after.health += deltaAmount;
         after.collection.health += deltaAmount;
         OnEnterGame.gameInfo.board[location] = after;
+        OnEnterGame.gameInfo.triggers[location].piece = after;
         if (before.IsAlly()) OnEnterGame.gameInfo.activePieces[Login.playerID][OnEnterGame.gameInfo.activePieces[Login.playerID].IndexOf(before)] = after;
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
@@ -170,6 +176,7 @@ public class GameController : MonoBehaviour {
         Piece after = new Piece(before);
         after.oreCost += deltaAmount;
         OnEnterGame.gameInfo.board[location] = after;
+        OnEnterGame.gameInfo.triggers[location].piece = after;
         if (before.IsAlly()) OnEnterGame.gameInfo.activePieces[Login.playerID][OnEnterGame.gameInfo.activePieces[Login.playerID].IndexOf(before)] = after;
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
@@ -193,16 +200,30 @@ public class GameController : MonoBehaviour {
         OnEnterGame.gameInfo.Upload();
     }
 
-    public static void Eliminate(Piece piece)
+    public static void Eliminate(Piece piece, bool revenge = true)
     {
+        GameEvent gameEvent;
+        if (revenge)
+        {
+            OnEnterGame.gameInfo.triggers[piece.location].Revenge();
+            gameEvent = new GameEvent(piece);
+            onEnterGame.AddToHistory(gameEvent);
+        }
+        gameEvent = new GameEvent(piece, "Kill");
+        onEnterGame.AddToHistory(gameEvent);
         Destroy(boardSetup.pieces[piece.location]);
         boardSetup.pieces.Remove(piece.location);
         OnEnterGame.gameInfo.RemovePiece(piece);
-        OnEnterGame.gameInfo.Upload();
     }
 
-    public static void Eliminate(Vector2Int location)
+    public static void Eliminate(Vector2Int location, bool revenge = true)
     {
+        if (revenge)
+        {
+            OnEnterGame.gameInfo.triggers[location].Revenge();
+            GameEvent gameEvent = new GameEvent(OnEnterGame.gameInfo.board[location]);
+            onEnterGame.AddToHistory(gameEvent);
+        }
         Destroy(boardSetup.pieces[location]);
         boardSetup.pieces.Remove(location);
         OnEnterGame.gameInfo.RemovePiece(OnEnterGame.gameInfo.board[location]);
@@ -211,22 +232,14 @@ public class GameController : MonoBehaviour {
 
     public static void FreezePiece(Vector2Int location, int round)
     {
-        Piece piece = OnEnterGame.gameInfo.board[location];
-        int index = OnEnterGame.gameInfo.activePieces[Login.playerID].IndexOf(piece);
-        if (index == -1)
-        {
-            index = OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(piece);
-            OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][index].freeze = round;
-        }
-        else OnEnterGame.gameInfo.activePieces[Login.playerID][index].freeze = round;
-        OnEnterGame.gameInfo.board[location].freeze = round;
+        GameEvent gameEvent = new GameEvent(OnEnterGame.gameInfo.board[location], "freeze");
+        OnEnterGame.gameInfo.FreezePiece(location, round);
         boardSetup.pieces[location].GetComponent<PieceInfo>().piece.freeze = round;
 
         // Add freeze image
         GameObject freezeImage = Instantiate(onEnterGame.freezeImage, boardCanvas);
         freezeImage.transform.position = new Vector3(location.x * MovementController.scale, location.y * MovementController.scale, -0.5f);
         freezeImages.Add(location, freezeImage);
-        OnEnterGame.gameInfo.Upload();
     }
 
     public static void PlaceTrap(Vector2Int location, string trapName, int creator)
@@ -269,40 +282,45 @@ public class GameController : MonoBehaviour {
 
     public static void DecodeGameEvent(GameEvent gameEvent)
     {
-        if (gameEvent.move)
+        if (gameEvent.result == "move")
         {
-
+            MovementController.Move(OnEnterGame.gameInfo.board[gameEvent.eventLocation], gameEvent.eventLocation, gameEvent.targetLocation);
         }
-        else if (gameEvent.trap)
-        {
-
-        }
-        else if (gameEvent.piece)
-        {
-
-        }
-        else if (gameEvent.tactic)
+        else
         {
 
         }
     }
 
-    public static void Passive(Piece piece)
+    public static void Passive(Piece piece, int caller)
     {
-        foreach (var item in OnEnterGame.gameInfo.triggers)
+        foreach (Piece activePiece in OnEnterGame.gameInfo.activePieces[caller])
         {
-            if (item.Value.passive == "Tactic")
-            {
-                foreach (Tactic tactic in OnEnterGame.gameInfo.unusedTactics[Login.playerID])
-                    if (item.Value.PassiveCriteria(tactic))
-                        item.Value.Passive(tactic);
-            }
-            else if (item.Value.passive == "Piece")
-            {
-                foreach (var pair in OnEnterGame.gameInfo.board)
-                    if (item.Value.PassiveCriteria(pair.Value))
-                        item.Value.Passive(pair.Value);
-            }
+            Trigger trigger = OnEnterGame.gameInfo.triggers[activePiece.location];
+            if (trigger.passive == "Piece" && trigger.PassiveCriteria(piece)) trigger.Passive(piece);
+        }
+    }
+
+    public static void ResumePiece(Piece piece)
+    {
+        piece.oreCost = piece.collection.oreCost;
+        piece.health = piece.collection.health;
+        piece.freeze = 0;
+    }
+
+    public static void ResumeTactic(Tactic tactic)
+    {
+        TacticAttributes tacticAttributes = Database.FindTacticAttributes(tactic.tacticName);
+        tactic.oreCost = tacticAttributes.oreCost;
+        tactic.goldCost = tacticAttributes.goldCost;
+    }
+
+    public static void Passive(Tactic tactic, int caller)
+    {   
+        foreach (Piece piece in OnEnterGame.gameInfo.activePieces[caller])
+        {
+            Trigger trigger = OnEnterGame.gameInfo.triggers[piece.location];
+            if (trigger.passive == "Tactic" && trigger.PassiveCriteria(tactic)) trigger.Passive(tactic);
         }
     }
 

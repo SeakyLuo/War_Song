@@ -14,8 +14,10 @@ MonoBehaviour:
   needsTarget: 0
   afterRound: 0
   effectLasts: 3
-  effectiveRound: 0
+  effectiveRound: 1
   tactic:
     tacticName: 
     oreCost: 0
     goldCost: 0
+    original: 0
+    ownerID: 0

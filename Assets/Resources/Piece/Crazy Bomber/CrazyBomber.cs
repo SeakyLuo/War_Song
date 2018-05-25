@@ -6,7 +6,7 @@ public class CrazyBomber : Trigger {
     public override void Activate(Vector2Int location)
     {
         Vector2Int prev = piece.location;
-        MovementController.MoveTo(location);
+        MovementController.Move(piece, prev, location);
         for (int i = prev.x; i < location.x; i++)
             for (int j = prev.y; j <location.y; j++)
                 GameController.PlaceTrap(new Vector2Int(i, j), Database.RandomTrap(), Login.playerID);

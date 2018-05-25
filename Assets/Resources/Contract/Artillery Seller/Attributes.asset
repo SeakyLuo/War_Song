@@ -14,7 +14,7 @@ MonoBehaviour:
   Name: Artillery Seller
   description: Artillery Seller will give you 5 Cannons and Chariots combined!
   image: {fileID: 21300000, guid: dc49d9df21f74ac4287051537a22614c, type: 3}
-  price: 20
+  price: 15
   cardTypes:
   - Chariot
   - Cannon

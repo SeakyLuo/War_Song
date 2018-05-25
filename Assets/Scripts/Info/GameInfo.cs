@@ -106,7 +106,7 @@ public class GameInfo
         Upload();
     }
 
-    public void RemovePiece(Piece piece)
+    public void RemovePiece(Piece piece, bool upload = true)
     {
         piece.active = false;
         board.Remove(piece.location);
@@ -122,6 +122,19 @@ public class GameInfo
             inactivePieces[TheOtherPlayer()].Add(piece);
         }
         castles[piece.location].Remove(piece);
+        if(upload) Upload();
+    }
+
+    public void FreezePiece(Vector2Int location, int round)
+    {
+        Piece piece = board[location];
+        int index = activePieces[Login.playerID].IndexOf(piece);
+        if (index == -1)
+            activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(piece)].freeze = round;
+        else
+            activePieces[Login.playerID][index].freeze = round;
+        board[location].freeze = round;
+        triggers[location].piece.freeze = round;
         Upload();
     }
 
@@ -236,6 +249,11 @@ public class GameInfo
     {
         ores[playerID] += deltaAmount;
         Upload();
+    }
+
+    public bool Destroyable(Vector2Int location, string destroyer)
+    {
+        return !triggers[location].cantBeDestroyedBy.Contains(destroyer);  
     }
 
     public void Clear()

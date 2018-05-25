@@ -2,6 +2,7 @@
 
     public override void Revenge()
     {
-        GameController.Eliminate(OnEnterGame.gameInfo.board[piece.location]);
+        if(OnEnterGame.gameInfo.Destroyable(piece.location, "Chariot"))
+            GameController.Eliminate(OnEnterGame.gameInfo.board[piece.location]);
     }
 }

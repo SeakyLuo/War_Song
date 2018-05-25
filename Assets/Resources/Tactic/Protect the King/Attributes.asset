@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: Attributes
   m_EditorClassIdentifier: 
   Name: Protect the King
-  description: Your General will not die this round.
+  description: Your General will not die in 3 rounds.
   goldCost: 0
   oreCost: 5
   image: {fileID: 21300000, guid: 913fc90fa625189419cf24d6f4842bed, type: 3}

@@ -6,7 +6,7 @@ public class SpaceWitch : Trigger {
 
     public override void Activate(Vector2Int location)
     {
-        MovementController.MoveTo(location);
+        MovementController.Move(piece, piece.location, location);
     }
 
     public override List<Vector2Int> ValidTargets()

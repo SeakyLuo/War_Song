@@ -14,38 +14,37 @@ public class CardInfo : MonoBehaviour {
     private string cardName, type, description;
     private int cost;
     private int health = 1;
-    private int ownerID = Login.playerID;
+    private int ownerID = -1;
 
     public void SetAttributes(CardInfo cardInfo)
     {
         if (cardInfo == null) return;
-        if (cardInfo.tactic != null) SetAttributes(cardInfo.tactic);
+        if (cardInfo.tactic != null) SetAttributes(cardInfo.tactic, cardInfo.ownerID);
         else if (cardInfo.piece != null)
         {
-            SetAttributes(cardInfo.piece);
+            SetAttributes(cardInfo.piece, cardInfo.ownerID);
             health = cardInfo.GetHealth();
             healthText.text = health.ToString();
             healthText.color = cardInfo.healthText.color;
         }
-        ownerID = cardInfo.ownerID;
         background.sprite = cardInfo.background.sprite;
     }
 
-    public void SetAttributes(Collection collection)
+    public void SetAttributes(Collection collection, int ownerID = -1)
     {
         if (collection == null) return;
         if (collection.type == "Tactic")
-            SetAttributes(Database.FindTacticAttributes(collection.name));
+            SetAttributes(Database.FindTacticAttributes(collection.name), ownerID);
         else
         {
-            SetAttributes(Database.FindPieceAttributes(collection.name));
+            SetAttributes(Database.FindPieceAttributes(collection.name), ownerID);
             SetHealth(collection.health);
         }
     }
 
     // Need to highlight keywords
 
-    public void SetAttributes(PieceAttributes attributes)
+    public void SetAttributes(PieceAttributes attributes, int ownerID = -1)
     {
         if (attributes == null) return;
         tactic = null;
@@ -64,9 +63,11 @@ public class CardInfo : MonoBehaviour {
         image.sprite = attributes.image;
         type = attributes.type;
         typeText.text = type;
+        if (ownerID == -1) SetOwner(Login.playerID);
+        else SetOwner(ownerID);
     }
 
-    public void SetAttributes(TacticAttributes attributes)
+    public void SetAttributes(TacticAttributes attributes, int ownerID = -1)
     {
         if (attributes == null) return;
         piece = null;
@@ -84,6 +85,8 @@ public class CardInfo : MonoBehaviour {
         image.sprite = attributes.image;
         type = "Tactic";
         typeText.text = type;
+        if (ownerID == -1) SetOwner(Login.playerID);
+        else SetOwner(ownerID);
     }
 
     public void SetPiece(Piece setupPiece)
@@ -135,6 +138,7 @@ public class CardInfo : MonoBehaviour {
         coinText.text = "0";
         image.sprite = null;
         cardName = type = description = "";
+        ownerID = -1;
     }
 
     public string GetCardName() { return cardName; }

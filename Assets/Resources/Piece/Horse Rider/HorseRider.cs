@@ -5,6 +5,7 @@ public class HorseRider : Trigger {
 
 	public override void Activate (Vector2Int location)
 	{
+        GameController.Eliminate(OnEnterGame.gameInfo.board[location]);
         GameController.boardSetup.pieces[location].GetComponent<PieceInfo>().trigger.validLocations = MovementController.HorseLoc;
     }
 
@@ -12,7 +13,7 @@ public class HorseRider : Trigger {
 	{
 		List<Vector2Int> targets = new List<Vector2Int> ();
 		foreach (Piece piece in OnEnterGame.gameInfo.activePieces[Login.playerID])
-            if (piece.GetPieceType() == "Soldier")
+            if (piece.GetPieceType() == "Soldier" && OnEnterGame.gameInfo.Destroyable(piece.location, "Horse"))
                 targets.Add(piece.location);
         return targets;
 	}
