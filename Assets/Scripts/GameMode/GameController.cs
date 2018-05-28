@@ -9,10 +9,10 @@ public class GameController : MonoBehaviour {
     public static OnEnterGame onEnterGame;
     public static BoardSetup boardSetup;
     public static Transform boardCanvas;
-    public static Dictionary<string, List<Vector2Int>> castles;
+    public static Dictionary<string, List<Location>> castles;
     public static PieceInfo pieceInfo;
-    public static Dictionary<Vector2Int, GameObject> flags;
-    public static Dictionary<Vector2Int, GameObject> freezeImages;
+    public static Dictionary<Location, GameObject> flags;
+    public static Dictionary<Location, GameObject> freezeImages;
 
     [HideInInspector] public GameObject settingsPanel;
 
@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour {
         boardSetup = onEnterGame.boardSetup;
         boardCanvas = onEnterGame.board.transform.Find("Canvas");
         settingsPanel = onEnterGame.settingsPanel;
-        castles = new Dictionary<string, List<Vector2Int>>()
+        castles = new Dictionary<string, List<Location>>()
         {
             {"Advisor", boardSetup.boardAttributes.AdvisorCastle() },
             {"Elephant", boardSetup.boardAttributes.ElephantCastle()  },
@@ -31,8 +31,8 @@ public class GameController : MonoBehaviour {
             {"Cannon", boardSetup.boardAttributes.CannonCastle()  },
             {"Soldier", boardSetup.boardAttributes.SoldierCastle()  },
         };
-        flags = new Dictionary<Vector2Int, GameObject>();
-        freezeImages = new Dictionary<Vector2Int, GameObject>();
+        flags = new Dictionary<Location, GameObject>();
+        freezeImages = new Dictionary<Location, GameObject>();
     }
 
     private void Update()
@@ -74,24 +74,23 @@ public class GameController : MonoBehaviour {
                     MovementController.validLocs = pieceInfo.ValidLoc();
                     MovementController.DrawPathDots();
                 }
-                else if (MovementController.selected != null && !ActivateAbility.activated)
+                else
                 {
-                    Vector2Int location;
-                    if (hitObj.name == "Piece") location = Database.StringToVec2(hitObj.transform.parent.name);
-                    else location = Database.StringToVec2(hitObj.name);
-                    if (MovementController.validLocs.Contains(location))
+                    if (hitObj.name == "UIPanel") return;
+                    Location location;
+                    if (hitObj.name == "Piece") location = new Location(hitObj.transform.parent.name);
+                    else
+                    {
+                        if (!Location.CorrectFormat(hitObj.name)) return;
+                        location = new Location(hitObj.name);
+                    }
+                    if (MovementController.selected != null && !ActivateAbility.activated)
                     {
                         OnEnterGame.gameInfo.Act("move", Login.playerID);
                         MovementController.MoveTo(location);
                         if (!OnEnterGame.gameInfo.Actable(Login.playerID)) onEnterGame.NextTurn();
                     }
-                }
-                else if (ActivateAbility.activated)
-                {
-                    Vector2Int location;
-                    if (hitObj.name == "Piece") location = Database.StringToVec2(hitObj.transform.parent.name);
-                    else location = Database.StringToVec2(hitObj.name);
-                    if (ActivateAbility.targetLocs.Contains(location))
+                    else if (ActivateAbility.activated)
                     {
                         OnEnterGame.gameInfo.Act(ActivateAbility.actor, Login.playerID);
                         ActivateAbility.Activate(location);
@@ -114,7 +113,7 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public static void ChangeSide(Vector2Int location, int ownerID)
+    public static void ChangeSide(Location location, int ownerID)
     {
         boardSetup.pieces[location].GetComponent<PieceInfo>().piece.ownerID = ownerID;
         Piece piece = OnEnterGame.gameInfo.board[location];
@@ -135,13 +134,13 @@ public class GameController : MonoBehaviour {
         OnEnterGame.gameInfo.Upload();
     }
 
-    public static void AddPiece(Collection collection, Vector2Int castle, int ownerID)
+    public static void AddPiece(Collection collection, Location castle, int ownerID)
     {
         boardSetup.AddPiece(collection, castle, ownerID, false);
         Passive(OnEnterGame.gameInfo.board[castle], ownerID);
     }
 
-    public static void ResurrectPiece(Collection collection, Vector2Int castle, int ownerID)
+    public static void ResurrectPiece(Collection collection, Location castle, int ownerID)
     {
         boardSetup.AddPiece(collection, castle, ownerID, true, true);
         Passive(OnEnterGame.gameInfo.board[castle], ownerID);
@@ -153,12 +152,13 @@ public class GameController : MonoBehaviour {
         Passive(tactic, Login.playerID);
     }
 
-    public static void RemoveTactic(Tactic tactic)
+    public static void RemoveTactic(Tactic tactic, bool useTactic = false)
     {
         onEnterGame.RemoveTactic(tactic);
+        if(!useTactic) onEnterGame.AddToHistory(new GameEvent("Discard", tactic));
     }
 
-    public static void ChangePieceHealth(Vector2Int location, int deltaAmount)
+    public static void ChangePieceHealth(Location location, int deltaAmount, GameEvent gameEvent = null)
     {
         Piece before = OnEnterGame.gameInfo.board[location];
         Piece after = new Piece(before);
@@ -166,22 +166,28 @@ public class GameController : MonoBehaviour {
         after.collection.health += deltaAmount;
         OnEnterGame.gameInfo.board[location] = after;
         OnEnterGame.gameInfo.triggers[location].piece = after;
+        boardSetup.pieces[location].GetComponent<PieceInfo>().SetPiece(after);
         if (before.IsAlly()) OnEnterGame.gameInfo.activePieces[Login.playerID][OnEnterGame.gameInfo.activePieces[Login.playerID].IndexOf(before)] = after;
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
+        if (gameEvent == null) gameEvent = new GameEvent("PieceHealth", before, after, deltaAmount);
+        onEnterGame.AddToHistory(gameEvent);
     }
-    public static void ChangePieceOreCost(Vector2Int location, int deltaAmount)
+    public static void ChangePieceOreCost(Location location, int deltaAmount, GameEvent gameEvent = null)
     {
         Piece before = OnEnterGame.gameInfo.board[location];
         Piece after = new Piece(before);
         after.oreCost += deltaAmount;
         OnEnterGame.gameInfo.board[location] = after;
         OnEnterGame.gameInfo.triggers[location].piece = after;
+        boardSetup.pieces[location].GetComponent<PieceInfo>().SetPiece(after);
         if (before.IsAlly()) OnEnterGame.gameInfo.activePieces[Login.playerID][OnEnterGame.gameInfo.activePieces[Login.playerID].IndexOf(before)] = after;
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
+        if (gameEvent == null) gameEvent = new GameEvent("PieceCost", before, after, deltaAmount);
+        onEnterGame.AddToHistory(gameEvent);
     }
-    public static void ChangeTacticOreCost(string tacticName, int deltaAmount)
+    public static void ChangeTacticOreCost(string tacticName, int deltaAmount, GameEvent gameEvent = null)
     {
         int index = OnEnterGame.gameInfo.FindUnusedTactic(tacticName, Login.playerID);
         Tactic tactic = OnEnterGame.gameInfo.unusedTactics[Login.playerID][index];
@@ -189,8 +195,10 @@ public class GameController : MonoBehaviour {
         OnEnterGame.gameInfo.unusedTactics[Login.playerID][index] = tactic;
         onEnterGame.ChangeTacticOreCost(index, deltaAmount);
         OnEnterGame.gameInfo.Upload();
+        if (gameEvent == null) gameEvent = new GameEvent("TacticOre", tactic, deltaAmount);
+        onEnterGame.AddToHistory(gameEvent);
     }
-    public static void ChangeTacticCoinCost(string tacticName, int deltaAmount)
+    public static void ChangeTacticGoldCost(string tacticName, int deltaAmount, GameEvent gameEvent = null)
     {
         int index = OnEnterGame.gameInfo.FindUnusedTactic(tacticName, Login.playerID);
         Tactic tactic = OnEnterGame.gameInfo.unusedTactics[Login.playerID][index];
@@ -198,41 +206,57 @@ public class GameController : MonoBehaviour {
         OnEnterGame.gameInfo.unusedTactics[Login.playerID][index] = tactic;
         onEnterGame.ChangeTacticGoldCost(index, deltaAmount);
         OnEnterGame.gameInfo.Upload();
+        if (gameEvent == null) gameEvent = new GameEvent("TacticGold", tactic, deltaAmount);
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void Eliminate(Piece piece, bool revenge = true)
+    public static void Eliminate(Piece piece, bool revenge = true, GameEvent gameEvent = null)
     {
-        GameEvent gameEvent;
         if (revenge)
         {
             OnEnterGame.gameInfo.triggers[piece.location].Revenge();
-            gameEvent = new GameEvent(piece);
-            onEnterGame.AddToHistory(gameEvent);
+            onEnterGame.AddToHistory(new GameEvent(piece));
         }
         gameEvent = new GameEvent(piece, "Kill");
         onEnterGame.AddToHistory(gameEvent);
         Destroy(boardSetup.pieces[piece.location]);
         boardSetup.pieces.Remove(piece.location);
         OnEnterGame.gameInfo.RemovePiece(piece);
+
+        if (gameEvent == null) gameEvent = new GameEvent(gameEvent.eventLocation, gameEvent.eventPlayerID);
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void Eliminate(Vector2Int location, bool revenge = true)
+    public static void Eliminate(Location location, Piece triggeredByPiece = null, bool revenge = true, GameEvent gameEvent = null)
     {
         if (revenge)
         {
             OnEnterGame.gameInfo.triggers[location].Revenge();
-            GameEvent gameEvent = new GameEvent(OnEnterGame.gameInfo.board[location]);
-            onEnterGame.AddToHistory(gameEvent);
+            onEnterGame.AddToHistory(new GameEvent(OnEnterGame.gameInfo.board[location]));
         }
         Destroy(boardSetup.pieces[location]);
         boardSetup.pieces.Remove(location);
         OnEnterGame.gameInfo.RemovePiece(OnEnterGame.gameInfo.board[location]);
-        OnEnterGame.gameInfo.Upload();
+
+        if (gameEvent == null)
+        {
+            if (triggeredByPiece == null) gameEvent = new GameEvent(triggeredByPiece, "Kill");
+            else gameEvent = new GameEvent(triggeredByPiece, "Kill");
+        }
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void FreezePiece(Vector2Int location, int round)
+    public static void TransformPiece(Piece from, Piece into, GameEvent gameEvent = null)
     {
-        GameEvent gameEvent = new GameEvent(OnEnterGame.gameInfo.board[location], "freeze");
+        boardSetup.TransformPiece(from.location, into);
+        onEnterGame.Defreeze(from.location);
+
+        if (gameEvent == null) gameEvent = new GameEvent("Transform", from, into);
+        onEnterGame.AddToHistory(gameEvent);
+    }
+
+    public static void FreezePiece(Location location, int round, GameEvent gameEvent = null)
+    {
         OnEnterGame.gameInfo.FreezePiece(location, round);
         boardSetup.pieces[location].GetComponent<PieceInfo>().piece.freeze = round;
 
@@ -240,56 +264,46 @@ public class GameController : MonoBehaviour {
         GameObject freezeImage = Instantiate(onEnterGame.freezeImage, boardCanvas);
         freezeImage.transform.position = new Vector3(location.x * MovementController.scale, location.y * MovementController.scale, -0.5f);
         freezeImages.Add(location, freezeImage);
+
+        if (gameEvent == null) gameEvent = new GameEvent("Freeze", OnEnterGame.gameInfo.board[location], round);
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void PlaceTrap(Vector2Int location, string trapName, int creator)
+    public static void PlaceTrap(Location location, string trapName, int creator)
     {
         OnEnterGame.gameInfo.traps.Add(location, new KeyValuePair<string, int>(trapName, creator));
         OnEnterGame.gameInfo.Upload();
     }
 
-    public static void PlaceFlag(Vector2Int location, bool isAlly)
+    public static void PlaceFlag(Location location, int ownerID, GameEvent gameEvent = null)
     {
         GameObject flag;
-        if (isAlly)
-        {
-            flag = Instantiate(onEnterGame.playerFlag, boardCanvas);
-            OnEnterGame.gameInfo.flags.Add(location, Login.playerID);
-        }
-        else
-        {
-            flag = Instantiate(onEnterGame.enemyFlag, boardCanvas);
-            OnEnterGame.gameInfo.flags.Add(location, OnEnterGame.gameInfo.TheOtherPlayer());
-        }
+        if (ownerID == Login.playerID) flag = Instantiate(onEnterGame.playerFlag, boardCanvas);
+        else flag = Instantiate(onEnterGame.enemyFlag, boardCanvas);
+        OnEnterGame.gameInfo.flags.Add(location, Login.playerID);
         flag.transform.position = new Vector3(location.x * MovementController.scale, location.y * MovementController.scale, -0.5f);
         flags.Add(location, flag);
         OnEnterGame.gameInfo.Upload();
+
+        if (gameEvent == null) gameEvent = new GameEvent(location, ownerID);
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void RemoveFlag(Vector2Int location)
+    public static void RemoveFlag(Location location, GameEvent gameEvent = null)
     {
         Destroy(flags[location]);
         flags.Remove(location);
         OnEnterGame.gameInfo.flags.Remove(location);
         OnEnterGame.gameInfo.Upload();
+
+        if (gameEvent == null) gameEvent = new GameEvent(location);
+        onEnterGame.AddToHistory(gameEvent);
     }
 
-    public static void RemoveTrap(Vector2Int location)
+    public static void RemoveTrap(Location location)
     {
         OnEnterGame.gameInfo.traps.Remove(location);
         OnEnterGame.gameInfo.Upload();
-    }
-
-    public static void DecodeGameEvent(GameEvent gameEvent)
-    {
-        if (gameEvent.result == "move")
-        {
-            MovementController.Move(OnEnterGame.gameInfo.board[gameEvent.eventLocation], gameEvent.eventLocation, gameEvent.targetLocation);
-        }
-        else
-        {
-
-        }
     }
 
     public static void Passive(Piece piece, int caller)
@@ -301,20 +315,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public static void ResumePiece(Piece piece)
-    {
-        piece.oreCost = piece.collection.oreCost;
-        piece.health = piece.collection.health;
-        piece.freeze = 0;
-    }
-
-    public static void ResumeTactic(Tactic tactic)
-    {
-        TacticAttributes tacticAttributes = Database.FindTacticAttributes(tactic.tacticName);
-        tactic.oreCost = tacticAttributes.oreCost;
-        tactic.goldCost = tacticAttributes.goldCost;
-    }
-
     public static void Passive(Tactic tactic, int caller)
     {   
         foreach (Piece piece in OnEnterGame.gameInfo.activePieces[caller])
@@ -322,6 +322,21 @@ public class GameController : MonoBehaviour {
             Trigger trigger = OnEnterGame.gameInfo.triggers[piece.location];
             if (trigger.passive == "Tactic" && trigger.PassiveCriteria(tactic)) trigger.Passive(tactic);
         }
+    }
+
+    public static void ResumePiece(Piece piece)
+    {
+        PieceAttributes attributes = Database.FindPieceAttributes(piece.GetName());
+        piece.oreCost = attributes.oreCost;
+        piece.health = piece.collection.health;
+        piece.freeze = 0;
+    }
+
+    public static void ResumeTactic(Tactic tactic)
+    {
+        TacticAttributes attributes = Database.FindTacticAttributes(tactic.tacticName);
+        tactic.oreCost = attributes.oreCost;
+        tactic.goldCost = attributes.goldCost;
     }
 
     public static bool ChangeOre(int deltaAmount)
@@ -346,5 +361,45 @@ public class GameController : MonoBehaviour {
         onEnterGame.SetCoinText();
         return true;
     }
-    public static List<Vector2Int> FindCastles(string type) { return castles[type]; }
+    public static List<Location> FindCastles(string type) { return castles[type]; }
+
+    public static void DecodeGameEvent(GameEvent gameEvent)
+    {
+        switch (gameEvent.result)
+        {
+            case "Move":
+                MovementController.Move(OnEnterGame.gameInfo.board[gameEvent.eventLocation], gameEvent.eventLocation, gameEvent.targetLocation);
+                break;
+            case "Kill":
+                Eliminate(OnEnterGame.gameInfo.board[gameEvent.targetLocation]);
+                break;
+            case "Freeze":
+                FreezePiece(gameEvent.targetLocation, gameEvent.amount);
+                break;
+            case "Flag":
+                PlaceFlag(gameEvent.eventLocation, gameEvent.eventPlayerID, gameEvent);
+                break;
+            case "RemoveFlag":
+                RemoveFlag(gameEvent.eventLocation);
+                break;
+            case "Trap":
+                onEnterGame.TriggerTrap(gameEvent.eventLocation);
+                break;
+            case "PieceCost":
+                ChangePieceOreCost(gameEvent.eventLocation, gameEvent.amount, gameEvent);
+                break;
+            case "PieceHealth":
+                ChangePieceHealth(gameEvent.eventLocation, gameEvent.amount, gameEvent);
+                break;
+            case "TacticGold":
+                ChangeTacticGoldCost(gameEvent.targetTriggerName, gameEvent.amount, gameEvent);
+                break;
+            case "TacticOre":
+                ChangeTacticOreCost(gameEvent.targetTriggerName, gameEvent.amount, gameEvent);
+                break;
+            case "Discard":
+                RemoveTactic(new Tactic(Database.FindTacticAttributes(gameEvent.targetTriggerName)), false);
+                break;
+        }
+    }
 }

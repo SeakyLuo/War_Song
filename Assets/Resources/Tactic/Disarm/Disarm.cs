@@ -1,19 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Disarm : TacticTrigger
 {
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
-        Piece piece = OnEnterGame.gameInfo.board[location];
-        GameController.AddPiece(Collection.StandardCollection(piece.GetPieceType()), piece.GetCastle(), piece.ownerID);
-        GameController.Eliminate(location, false);
+        Piece from = OnEnterGame.gameInfo.board[location];
+        Piece into = new Piece(from);
+        into.Transform(Collection.StandardCollection(from.GetPieceType()));
+        GameController.TransformPiece(from, into);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
-        List<Vector2Int> targets = new List<Vector2Int>();
+        List<Location> targets = new List<Location>();
         foreach (int playerID in new List<int> { OnEnterGame.gameInfo.firstPlayer, OnEnterGame.gameInfo.secondPlayer })
             foreach (Piece piece in OnEnterGame.gameInfo.activePieces[playerID])
                 targets.Add(piece.location);

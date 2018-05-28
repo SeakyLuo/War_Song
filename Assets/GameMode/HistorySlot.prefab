@@ -84,11 +84,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b06ecd7ee7333c4b85c40c563f78d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  background: {fileID: 114133626556541320}
+  background: {fileID: 114882024147082142}
+  cardImage: {fileID: 114133626556541320}
   allyBackground: {fileID: 21300000, guid: 6e7f4b3f4ff7d0d4f8e919817a15b3f0, type: 3}
   enemyBackground: {fileID: 21300000, guid: f34f778594a3ae8448bac1bf36e9ef52, type: 3}
-  cardImage: {fileID: 0}
-  historyCard: {fileID: 0}
+  historyPanel: {fileID: 0}
+  eventCard: {fileID: 0}
+  targetCard: {fileID: 0}
+  gameEvent:
+    eventLocation:
+      x: -1
+      y: -1
+    targetLocation:
+      x: -1
+      y: -1
+    eventTriggerName: 
+    targetTriggerName: 
+    eventPlayerID: -1
+    targetPlayerID: -1
+    result: 
+    amount: 0
 --- !u!114 &114882024147082142
 MonoBehaviour:
   m_ObjectHideFlags: 1

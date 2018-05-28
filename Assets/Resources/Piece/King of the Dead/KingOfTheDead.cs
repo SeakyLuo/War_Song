@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class KingOfTheDead : Trigger {
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
         List<Collection> collections = new List<Collection>();
         foreach (Piece piece in OnEnterGame.gameInfo.inactivePieces[Login.playerID])
@@ -12,10 +12,10 @@ public class KingOfTheDead : Trigger {
         GameController.ResurrectPiece(collections[Random.Range(0, collections.Count)], location, Login.playerID);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
-        List<Vector2Int> targets = new List<Vector2Int>();
-        foreach (Vector2Int loc in MovementController.boardAttributes.SoldierCastle())
+        List<Location> targets = new List<Location>();
+        foreach (Location loc in MovementController.boardAttributes.SoldierCastle())
             if (!OnEnterGame.gameInfo.board.ContainsKey(loc))
                 targets.Add(loc);
         return targets;

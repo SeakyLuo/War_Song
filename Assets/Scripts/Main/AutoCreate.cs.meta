@@ -5,7 +5,12 @@ licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - copy: {instanceID: 0}
+  - gridPanel: {fileID: 1721644628400974, guid: d3c6d48ef1e5c0e469e93f721dbd296f,
+      type: 2}
+  - grid: {fileID: 1481481858523844, guid: b3e28618cee0f9647a75b5cac4a39262, type: 2}
+  - piece: {fileID: 1206878061413522, guid: 391979c184781924aa57902e93f755a9, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

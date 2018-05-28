@@ -7,11 +7,11 @@ using UnityEngine.EventSystems;
 public class MouseOverHistory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image background;
+    public Image cardImage;
     public Sprite allyBackground;
     public Sprite enemyBackground;
-    public Image cardImage;
     public GameObject historyPanel, eventCard, targetCard;
-    public GameEvent gameEvent;
+    [HideInInspector] public GameEvent gameEvent;
 
     public void SetAttributes(GameEvent game_event)
     {
@@ -24,23 +24,30 @@ public class MouseOverHistory : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void SetCard(GameObject card, string triggerName, int triggerPlayerID)
     {
-        if (Database.pieceList.Contains(gameEvent.targetTriggerName))
-            card.GetComponent<CardInfo>().SetAttributes(Database.FindPieceAttributes(triggerName), triggerPlayerID);
-        else if (Database.tacticList.Contains(gameEvent.targetTriggerName))
-            card.GetComponent<CardInfo>().SetAttributes(Database.FindPieceAttributes(triggerName), triggerPlayerID);
-        else if(Database.trapList.Contains(gameEvent.targetTriggerName))
-            card.GetComponent<TrapInfo>().SetAttributes(Database.FindTrapAttributes(triggerName), triggerPlayerID);
+        switch (Database.FindType(gameEvent.targetTriggerName))
+        {
+            case "Piece":
+                card.GetComponent<CardInfo>().SetAttributes(Database.FindPieceAttributes(triggerName), triggerPlayerID);
+                break;
+            case "Tactic":
+                card.GetComponent<CardInfo>().SetAttributes(Database.FindTacticAttributes(triggerName), triggerPlayerID);
+                break;
+            case "Trap":
+                card.GetComponent<CardInfo>().SetAttributes(Database.FindTrapAttributes(triggerName), triggerPlayerID);
+                break;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        historyPanel.SetActive(true);
-        if (gameEvent.eventPlayerID != -1) targetCard.SetActive(true);
+        // it flashes. Problem is height.
+        //historyPanel.SetActive(true);
+        //if (gameEvent.eventPlayerID != -1) targetCard.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        historyPanel.SetActive(false);
-        if (gameEvent.eventPlayerID != -1) targetCard.SetActive(false);
+    //    historyPanel.SetActive(false);
+    //    if (gameEvent.eventPlayerID != -1) targetCard.SetActive(false);
     }
 }

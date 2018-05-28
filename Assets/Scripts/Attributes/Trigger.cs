@@ -17,7 +17,7 @@ public class Trigger: ScriptableObject {
     public List<string> cantBeDestroyedBy = new List<string>();
     [HideInInspector] public bool silenced = false;
     [HideInInspector] public Piece piece;
-    public delegate List<Vector2Int> ValidLocations(int x, int y, bool link = false);
+    public delegate List<Location> ValidLocations(int x, int y, bool link = false);
     public ValidLocations validLocations;
     public delegate void AssignRevenge();
     public AssignRevenge revenge;
@@ -26,15 +26,15 @@ public class Trigger: ScriptableObject {
 
     public virtual void StartOfGame() { }
     public virtual void Activate() { }  // Override this if NO targets required
-    public virtual void Activate(Vector2Int location) { } // Override this if target Piece required
+    public virtual void Activate(Location location) { } // Override this if target Piece required
     public virtual void Revenge() { if (revenge != null) revenge(); } // triggered when eliminated
     public virtual void BloodThirsty() { } // triggered when kills someone
-    public virtual List<Vector2Int> ValidLocs(bool link = false)
+    public virtual List<Location> ValidLocs(bool link = false)
     {
         if (validLocations == null) return MovementController.ValidLocs(piece.location.x, piece.location.y, piece.GetPieceType(), link);
         else return validLocations(piece.location.x, piece.location.y, link);
     }
-    public virtual List<Vector2Int> ValidTargets() { return new List<Vector2Int>(); }  // Offers the location of targets
+    public virtual List<Location> ValidTargets() { return new List<Location>(); }  // Offers the location of targets
     public virtual List<Tactic> ValidTargets(int oreCost, int goldCost) {return OnEnterGame.gameInfo.unusedTactics[Login.playerID]; } // Offers target tactics
     public virtual void Passive(Tactic tactic) { } // For instance, your tacitics cost 1 Ore less
     public virtual void Passive(Piece piece) { } // For instance, your minion abilities cost 1 Ore less

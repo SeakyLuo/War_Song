@@ -14,63 +14,69 @@ public class BoardAttributes : ScriptableObject {
     [TextArea(2, 3)]
     public string description;
 
-    public Vector2Int palaceDownLeft = new Vector2Int(3, 0);
-    public Vector2Int palaceUpperRight = new Vector2Int(5, 2);
-    public Vector2Int enemyPalaceDownLeft = new Vector2Int(3, 7);
-    public Vector2Int enemyPalaceUpperRight = new Vector2Int(5, 9);
+    // Index not height
+    public int palaceLeft = 3;
+    public int palaceRight = 5;
+    public int palaceUp = 2;
+    public int palaceDown = 0;
+    public int epalaceLeft = 3;
+    public int epalaceRight = 5;
+    public int epalaceUp = 9;
+    public int epalaceDown = 7;
 
-    public Vector2Int asloc1 = new Vector2Int(0, 3);
-    public Vector2Int asloc2 = new Vector2Int(2, 3);
-    public Vector2Int asloc3 = new Vector2Int(4, 3);
-    public Vector2Int asloc4 = new Vector2Int(6, 3);
-    public Vector2Int asloc5 = new Vector2Int(8, 3);
-    public Vector2Int acloc1 = new Vector2Int(1, 2);
-    public Vector2Int acloc2 = new Vector2Int(7, 2);
-    public Vector2Int arloc1 = new Vector2Int(0, 0);
-    public Vector2Int arloc2 = new Vector2Int(8, 0);
-    public Vector2Int ahloc1 = new Vector2Int(1, 0);
-    public Vector2Int ahloc2 = new Vector2Int(7, 0);
-    public Vector2Int aeloc1 = new Vector2Int(2, 0);
-    public Vector2Int aeloc2 = new Vector2Int(6, 0);
-    public Vector2Int aaloc1 = new Vector2Int(3, 0);
-    public Vector2Int aaloc2 = new Vector2Int(5, 0);
-    public Vector2Int agloc = new Vector2Int(4, 0);
+    public Location asloc1 = new Location(0, 3);
+    public Location asloc2 = new Location(2, 3);
+    public Location asloc3 = new Location(4, 3);
+    public Location asloc4 = new Location(6, 3);
+    public Location asloc5 = new Location(8, 3);
+    public Location acloc1 = new Location(1, 2);
+    public Location acloc2 = new Location(7, 2);
+    public Location arloc1 = new Location(0, 0);
+    public Location arloc2 = new Location(8, 0);
+    public Location ahloc1 = new Location(1, 0);
+    public Location ahloc2 = new Location(7, 0);
+    public Location aeloc1 = new Location(2, 0);
+    public Location aeloc2 = new Location(6, 0);
+    public Location aaloc1 = new Location(3, 0);
+    public Location aaloc2 = new Location(5, 0);
+    public Location agloc = new Location(4, 0);
 
-    public Vector2Int esloc1 = new Vector2Int(0, 6);
-    public Vector2Int esloc2 = new Vector2Int(2, 6);
-    public Vector2Int esloc3 = new Vector2Int(4, 6);
-    public Vector2Int esloc4 = new Vector2Int(6, 6);
-    public Vector2Int esloc5 = new Vector2Int(8, 6);
-    public Vector2Int ecloc1 = new Vector2Int(1, 7);
-    public Vector2Int ecloc2 = new Vector2Int(7, 7);
-    public Vector2Int erloc1 = new Vector2Int(0, 9);
-    public Vector2Int erloc2 = new Vector2Int(8, 9);
-    public Vector2Int ehloc1 = new Vector2Int(1, 9);
-    public Vector2Int ehloc2 = new Vector2Int(7, 9);
-    public Vector2Int eeloc1 = new Vector2Int(2, 9);
-    public Vector2Int eeloc2 = new Vector2Int(6, 9);
-    public Vector2Int ealoc1 = new Vector2Int(3, 9);
-    public Vector2Int ealoc2 = new Vector2Int(5, 9);
-    public Vector2Int egloc = new Vector2Int(4, 9);
+    public Location esloc1 = new Location(0, 6);
+    public Location esloc2 = new Location(2, 6);
+    public Location esloc3 = new Location(4, 6);
+    public Location esloc4 = new Location(6, 6);
+    public Location esloc5 = new Location(8, 6);
+    public Location ecloc1 = new Location(1, 7);
+    public Location ecloc2 = new Location(7, 7);
+    public Location erloc1 = new Location(0, 9);
+    public Location erloc2 = new Location(8, 9);
+    public Location ehloc1 = new Location(1, 9);
+    public Location ehloc2 = new Location(7, 9);
+    public Location eeloc1 = new Location(2, 9);
+    public Location eeloc2 = new Location(6, 9);
+    public Location ealoc1 = new Location(3, 9);
+    public Location ealoc2 = new Location(5, 9);
+    public Location egloc = new Location(4, 9);
 
-    public List<Vector2Int> AdvisorCastle() { return new List<Vector2Int> { aaloc1, aaloc2 }; }
-    public List<Vector2Int> ElephantCastle() { return new List<Vector2Int> { aeloc1, aeloc2 }; }
-    public List<Vector2Int> HorseCastle() { return new List<Vector2Int> { ahloc1, ahloc2 }; }
-    public List<Vector2Int> ChariotCastle() { return new List<Vector2Int> { arloc1, arloc2 }; }
-    public List<Vector2Int> CannonCastle() { return new List<Vector2Int> { acloc1, acloc2 }; }
-    public List<Vector2Int> SoldierCastle() { return new List<Vector2Int> { asloc1, asloc2, asloc3, asloc4, asloc5 }; }
-    public List<Vector2Int> EnemyAdvisorCastle() { return new List<Vector2Int> { ealoc1, ealoc2 }; }
-    public List<Vector2Int> EnemyElephantCastle() { return new List<Vector2Int> { eeloc1, eeloc2 }; }
-    public List<Vector2Int> EnemyHorseCastle() { return new List<Vector2Int> { ehloc1, ehloc2 }; }
-    public List<Vector2Int> EnemyChariotCastle() { return new List<Vector2Int> { erloc1, erloc2 }; }
-    public List<Vector2Int> EnemyCannonCastle() { return new List<Vector2Int> { ecloc1, ecloc2 }; }
-    public List<Vector2Int> EnemySoldierCastle() { return new List<Vector2Int> { esloc1, esloc2, esloc3, esloc4, esloc5 }; }
-    public List<Vector2Int> EnemyCastles() { return new List<Vector2Int> { ealoc1, ealoc2, eeloc1, eeloc2, ehloc1, ehloc2, erloc1, erloc2, ecloc1, ecloc2, esloc1, esloc2, esloc3, esloc4, esloc5, egloc }; }
+    public List<Location> AdvisorCastle() { return new List<Location> { aaloc1, aaloc2 }; }
+    public List<Location> ElephantCastle() { return new List<Location> { aeloc1, aeloc2 }; }
+    public List<Location> HorseCastle() { return new List<Location> { ahloc1, ahloc2 }; }
+    public List<Location> ChariotCastle() { return new List<Location> { arloc1, arloc2 }; }
+    public List<Location> CannonCastle() { return new List<Location> { acloc1, acloc2 }; }
+    public List<Location> SoldierCastle() { return new List<Location> { asloc1, asloc2, asloc3, asloc4, asloc5 }; }
+    public List<Location> AllyCastles() { return new List<Location> { aaloc1, aaloc2, aeloc1, aeloc2, ahloc1, ahloc2, arloc1, arloc2, acloc1, acloc2, asloc1, asloc2, asloc3, asloc4, asloc5, agloc }; }
+    public List<Location> EnemyAdvisorCastle() { return new List<Location> { ealoc1, aaloc2 }; }
+    public List<Location> EnemyElephantCastle() { return new List<Location> { eeloc1, aeloc2 }; }
+    public List<Location> EnemyHorseCastle() { return new List<Location> { ehloc1, ahloc2 }; }
+    public List<Location> EnemyChariotCastle() { return new List<Location> { erloc1, arloc2 }; }
+    public List<Location> EnemyCannonCastle() { return new List<Location> { ecloc1, acloc2 }; }
+    public List<Location> EnemySoldierCastle() { return new List<Location> { esloc1, asloc2, asloc3, asloc4, asloc5 }; }
+    public List<Location> EnemyCastles() { return new List<Location> { ealoc1, ealoc2, eeloc1, eeloc2, ehloc1, ehloc2, erloc1, erloc2, ecloc1, ecloc2, esloc1, esloc2, esloc3, esloc4, esloc5, egloc }; }
     public bool InAllyField(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y <= allyField; }
-    public bool InPalace(int x, int y) { return palaceDownLeft.x <= x && x <= palaceUpperRight.x && palaceDownLeft.y <= y && y <= palaceUpperRight.y; }
-    public bool InEnemyPalace(int x, int y) { return enemyPalaceDownLeft.x <= x && x <= enemyPalaceUpperRight.x && enemyPalaceDownLeft.y <= y && y <= enemyPalaceUpperRight.y; }
+    public bool InPalace(int x, int y) { return palaceLeft <= x && x <= palaceRight && palaceDown <= y && y <= palaceUp; }
+    public bool InEnemyPalace(int x, int y) { return epalaceLeft <= x && x <= epalaceRight && epalaceDown <= y && y <= epalaceUp; }
     public bool InEnemyRegion(int x, int y) { return 0 <= x && x < boardWidth && enemyField <= y && y < boardHeight; }
-    public bool InEnemyCastle(int x, int y) { return EnemyCastles().Contains(new Vector2Int(x, y)); }
+    public bool InEnemyCastle(int x, int y) { return EnemyCastles().Contains(new Location(x, y)); }
     public bool AtEnemyBottom(int x, int y) { return 0 <= x && x < boardWidth && y == boardHeight; }
     public bool InBoard(int x, int y) { return 0 <= x && x < boardWidth && 0 <= y && y < boardHeight; }
 }

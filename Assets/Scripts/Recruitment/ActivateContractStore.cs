@@ -72,10 +72,7 @@ public class ActivateContractStore : MonoBehaviour {
             contractsManager.AddContract(contractAttributes, contractsCount);
             successfulPurchase.SetActive(true);
         }
-        else
-        {
-            notEnoughCoins.SetActive(true);
-        }
+        else notEnoughCoins.SetActive(true);
     }
 
     private void LoadContract()

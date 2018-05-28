@@ -1,20 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Newtonsoft.Json;
 
+[System.Serializable]
 public class GameEvent {
 
-    public Vector2Int eventLocation = Piece.noLocation;
-    public Vector2Int targetLocation = Piece.noLocation;
+    public Location eventLocation = new Location(-1, -1);
+    public Location targetLocation = new Location(-1, -1);
 	public string eventTriggerName = ""; // Who (Piece or tactic) triggers this event
     public string targetTriggerName = ""; // Target name
     public int eventPlayerID = -1;
     public int targetPlayerID = -1;
-    public string result = ""; // Piece, Tactic, Trap, Freeze, Move, Kill
+    public string result = ""; // Piece, Tactic, Trap, Freeze, Move, Kill, Flag
+    public int amount = 0;
 
     public GameEvent() { }
 
-    public GameEvent(Vector2Int from, Vector2Int to, int playerID)
+    public GameEvent(Location from, Location to, int playerID)
     {
         /// Move
         result = "Move";
@@ -25,6 +26,7 @@ public class GameEvent {
 
     public GameEvent(Piece piece, string Result = "Ability")
     {
+        /// Activate Ability that doesn't require targets.
         result = Result;
         eventTriggerName = piece.GetName();
         eventPlayerID = piece.ownerID;
@@ -32,9 +34,28 @@ public class GameEvent {
 
     public GameEvent(Tactic tactic)
     {
+        /// Tactic
         result = "Tactic";
         eventTriggerName = tactic.tacticName;
         eventPlayerID = tactic.ownerID;
+    }
+
+    public GameEvent(string Result, Tactic tactic, int Amount = 0)
+    {
+        /// Discard or TacticOre or TacticGold
+        result = Result;
+        targetTriggerName = tactic.tacticName;
+        targetPlayerID = tactic.ownerID;
+        amount = Amount;
+    }
+
+    public GameEvent(string Result, Piece piece, int Amount)
+    {
+        /// Freeze
+        result = "Freeze";
+        targetLocation = piece.location;
+        targetTriggerName = piece.GetName();
+        targetPlayerID = piece.ownerID;
     }
 
     public GameEvent(string Result, string TriggerName, int playerID)
@@ -44,29 +65,45 @@ public class GameEvent {
         eventPlayerID = playerID;
     }
 
-    public GameEvent(string Result, string EventTriggerName, string TargetTriggerName, Vector2Int EventLocation, Vector2Int TargetLocation, int EventPlayerID, int TargetPlayerID)
+    public GameEvent(Location EventLocation, int EventPlayerID)
     {
-        result = Result;
-        eventTriggerName = EventTriggerName;
-        targetTriggerName = TargetTriggerName;
+        /// Flag
+        result = "Flag";
         eventLocation = EventLocation;
-        targetLocation = TargetLocation;
         eventPlayerID = EventPlayerID;
-        targetPlayerID = TargetPlayerID;
     }
 
-    public GameEvent(Piece eventPiece, Piece targetPiece)
+    public GameEvent(Location EventLocation)
     {
-        result = "Piece";
+        /// RemoveFlag
+        result = "RemoveFlag";
+        eventLocation = EventLocation;
+    }
+
+    public GameEvent(string trapName, int trapOwnerID, Piece piece)
+    {
+        /// Trap
+        result = "Trap";
+        eventTriggerName = trapName;
+        targetTriggerName = piece.GetName();
+        eventPlayerID = trapOwnerID;
+        targetPlayerID = piece.ownerID;
+    }
+
+    public GameEvent(string Result, Piece eventPiece, Piece targetPiece, int Amount = 0)
+    {
+        /// Transform or PieceHealth or PieceCost
+        result = Result;
         eventTriggerName = eventPiece.GetName();
         targetTriggerName = targetPiece.GetName();
         eventLocation = eventPiece.location;
         targetLocation = targetPiece.location;
         eventPlayerID = eventPiece.ownerID;
         targetPlayerID = targetPiece.ownerID;
+        amount = Amount;
     }
 
-    public void ReceiveEvent(GameEvent gameEvent)
+    public GameEvent(GameEvent gameEvent)
     {
         result = gameEvent.result;
         eventTriggerName = gameEvent.eventTriggerName;
@@ -79,11 +116,11 @@ public class GameEvent {
 
     public static string ClassToJson(GameEvent gameEvent)
     {
-        return JsonUtility.ToJson(gameEvent);
+        return JsonConvert.SerializeObject(gameEvent);
     }
     public static GameEvent JsonToClass(string json)
     {
-        return JsonUtility.FromJson<GameEvent>(json);
+        return JsonConvert.DeserializeObject<GameEvent>(json);
     }
     public void Upload(GameEvent gameEvent)
     {

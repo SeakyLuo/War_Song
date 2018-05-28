@@ -503,6 +503,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   piece: {fileID: 0}
   tactic: {fileID: 0}
+  trap: {fileID: 0}
   nameText: {fileID: 114860648855819092}
   descriptionText: {fileID: 114344129379949884}
   costText: {fileID: 114691719476280900}
@@ -511,6 +512,7 @@ MonoBehaviour:
   typeText: {fileID: 114577261403131364}
   image: {fileID: 114780775591576292}
   background: {fileID: 114053057471510462}
+  costImage: {fileID: 1045727955141992}
   healthImage: {fileID: 1582821182070220}
   coinImage: {fileID: 1946890963897682}
   allyBackground: {fileID: 21300000, guid: 6e7f4b3f4ff7d0d4f8e919817a15b3f0, type: 3}

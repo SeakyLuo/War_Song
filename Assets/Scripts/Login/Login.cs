@@ -13,17 +13,20 @@ public class Login : MonoBehaviour
     public GameObject createAccountPanel, emptyEmail, wrongPassword, emptyPassword;
     public GameObject settingsPanel, forgotPasswordPanel, networkError, connecting;
     public Canvas parentCanvas;
-
-    private Database database;
+    
     private Rect rect;
 
     // better to support phone number registration
+    private void Awake()
+    {
+        Database database = new Database();
+        database.Init();
+    }
 
-    void Start () {
+    void Start ()
+    {
         rect = settingsPanel.transform.Find("MainSettings").GetComponent<RectTransform>().rect;
         // If already has an account saved
-        database = new Database();
-        database.Init();
         string email = PlayerPrefs.GetString("email"),
                password = PlayerPrefs.GetString("password");
         if (email != "" && password != "")
@@ -89,7 +92,6 @@ public class Login : MonoBehaviour
                 if (emptyPassword.activeSelf) emptyPassword.SetActive(false);
                 if (wrongPassword.activeSelf) wrongPassword.SetActive(false);
                 user = UserInfo.Download();
-                user.SetData();
                 playerID = user.playerID;
                 SceneManager.LoadScene("Main");
             }

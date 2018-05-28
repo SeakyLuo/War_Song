@@ -11,7 +11,7 @@ public class CollectionManager : MonoBehaviour {
     public GameObject clearSearch, searchPanel, selectedBoardPanel, createLineupPanel, noCollectionPanel;
     public Transform tabsObj;
     public Button createLineupButton;
-    public Text TitleText, pageText, createLineupButtonText;
+    public Text TitleText, createLineupButtonText;
     public InputField searchByInput;
 
     private static GameObject[] tabs;
@@ -20,8 +20,7 @@ public class CollectionManager : MonoBehaviour {
     private List<Collection> displayCollections, searchedCollections;
     private Dictionary<string, List<Collection>> collectionDict = new Dictionary<string, List<Collection>>();
     private Dictionary<string, List<Collection>> originalDict = new Dictionary<string, List<Collection>>();
-    private int pageNumber = 1, 
-                searchByGoldValue = -1, 
+    private int searchByGoldValue = -1, 
                 searchByOreValue = -1, 
                 searchByHealthValue = -1;
     private string searchByKeyword = "";
@@ -51,14 +50,14 @@ public class CollectionManager : MonoBehaviour {
 
         LoadUserCollections();
         SetPageLimits();
-        ShowNoCollection(Login.user.collection.Count == 0);
         foreach (Collection collection in displayCollections)
             originalDict[collection.type].Add(collection);
-        if (Login.user.collection.Count != 0) SetCurrentPage(FirstPage());
+        SetCurrentPage(FirstPage());
     }
 
     public void AddCollection(Collection collection)
     {
+        if (collection.IsStandard()) return;
         ShowNoCollection(false);
         foreach (Collection target in collectionDict[collection.type])
             if (collection.Equals(target))
@@ -67,41 +66,34 @@ public class CollectionManager : MonoBehaviour {
                 return;
             }
         collection.count = 1;
-        if (!collection.IsStandard()) Login.user.AddCollection(collection);
+        if (!collection.IsStandard()) Login.user.AddCollection(collection, false);
         Collection.InsertCollection(collectionDict[collection.type], collection);
         SetPageLimits();
     }
 
     public bool RemoveCollection(Collection remove)
     {
-        Collection found = new Collection();
         List<Collection> collectionList = collectionDict[remove.type];
         for (int i = 0; i < collectionList.Count; i++)
-        {
             if (remove.Equals(collectionList[i]))
             {
-                found = collectionList[i];
-                if (found.count == 1)
+                if (collectionList[i].count == 1)
                 {
-                    Login.user.RemoveCollection(found);
-                    displayCollections.Remove(found);
-                    collectionDict[found.type].Remove(found);
+                    displayCollections.Remove(remove);
+                    collectionDict[remove.type].Remove(remove);
+                    Login.user.RemoveCollection(remove, false);
                     SetPageLimits();
+                    if (pageLimits[currentPage.Key] == 0)
+                    {
+                        int index = types.IndexOf(currentPage.Key);
+                        if (index != types.Count - 1) NextPage();
+                        else if (index != 0) PreviousPage();
+                    }
                 }
-                else --found.count;
-                break;
+                else Login.user.ChangeCollectionCount(i, -1, false);
+                return true;
             }
-        }
-        if (found.IsEmpty()) return false;
-        ShowNoCollection(Login.user.collection.Count == 0);
-        return true;
-    }
-
-    public void RemoveStandardCards()
-    {
-        LoadUserCollections();
-        SetPageLimits();
-        ShowNoCollection(Login.user.collection.Count == 0);
+        return false;
     }
 
     private void LoadUserCollections()
@@ -229,26 +221,22 @@ public class CollectionManager : MonoBehaviour {
             counters[i].text = "";
             counters[i].transform.parent.gameObject.SetActive(false);
         }
-        pageText.text = "";
-
-        // Calculate Page Number
-        string type = currentPage.Key;
-        pageNumber = currentPage.Value;
-        foreach (string cardType in types)
+        
+        if(Login.user.collection.Count == 0)
         {
-            if (cardType != type) pageNumber += pageLimits[cardType];
-            else break;
+            ShowNoCollection(true);
+            return;
         }
-        pageText.text = "Page " + pageNumber.ToString();
 
-        if (currentPage.Equals(notFound) || collectionDict[type].Count == 0)
+        string type = currentPage.Key;
+        if (currentPage.Equals(notFound) || pageLimits[type] == 0)
         {
             TitleText.text = "Not Found";
             return;
         }
 
         int page = currentPage.Value - 1;
-        TitleText.text = type;
+        TitleText.text = type + string.Format(" ({0}/{1})", currentPage.Value, pageLimits[type]);
 
         GameObject card;
         Collection collection;
@@ -272,7 +260,7 @@ public class CollectionManager : MonoBehaviour {
         // Turn page animation    
         string type = currentPage.Key;
         int page = currentPage.Value;
-        if (currentPage.Value == 1)
+        if (currentPage.Value <= 1)
         {
             int index = types.IndexOf(type) - 1;
             while (true)
@@ -288,10 +276,10 @@ public class CollectionManager : MonoBehaviour {
     }
     public void NextPage()
     {
-        // Turn page animatioin      
+        // Turn page animation      
         string type = currentPage.Key;
         int page = currentPage.Value;
-        if (currentPage.Value == pageLimits[type])
+        if (currentPage.Value >= pageLimits[type])
         {
             int index = types.IndexOf(type) + 1;
             while (true)

@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Turret: Trigger {
 
-    public override List<Vector2Int> ValidLocs(bool link = false)
+    public override List<Location> ValidLocs(bool link = false)
     {
         if (silenced) return MovementController.ValidLocs(piece.location.x, piece.location.y, piece.GetPieceType());
-        return new List<Vector2Int>();
+        return new List<Location>();
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
         return MovementController.CannonTarget(piece.location.x, piece.location.y);
     }
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
-        GameController.Eliminate(location);
+        GameController.Eliminate(location, piece);
     }
 }

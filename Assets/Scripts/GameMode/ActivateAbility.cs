@@ -8,7 +8,7 @@ public class ActivateAbility : MonoBehaviour {
     public static OnEnterGame onEnterGame;
     public static bool activated = false;
     public static int tacticCaller = -1;
-    public static List<Vector2Int> targetLocs = new List<Vector2Int>();
+    public static List<Location> targetLocs = new List<Location>();
     public static PieceInfo pieceInfo;
     public static Button button;
     public static string actor;
@@ -34,28 +34,23 @@ public class ActivateAbility : MonoBehaviour {
         board = onEnterGame.board.transform.parent;
     }
 
-    public static void Activate(Vector2Int location)
+    public static void Activate(Location location)
     {
-        Piece target = OnEnterGame.gameInfo.board[location];
-        GameEvent gameEvent;
         if (tacticCaller != -1)
         {
             // use tactic
             if (!GameController.ChangeOre(-tacticTrigger.tactic.oreCost) || !GameController.ChangeCoin(-tacticTrigger.tactic.goldCost)) return;
-            gameEvent = new GameEvent(tacticTrigger.tactic);
             tacticTrigger.Activate(location);
-            GameController.RemoveTactic(tacticTrigger.tactic);
+            GameController.RemoveTactic(tacticTrigger.tactic, true);
             tacticCaller = -1;
         }
         else
         {
             // activate ability
             if (!GameController.ChangeOre(-pieceInfo.trigger.piece.oreCost)) return;
-            gameEvent = new GameEvent(pieceInfo.piece, target);
             pieceInfo.trigger.Activate(location);
             MovementController.PutDownPiece();
         }
-        onEnterGame.AddToHistory(gameEvent);
         DeactivateButton();
     }
 
@@ -85,10 +80,10 @@ public class ActivateAbility : MonoBehaviour {
     {
         activated = true;
         MovementController.HidePathDots();
-        foreach (Vector2Int loc in targetLocs)
+        foreach (Location loc in targetLocs)
         {
             GameObject copy = Instantiate(targetDot, board);
-            copy.name = Database.Vec2ToString(loc);
+            copy.name = loc.ToString();
             copy.transform.position = new Vector3(loc.x * MovementController.scale, loc.y * MovementController.scale, -2.5f);
             targetDots.Add(copy);
         }
@@ -100,7 +95,7 @@ public class ActivateAbility : MonoBehaviour {
         targetDots.Clear();
     }
 
-    public static void ShowTacticTarget(List<Vector2Int> validTargets, int caller, TacticTrigger trigger)
+    public static void ShowTacticTarget(List<Location> validTargets, int caller, TacticTrigger trigger)
     {
         actor = "tactic";
         targetLocs = validTargets;

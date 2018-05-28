@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class SeekForAdvisors : TacticTrigger
 {
-    public override void Activate(Vector2Int loc)
+    public override void Activate(Location loc)
     {
         GameController.AddPiece(Collection.Advisor, loc, Login.playerID);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
-        List<Vector2Int> target = new List<Vector2Int>();
-        foreach (Vector2Int loc in GameController.FindCastles("Advisor"))
+        List<Location> target = new List<Location>();
+        foreach (Location loc in GameController.FindCastles("Advisor"))
             if (!OnEnterGame.gameInfo.board.ContainsKey(loc))
                 target.Add(loc);
         return target;

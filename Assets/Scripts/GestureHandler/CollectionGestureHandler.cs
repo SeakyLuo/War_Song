@@ -49,9 +49,21 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
         dragBegins = false;
         CardInfo cardInfo = infoCard.GetComponent<CardInfo>();
         if (TacticGestureHandler.InTacticRegion(Input.mousePosition) && cardInfo.GetCardType() == "Tactic")
-            lineupBuilder.AddTactic(cardInfo);
+        {
+            if (!lineupBuilder.AddTactic(cardInfo))
+            {
+                collectionManager.AddCollection(new Collection(cardInfo));
+                collectionManager.ShowCurrentPage();
+            }
+        }
         else if (LineupBoardGestureHandler.InBoardRegion(Input.mousePosition) && cardInfo.GetCardType() != "Tactic")
-            lineupBuilder.AddPiece(cardInfo, Input.mousePosition);
+        {
+            if (!lineupBuilder.AddPiece(cardInfo, Input.mousePosition))
+            {
+                collectionManager.AddCollection(new Collection(cardInfo));
+                collectionManager.ShowCurrentPage();
+            }
+        }
         else
         {
             collectionManager.AddCollection(remove);
@@ -68,41 +80,40 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
         CardInfo cardInfo = selectedObject.transform.parent.Find("Card").GetComponent<CardInfo>();
         if (cardInfo.GetCardType() == "Tactic")
         {
-            lineupBuilder.AddTactic(cardInfo);
-            collectionManager.RemoveCollection(new Collection(cardInfo));
-            collectionManager.ShowCurrentPage();
+            if (lineupBuilder.AddTactic(cardInfo))
+            {
+                collectionManager.RemoveCollection(new Collection(cardInfo));
+                collectionManager.ShowCurrentPage();
+            }
         }   
         else
         {
             string cardName = cardInfo.GetCardName();
-            bool findStandard = false;
-            foreach (Vector2Int loc in boardInfo.typeLocations[cardInfo.GetCardType()])
+            Location location = Location.NoLocation;
+            foreach (Location loc in boardInfo.typeLocations[cardInfo.GetCardType()])
             {
                 Collection oldCollection = boardInfo.cardLocations[loc];
                 if ((cardInfo.IsStandard() && !oldCollection.name.StartsWith("Standard ")) ||
                     (!cardInfo.IsStandard() && oldCollection.name.StartsWith("Standard ")))
                 {
-                    findStandard = true;
-                    lineupBuilder.AddPiece(cardInfo, loc);
-                    collectionManager.RemoveCollection(new Collection(cardInfo));
-                    collectionManager.ShowCurrentPage();
+                    location = loc;
                     break;
                 }
             }
-            if (!findStandard)
-                foreach (Vector2Int loc in boardInfo.typeLocations[cardInfo.GetCardType()])
+            if (location == Location.NoLocation)
+                foreach (Location loc in boardInfo.typeLocations[cardInfo.GetCardType()])
                 {
                     Collection oldCollection = boardInfo.cardLocations[loc];
                     if (cardName != oldCollection.name || cardInfo.GetHealth() != oldCollection.health)
                     {
-                        lineupBuilder.AddPiece(cardInfo, loc);
-                        collectionManager.RemoveCollection(new Collection(cardInfo));
-                        collectionManager.ShowCurrentPage();
+                        location = loc;
                         break;
                     }
                 }
-        }            
-
+            lineupBuilder.AddPiece(cardInfo, location);
+            collectionManager.RemoveCollection(boardInfo.cardLocations[location]);
+            collectionManager.ShowCurrentPage();
+        }
     }
 
     public void SetBoardInfo(BoardInfo info) { boardInfo = info; }

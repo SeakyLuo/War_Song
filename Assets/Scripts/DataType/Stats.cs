@@ -1,6 +1,4 @@
-﻿using System;
-
-[Serializable]
+﻿[System.Serializable]
 public class Stats {
 
     public int gamesPlayed = 0;
@@ -42,7 +40,7 @@ public class Stats {
     public void SetPercentage()
     {
         if (gamesPlayed == 0) percentage = 0;
-        else percentage = Math.Round(((double)win / gamesPlayed * 100), 2);
+        else percentage = System.Math.Round(((double)win / gamesPlayed * 100), 2);
     }
 
     public bool IsNewPlayer()

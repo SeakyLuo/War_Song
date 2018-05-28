@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class ProtectTheKing : TacticTrigger
 {
@@ -8,10 +6,11 @@ public class ProtectTheKing : TacticTrigger
     {
         foreach (Piece piece in OnEnterGame.gameInfo.activePieces[Login.playerID])
             if (piece.GetPieceType() == "General"){
-                OnEnterGame.gameInfo.triggers[piece.location].cantBeDestroyedBy = new List<string>(Database.types);
-                OnEnterGame.gameInfo.triggers[piece.location].cantBeDestroyedBy.Add("Trap");
+                OnEnterGame.gameInfo.triggers[piece.location].cantBeDestroyedBy = new List<string>(Database.types)
+                {
+                    "Trap"
+                };
                 break;
             }
     }
-
 }

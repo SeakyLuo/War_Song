@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class HorribleLandmine : TacticTrigger {
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location Location)
     {
-        if(OnEnterGame.gameInfo.Destroyable(location, "Trap"))
-            GameController.Eliminate(OnEnterGame.gameInfo.board[location]);
+        if(OnEnterGame.gameInfo.Destroyable(Location, "Trap"))
+            GameController.Eliminate(OnEnterGame.gameInfo.board[Location]);
     }
 }

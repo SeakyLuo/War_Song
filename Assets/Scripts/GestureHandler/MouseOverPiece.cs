@@ -5,20 +5,20 @@ public class MouseOverPiece : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     private GameObject infoCard;
     private BoardInfo boardInfo;
-    private Vector2Int nameLoc;
+    private Location location;
 
     private void Start()
     {
         infoCard = transform.parent.parent.parent.parent.parent.Find("InfoCard").gameObject;
         boardInfo = transform.parent.GetComponent<BoardInfo>();
-        nameLoc = Database.StringToVec2(gameObject.name);
+        location = new Location(gameObject.name);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (LineupBoardGestureHandler.dragBegins) return;
         infoCard.SetActive(true);
-        infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[nameLoc]);
+        infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[location]);
         // could be closer
         infoCard.transform.position = transform.position - new Vector3(0, infoCard.GetComponent<RectTransform>().rect.y + GetComponent<RectTransform>().rect.y);
     }

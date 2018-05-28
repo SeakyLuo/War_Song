@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public class GameInfo
 {
     public static Dictionary<string, int> newTurnAction = new Dictionary<string, int> { { "move",1 }, {"ability",1}, {"tactic",1} };
 
-    public Dictionary<Vector2Int, List<Piece>> castles = new Dictionary<Vector2Int, List<Piece>>();
-    public Dictionary<Vector2Int, Piece> board = new Dictionary<Vector2Int, Piece>();
-    public Dictionary<Vector2Int, Trigger> triggers = new Dictionary<Vector2Int, Trigger>();
-    public Dictionary<Vector2Int, KeyValuePair<string, int>> traps = new Dictionary<Vector2Int, KeyValuePair<string, int>>(); // loc and trap name & creator ID
-    public Dictionary<Vector2Int, int> flags = new Dictionary<Vector2Int, int>();  // loc and player ID
+    public Dictionary<Location, List<Piece>> castles = new Dictionary<Location, List<Piece>>();
+    public Dictionary<Location, Piece> board = new Dictionary<Location, Piece>();
+    public Dictionary<Location, Trigger> triggers = new Dictionary<Location, Trigger>();
+    public Dictionary<Location, KeyValuePair<string, int>> traps = new Dictionary<Location, KeyValuePair<string, int>>(); // loc and trap name & creator ID
+    public Dictionary<Location, int> flags = new Dictionary<Location, int>();  // loc and player ID
     public Dictionary<int, List<Tactic>> unusedTactics;
     public Dictionary<int, List<Tactic>> usedTactics;
     public Dictionary<int, List<Piece>> activePieces;
@@ -85,7 +86,7 @@ public class GameInfo
         ResetActions();
     }
 
-    public void AddPiece(Trigger trigger, bool reactivate = false)
+    public void AddPiece(Trigger trigger, bool reactivate = false, bool upload = true)
     {
         Piece piece = trigger.piece;
         piece.active = true;
@@ -103,7 +104,7 @@ public class GameInfo
         }
         if (castles.ContainsKey(piece.GetCastle())) castles[piece.GetCastle()].Add(piece);
         else castles.Add(piece.GetCastle(), new List<Piece> { piece });
-        Upload();
+        if(upload) Upload();
     }
 
     public void RemovePiece(Piece piece, bool upload = true)
@@ -125,7 +126,15 @@ public class GameInfo
         if(upload) Upload();
     }
 
-    public void FreezePiece(Vector2Int location, int round)
+    public void TransformPiece(Location from, Trigger into)
+    {
+        Piece piece = board[from];
+        board[from] = into.piece;
+        triggers[from] = into;
+        activePieces[piece.ownerID][activePieces[piece.ownerID].IndexOf(piece)] = into.piece;
+    }
+
+    public void FreezePiece(Location location, int round)
     {
         Piece piece = board[location];
         int index = activePieces[Login.playerID].IndexOf(piece);
@@ -234,7 +243,7 @@ public class GameInfo
         Upload();
     }
 
-    public void Move(Vector2Int from, Vector2Int to)
+    public void Move(Location from, Location to)
     {
         Piece piece = board[from];
         board.Remove(from);
@@ -251,7 +260,7 @@ public class GameInfo
         Upload();
     }
 
-    public bool Destroyable(Vector2Int location, string destroyer)
+    public bool Destroyable(Location location, string destroyer)
     {
         return !triggers[location].cantBeDestroyedBy.Contains(destroyer);  
     }
@@ -270,11 +279,11 @@ public class GameInfo
 
     public static string ClassToJson(GameInfo gameInfo)
     {
-        return JsonUtility.ToJson(gameInfo);
+        return JsonConvert.SerializeObject(gameInfo);
     }
     public static GameInfo JsonToClass(string json)
     {
-        return JsonUtility.FromJson<GameInfo>(json);
+        return JsonConvert.DeserializeObject<GameInfo>(json);
     }
     public void Upload()
     {

@@ -57,3 +57,5 @@ Contract/Artillery Seller
 Contract/Human Resource
 Contract/Standard Contract
 Contract/Wise Elder
+Mission/Victory
+Mission/Winner

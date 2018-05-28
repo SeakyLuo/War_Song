@@ -5,10 +5,11 @@ public class CardInfo : MonoBehaviour {
 
     [HideInInspector] public PieceAttributes piece;
     [HideInInspector] public TacticAttributes tactic;
+    [HideInInspector] public TrapAttributes trap;
 
     public Text nameText, descriptionText, costText, healthText, coinText, typeText;
     public Image image, background;
-    public GameObject healthImage, coinImage;
+    public GameObject costImage, healthImage, coinImage;
     public Sprite allyBackground, enemyBackground;
 
     private string cardName, type, description;
@@ -27,6 +28,7 @@ public class CardInfo : MonoBehaviour {
             healthText.text = health.ToString();
             healthText.color = cardInfo.healthText.color;
         }
+        else if (cardInfo.trap != null) SetAttributes(cardInfo.trap, cardInfo.ownerID);
         background.sprite = cardInfo.background.sprite;
     }
 
@@ -47,8 +49,9 @@ public class CardInfo : MonoBehaviour {
     public void SetAttributes(PieceAttributes attributes, int ownerID = -1)
     {
         if (attributes == null) return;
-        tactic = null;
         piece = attributes;
+        tactic = null;
+        trap = null;
         nameText.text = attributes.Name;
         cardName = attributes.Name;
         description = attributes.description;
@@ -56,6 +59,7 @@ public class CardInfo : MonoBehaviour {
         cost = attributes.oreCost;
         costText.text = attributes.oreCost.ToString();
         health = attributes.health;
+        costImage.SetActive(true);
         healthImage.SetActive(true);
         coinImage.SetActive(false);
         healthText.text = attributes.health.ToString();
@@ -63,8 +67,7 @@ public class CardInfo : MonoBehaviour {
         image.sprite = attributes.image;
         type = attributes.type;
         typeText.text = type;
-        if (ownerID == -1) SetOwner(Login.playerID);
-        else SetOwner(ownerID);
+        SetOwner(ownerID);
     }
 
     public void SetAttributes(TacticAttributes attributes, int ownerID = -1)
@@ -72,12 +75,14 @@ public class CardInfo : MonoBehaviour {
         if (attributes == null) return;
         piece = null;
         tactic = attributes;
+        trap = null;
         nameText.text = attributes.Name;
         cardName = attributes.Name;
         description = attributes.description;
         descriptionText.text = attributes.description;
         cost = attributes.oreCost;
         costText.text = attributes.oreCost.ToString();
+        costImage.SetActive(true);
         healthImage.SetActive(false);
         coinImage.SetActive(true);
         health = attributes.goldCost;
@@ -85,8 +90,26 @@ public class CardInfo : MonoBehaviour {
         image.sprite = attributes.image;
         type = "Tactic";
         typeText.text = type;
-        if (ownerID == -1) SetOwner(Login.playerID);
-        else SetOwner(ownerID);
+        SetOwner(ownerID);
+    }
+
+    public void SetAttributes(TrapAttributes attributes, int ownerID = -1)
+    {
+        if (attributes == null) return;
+        piece = null;
+        tactic = null;
+        trap = attributes;
+        nameText.text = attributes.Name;
+        cardName = attributes.Name;
+        description = attributes.description;
+        descriptionText.text = attributes.description;
+        costImage.SetActive(false);
+        healthImage.SetActive(false);
+        coinImage.SetActive(false);
+        image.sprite = attributes.image;
+        type = "Trap";
+        typeText.text = type;
+        SetOwner(ownerID);
     }
 
     public void SetPiece(Piece setupPiece)
@@ -150,7 +173,8 @@ public class CardInfo : MonoBehaviour {
     public bool IsAlly() { return ownerID == Login.playerID; }
     public void SetOwner(int owner)
     {
-        ownerID = owner;
+        if (owner == -1) ownerID = Login.playerID;
+        else ownerID = owner;
         if(IsAlly()) background.sprite = allyBackground;
         else background.sprite = enemyBackground;
     }

@@ -21,26 +21,42 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         card = PieceInfoCard.transform.Find("Canvas/Card").gameObject;
     }
 
-    public void Setup(Collection collection, Vector2Int loc, int ownerID, bool original)
+    public void Setup(Piece piece, bool original)
     {
-        pieceAttributes = Database.FindPieceAttributes(collection.name);
-        piece = new Piece(collection, loc, pieceAttributes.oreCost, ownerID, original);
-        if (pieceAttributes.trigger != null) trigger = Instantiate(pieceAttributes.trigger);
-        if (trigger != null) trigger.piece = piece; // remove the if when all completed
+        pieceAttributes = Database.FindPieceAttributes(piece.GetName());
+        trigger = Instantiate(pieceAttributes.trigger);
+        SetPiece(piece);
         GetComponentInChildren<Image>().sprite = pieceAttributes.image;
         if (piece.IsAlly()) GetComponent<Renderer>().material = red;
         else GetComponent<Renderer>().material = black;
     }
 
-    public List<Vector2Int> ValidLoc()
+    public void Setup(Collection collection, Location loc, int ownerID, bool original)
+    {
+        pieceAttributes = Database.FindPieceAttributes(collection.name);
+        if (pieceAttributes.trigger == null) Debug.Log(pieceAttributes.Name);
+        trigger = Instantiate(pieceAttributes.trigger);
+        SetPiece(new Piece(collection, loc, pieceAttributes.oreCost, ownerID, original));
+        GetComponentInChildren<Image>().sprite = pieceAttributes.image;
+        if (piece.IsAlly()) GetComponent<Renderer>().material = red;
+        else GetComponent<Renderer>().material = black;
+    }
+
+    public void SetPiece(Piece setup)
+    {
+        piece = setup;
+        trigger.piece = setup;
+    }
+
+    public List<Location> ValidLoc()
     {
         if (trigger == null) return MovementController.ValidLocs(piece.location.x, piece.location.y, piece.GetPieceType());
         return trigger.ValidLocs(); 
     }
 
-    public List<Vector2Int> ValidTarget()
+    public List<Location> ValidTarget()
     {
-        if (trigger == null) return new List<Vector2Int>();
+        if (trigger == null) return new List<Location>();
         return trigger.ValidTargets();
     }
 
@@ -75,6 +91,6 @@ public class PieceInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     
     public PieceAttributes GetPieceAttributes() { return pieceAttributes; }
     public string GetPieceType() { return pieceAttributes.type; }
-    public void SetLocation(Vector2Int loc) { piece.location = loc; }
+    public void SetLocation(Location loc) { piece.location = loc; }
     public bool IsStandard() { return piece.IsStandard(); }
 }

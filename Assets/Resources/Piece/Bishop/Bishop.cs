@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Bishop : Trigger {
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
         if(link) GameController.AddPiece(Collection.Advisor, location, Login.playerID);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
-        List<Vector2Int> targets = new List<Vector2Int>();
-        foreach (Vector2Int loc in MovementController.boardAttributes.ElephantCastle())
+        List<Location> targets = new List<Location>();
+        foreach (Location loc in MovementController.boardAttributes.ElephantCastle())
             if (!OnEnterGame.gameInfo.board.ContainsKey(loc))
                 targets.Add(loc);
         return targets;

@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class SpaceWitch : Trigger {
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
         MovementController.Move(piece, piece.location, location);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
-        List<Vector2Int> targets = new List<Vector2Int>();
-        for(int i = MovementController.boardAttributes.palaceDownLeft.x; i <= MovementController.boardAttributes.palaceUpperRight.x; i++)
-            for(int j = MovementController.boardAttributes.palaceDownLeft.y; j <= MovementController.boardAttributes.palaceUpperRight.y; j++)
+        List<Location> targets = new List<Location>();
+        for(int i = MovementController.boardAttributes.palaceLeft; i <= MovementController.boardAttributes.palaceRight; i++)
+            for(int j = MovementController.boardAttributes.palaceDown; j <= MovementController.boardAttributes.palaceUp; j++)
             {
-                Vector2Int target = new Vector2Int(i, j);
+                Location target = new Location(i, j);
                 if (!OnEnterGame.gameInfo.board.ContainsKey(target)) targets.Add(target);
             }
         return targets;

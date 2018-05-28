@@ -78,7 +78,7 @@ public class BoardManager : MonoBehaviour {
         LoadBoard(Database.FindBoardAttributes(lineup.boardName), lineup.cardLocations);
     }
 
-    public void LoadBoard(BoardAttributes attributes, Dictionary<Vector2Int, Collection> newLocations = null)
+    public void LoadBoard(BoardAttributes attributes, Dictionary<Location, Collection> newLocations = null)
     {
         loadedBoard = Instantiate(Resources.Load<GameObject>("Board/" + attributes.Name + "/LineupBoard"), board.transform);
         loadedBoard.transform.localPosition = new Vector3(0, 0, 0);

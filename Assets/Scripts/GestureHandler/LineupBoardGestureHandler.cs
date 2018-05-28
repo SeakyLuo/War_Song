@@ -41,7 +41,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
             EnableImage(cardImage, false);
             infoCard.SetActive(true);
             infoCard.transform.position = Input.mousePosition;
-            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[Database.StringToVec2(parent.name)]);
+            infoCard.GetComponent<CardInfo>().SetAttributes(boardInfo.cardLocations[new Location(parent.name)]);
         }
     }
 
@@ -51,11 +51,11 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         infoCard.transform.position = Input.mousePosition;
     }
 
-    public static Vector2Int FindLoc(Vector3 loc)
+    public static Location FindLoc(Vector3 loc)
     {
         int x = (int)Mathf.Floor((loc.x - offsetLeft) / 100); // 100 is grid size
         int y = (int)Mathf.Floor((loc.y - offsetDown) / 100);
-        return new Vector2Int(x, y);
+        return new Location(x, y);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -66,7 +66,7 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
         {
             cardImage.GetComponent<Image>().sprite = null;
             CardInfo newCard = infoCard.GetComponent<CardInfo>();
-            GameObject find = GameObject.Find(Database.Vec2ToString(FindLoc(Input.mousePosition)));
+            GameObject find = GameObject.Find(FindLoc(Input.mousePosition).ToString());
             if (find != null)
             {
                 Transform oldObject = find.transform;
@@ -77,10 +77,10 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                     PieceAttributes attributes = boardInfo.attributesDict[oldObject.name];                    
                     if (attributes.type == newCard.GetCardType())
                     {
-                        boardInfo.SetCard(attributes, Database.StringToVec2(parent.name));
+                        boardInfo.SetCard(attributes, new Location(parent.name));
                         cardImage.GetComponent<Image>().sprite = attributes.image;
                         parent = oldObject;
-                        boardInfo.SetCard(newCard.piece, Database.StringToVec2(parent.name));
+                        boardInfo.SetCard(newCard.piece, new Location(parent.name));
                         oldCardImage.sprite = newCard.piece.image;
                     }
                     else
@@ -101,8 +101,8 @@ public class LineupBoardGestureHandler : MonoBehaviour, IPointerClickHandler, IB
                 // Drag outside the board.
                 string cardType = newCard.GetCardType();
                 collectionManager.AddCollection(new Collection(newCard.piece));
-                boardInfo.SetStandardCard(cardType, Database.StringToVec2(parent.name));
-                collectionManager.RemoveCollection(Collection.standardCollectionDict[cardType]);
+                boardInfo.SetStandardCard(cardType, new Location(parent.name));
+                collectionManager.RemoveCollection(Collection.StandardCollection(cardType));
                 collectionManager.ShowCurrentPage();
                 cardImage.sprite = Database.standardAttributes["Standard " + cardType].image;
             }

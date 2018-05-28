@@ -4616,7 +4616,6 @@ MonoBehaviour:
   tabsObj: {fileID: 1085532922}
   createLineupButton: {fileID: 67594669}
   TitleText: {fileID: 427586510}
-  pageText: {fileID: 1899953557}
   createLineupButtonText: {fileID: 734605405}
   searchByInput: {fileID: 2009662116}
 --- !u!114 &370393598
@@ -7775,7 +7774,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Well, it seems you don't have any allies currently.
+  m_Text: Oops, it seems you don't have any allies currently.
 --- !u!222 &851274278
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9919,7 +9918,7 @@ Prefab:
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -650
+      value: -660
       objectReference: {fileID: 0}
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
@@ -11122,7 +11121,6 @@ RectTransform:
   m_Children:
   - {fileID: 2095401808}
   - {fileID: 427586509}
-  - {fileID: 1899953559}
   m_Father: {fileID: 370393594}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12801,7 +12799,7 @@ Prefab:
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -650
+      value: -660
       objectReference: {fileID: 0}
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
@@ -14481,7 +14479,7 @@ Prefab:
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -650
+      value: -660
       objectReference: {fileID: 0}
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
@@ -14920,6 +14918,10 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1718669066344988, guid: 669cd415283f0be4a900b652d263b7db, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 669cd415283f0be4a900b652d263b7db, type: 2}
@@ -17692,80 +17694,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1896764842}
---- !u!1 &1899953556
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1899953559}
-  - component: {fileID: 1899953558}
-  - component: {fileID: 1899953557}
-  m_Layer: 5
-  m_Name: PageText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1899953557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1899953556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
-    m_FontStyle: 1
-    m_BestFit: 1
-    m_MinSize: 5
-    m_MaxSize: 40
-    m_Alignment: 1
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: Page
---- !u!222 &1899953558
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1899953556}
---- !u!224 &1899953559
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1899953556}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1133740510}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -460}
-  m_SizeDelta: {x: 160, y: 40}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1900424978
 GameObject:
   m_ObjectHideFlags: 0
@@ -18329,7 +18257,7 @@ Prefab:
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -650
+      value: -660
       objectReference: {fileID: 0}
     - target: {fileID: 224304635704260034, guid: 669cd415283f0be4a900b652d263b7db,
         type: 2}
@@ -18374,6 +18302,10 @@ Prefab:
     - target: {fileID: 1419300829310266, guid: 669cd415283f0be4a900b652d263b7db, type: 2}
       propertyPath: m_Name
       value: Slot4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1718669066344988, guid: 669cd415283f0be4a900b652d263b7db, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 669cd415283f0be4a900b652d263b7db, type: 2}
@@ -19182,7 +19114,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2062024707
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19277,8 +19209,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -10}
-  m_SizeDelta: {x: 1440, y: 860}
+  m_AnchoredPosition: {x: 0, y: -30}
+  m_SizeDelta: {x: 1440, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2095401809
 MonoBehaviour:
@@ -19300,7 +19232,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 360, y: 420}
-  m_Spacing: {x: 0, y: 20}
+  m_Spacing: {x: 0, y: 30}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!114 &2095401810

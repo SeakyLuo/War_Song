@@ -49,49 +49,51 @@ public class LineupBuilder : MonoBehaviour {
         boardInfo = lineupBoard.GetComponent<BoardInfo>();
     }
 
-    public void AddPiece(CardInfo cardInfo, Vector2Int loc)
+    public void AddPiece(CardInfo cardInfo, Location loc)
     {
-        PieceAdder(cardInfo, loc, loc.x, loc.y);
+        PieceAdder(cardInfo, loc);
     }
 
-    public void AddPiece(CardInfo cardInfo, Vector3 loc)
+    public bool AddPiece(CardInfo cardInfo, Vector3 loc)
     {
-        Vector2Int location = LineupBoardGestureHandler.FindLoc(loc);
+        Location location = LineupBoardGestureHandler.FindLoc(loc);
         string cardType,
-               locName = Database.Vec2ToString(location);
+               locName = location.ToString();
         if (boardInfo.locationType.TryGetValue(locName, out cardType) && cardType == cardInfo.GetCardType())
-            PieceAdder(cardInfo, location, location.x, location.y);
+        {
+            PieceAdder(cardInfo, location);
+            return true;
+        }
+        return false;
     }
 
-    private void PieceAdder(CardInfo cardInfo, Vector2Int loc, int locx, int locy)
+    private void PieceAdder(CardInfo cardInfo, Location loc)
     {
-        string locName = locx.ToString() + locy.ToString();
         if (lineupBoard == null) lineupBoard = board.transform.Find("LineupBoard(Clone)");
         Collection newCollection = new Collection(cardInfo.piece, 1, cardInfo.GetHealth());
         if (newCollection.type == "General") lineup.general = newCollection.name;
         lineup.cardLocations[loc] = newCollection;
-        lineupBoard.Find(locName).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
+        lineupBoard.Find(loc.ToString()).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
         collectionManager.AddCollection(boardInfo.cardLocations[loc]);
-        //collectionManager.RemoveCollection(new Collection(cardInfo.piece, 1, cardInfo.GetHealth()));
         collectionManager.ShowCurrentPage();
         boardInfo.SetCard(newCollection, loc);        
     }
 
-    public void AddTactic(CardInfo cardInfo)
+    public bool AddTactic(CardInfo cardInfo)
     {
         if (current_tactics == tacticsLimit)
         {
             StartCoroutine(FullReminder());
-            return;
+            return false;
         }
         else if (FindTactic(cardInfo.GetCardName()) != -1)
         {
             StartCoroutine(SameTacticReminder());
-            return;
+            return false;
         }
         TacticAdder(cardInfo.tactic);
-        //collectionManager.RemoveCollection(new Collection(cardInfo.GetCardName()));
         collectionManager.ShowCurrentPage();
+        return true;
     }
 
     private void AddTactic(Tactic tactic)
@@ -164,17 +166,17 @@ public class LineupBuilder : MonoBehaviour {
         return -1;
     }
 
-    private IEnumerator SameTacticReminder()
+    private IEnumerator SameTacticReminder(float time = 1.5f)
     {
         sameTacticReminder.SetActive(true);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(time);
         sameTacticReminder.SetActive(false);
     }
 
-    private IEnumerator FullReminder()
+    private IEnumerator FullReminder(float time = 1.5f)
     {
         fullReminder.SetActive(true);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(time);
         fullReminder.SetActive(false);
     }
 
@@ -192,8 +194,7 @@ public class LineupBuilder : MonoBehaviour {
 
     private void ResumeCollections()
     {
-        collectionManager.RemoveStandardCards();
-        collectionManager.SetCardsPerPage(8);
+        collectionManager.ShowCurrentPage();
         gameObject.SetActive(false);
         selectBoardPanel.GetComponent<BoardManager>().DestroyBoard();
     }
@@ -223,14 +224,13 @@ public class LineupBuilder : MonoBehaviour {
         if (returnCards)
         {
             // return cards
-            foreach (KeyValuePair<Vector2Int, Collection> pair in lineup.cardLocations)
+            foreach (KeyValuePair<Location, Collection> pair in lineup.cardLocations)
                 collectionManager.AddCollection(pair.Value);
             foreach (Tactic tactic in new List<Tactic>(lineup.tactics))
             {
                 RemoveTactic(tactic);
                 collectionManager.AddCollection(new Collection(tactic));
             }
-            collectionManager.RemoveStandardCards();
             collectionManager.ShowCurrentPage();
         }
         lineup = new Lineup();
@@ -274,7 +274,7 @@ public class LineupBuilder : MonoBehaviour {
                     AddTactic(tactic);
                 // can add virtual card like hearthstore
             }
-            foreach (KeyValuePair<Vector2Int, Collection> pair in newLineup.cardLocations)
+            foreach (KeyValuePair<Location, Collection> pair in newLineup.cardLocations)
             {
                 Collection collection = pair.Value;
                 if (!collectionManager.RemoveCollection(collection) || 

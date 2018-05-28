@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class PlaceAFlag : TacticTrigger
 {
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
-        GameController.PlaceFlag(location, true);
+        GameController.PlaceFlag(location, Login.playerID);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
         return MovementController.Unoccupied();
     }

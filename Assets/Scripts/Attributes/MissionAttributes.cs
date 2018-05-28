@@ -1,26 +1,24 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-[CreateAssetMenu(fileName = "Mission", menuName = "Mission")]
+[CreateAssetMenu(fileName = "Attributes", menuName = "Mission")]
 public class MissionAttributes : ScriptableObject {
 
-    public string missionName;
+    public string Name;
     [TextArea(2, 3)]
     public string description;
-    public int progress;    // a of a/b
-    public int requirement; // b of a/b
+    public int requirement; // Like Win 1 Game
     public int reward;
-
 }
 
 public class Mission
 {
-    public string missionName;
+    public string Name;
     public int progress;
 
     public Mission(string name, int Progress = 0)
     {
-        missionName = name;
+        Name = name;
         progress = Progress;
     }
 }

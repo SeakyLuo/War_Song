@@ -137,7 +137,7 @@ public class ContractsManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void SetCards()
     {
-        Login.user.ChangeContracts(targetContract.name, -contractCount);
+        Login.user.ChangeContracts(targetContract.name, -contractCount, false);
         List<string> types = Database.FindContractAttributes(targetContract.name).cardTypes;
         for(int i = 0; i < contractCount * 5; i++)
         {

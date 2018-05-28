@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class CrazyBomber : Trigger {
 
-    public override void Activate(Vector2Int location)
+    public override void Activate(Location location)
     {
-        Vector2Int prev = piece.location;
+        Location prev = piece.location;
         MovementController.Move(piece, prev, location);
         for (int i = prev.x; i < location.x; i++)
             for (int j = prev.y; j <location.y; j++)
-                GameController.PlaceTrap(new Vector2Int(i, j), Database.RandomTrap(), Login.playerID);
+                GameController.PlaceTrap(new Location(i, j), Database.RandomTrap(), Login.playerID);
     }
 
-    public override List<Vector2Int> ValidTargets()
+    public override List<Location> ValidTargets()
     {
         return MovementController.ChariotLoc(piece.location.x, piece.location.y);
     }
