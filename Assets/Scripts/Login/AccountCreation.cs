@@ -73,7 +73,6 @@ public class AccountCreation : MonoBehaviour {
             {
                 PlayerPrefs.SetString("email", email.text);
                 PlayerPrefs.SetString("password", password.text);
-
                 login.RequestLogin(email.text, password.text);
                 CancelCreation();
             }
@@ -86,12 +85,11 @@ public class AccountCreation : MonoBehaviour {
 
     public int GeneratePlayerID()
     {
-        return 10000000;
         WWWForm infoToPhp = new WWWForm();
         infoToPhp.AddField("playerID", "playerID");
-        WWW sendToPhp = new WWW("http://47.151.234.225/action_reg.php", infoToPhp);
+        WWW sendToPhp = new WWW("http://47.151.234.225/returnNumRows.php", infoToPhp);
         while (!sendToPhp.isDone) { }
-        return int.Parse(sendToPhp.text) + 10000000;        
+        return int.Parse(sendToPhp.text) + 10000000;
     }
 
     public void Agree()

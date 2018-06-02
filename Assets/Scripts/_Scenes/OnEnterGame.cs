@@ -12,14 +12,14 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     public static int history_limit = 9;
     public static GameInfo gameInfo;
 
-    public GameObject gameStartImage, victoryImage, defeatImage, drawImage, settingsPanel, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
-    public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel;
+    public GameObject gameStartImage, victoryImage, defeatImage, drawImage, yourTurnImage, notEnoughCoinsImage, notEnoughOresImage, fullTacticBag, freezeText, winReward;
+    public GameObject pathDot, targetDot, oldLocation, explosion, askTriggerPanel, settingsPanel;
     public GameObject pieceInfoCard, showInfoCard, playerFlag, enemyFlag, freezeImage;
     public Transform tacticBag, history;
     public Button endTurnButton;
     public Text roundCount, timer, modeName;
-    public Text playerName, playerWin, playerRank;
-    public Text opponentName, opponentWin, opponentRank;
+    public Text playerName, playerRank;
+    public Text opponentName, opponentRank;
     public Text oreText, coinText, endTurnText;
     [HideInInspector] public GameObject board;
     [HideInInspector] public BoardSetup boardSetup;
@@ -41,24 +41,21 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     // Use this for initialization
     void Start () {
         lineup = Login.user.lineups[Login.user.lastLineupSelected];
-        // Set GameInfo
-        gameInfo = new GameInfo(lineup, Login.playerID, new EnemyLineup(), 99999999); // should be downloading a GameInfo
-        //gameInfo.JsonToClass();
-        Login.user.SetGameID(gameInfo.gameID);
         board = Instantiate(Resources.Load<GameObject>("Board/" + lineup.boardName + "/Board"));
         board.transform.SetSiblingIndex(1);
         boardSetup = board.GetComponent<BoardSetup>();
         boardSetup.Setup(lineup, Login.playerID);  // Set up Player Lineup
         boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], 99999999);  // Set up Enemy Lineup
+        GameEvent.SetBoard(boardSetup.boardAttributes);
+
+        modeName.text = gameInfo.mode;
         // Set up Player Info
         playerName.text = Login.user.username;
-        playerWin.text = "Win%: " + Login.user.total.percentage.ToString();
         playerRank.text = "Rank: " + Login.user.rank.ToString();
         // Set up Opponent Info
-        opponentName.text = "Opponent";
-        opponentWin.text = "Win%: 80.00";
-        opponentRank.text = "Rank: 9900";
-        modeName.text = Login.user.lastModeSelected;
+        opponentName.text = gameInfo.matchInfo[gameInfo.TheOtherPlayer()].playerName;
+        opponentRank.text = "Rank: " + gameInfo.matchInfo[gameInfo.TheOtherPlayer()].rank.ToString();
+
         foreach (var item in gameInfo.triggers)
             item.Value.StartOfGame();
         SetOreText();
@@ -92,8 +89,10 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         //                item.Value.Passive(pair.Value);
         //    }
         //}
-        StartCoroutine(Timer());
         StartCoroutine(GameStartAnimation());
+        StartCoroutine(Timer());
+        if (gameInfo.currentTurn == Login.playerID) YourTurn();
+        else EnemyTurn();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -114,10 +113,9 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator GameStartAnimation()
     {
-        //gameStartImage.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        //gameStartImage.SetActive(false);
-        YourTurn();
+        gameStartImage.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        gameStartImage.SetActive(false);
     }
 
     private IEnumerator Timer()
@@ -209,7 +207,13 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             }
         }
         Login.user.ModifyLineup(lineup, Login.user.lastLineupSelected);
-        //gameInfo.Upload();
+        Login.user.SetGameID(-1);
+
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("gameID", gameInfo.gameID);
+        infoToPhp.AddField("GameEvent", "GameOver");
+        WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
     }
 
     public void Concede()
@@ -244,7 +248,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             endTurnButton.interactable = false;
             endTurnText.text = "Your Turn";
         }
-        //StartCoroutine(ShowYourTurn());
+        StartCoroutine(ShowYourTurn());
         gameInfo.ResetActions(Login.playerID);
         foreach (KeyValuePair<Location, GameObject> pair in boardSetup.pieces)
         {
@@ -262,7 +266,6 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
 
     public void NextTurn()
     {
-        endTurnText.text = "Enemy Turn";
         foreach (KeyValuePair<Location, GameObject> pair in boardSetup.pieces)
         {
             Piece piece = pair.Value.GetComponent<PieceInfo>().piece;
@@ -273,34 +276,50 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
                 trigger.EndOfTurn();
             }
         }
+
+        // Send EndTurn GameEvent
+        WWWForm infoToPhp = new WWWForm();
+        infoToPhp.AddField("gameID", gameInfo.gameID);
+        infoToPhp.AddField("playerID", gameInfo.currentTurn);
+        infoToPhp.AddField("GameEvent", GameEvent.ClassToJson(new GameEvent()));
+        WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
         gameInfo.NextTurn();
+
         roundCount.text = gameInfo.round.ToString();
         if (gameInfo.round == 150)
         {
             Draw();
             return;
         }
-        EnemyTurn();
+
+        if (gameInfo.currentTurn == Login.playerID) YourTurn();
+        else EnemyTurn();
     }
 
     public void EnemyTurn()
     {
         // Set Button interactable
-        gameInfo.ResetActions(gameInfo.TheOtherPlayer());
         SetTacticInteractable(false);
         endTurnButton.interactable = false;
         endTurnText.text = "Enemy Turn";
-
-        //WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
-        //infoToPhp.AddField("gameID", gameInfo.gameID);
-        //infoToPhp.AddField("playerID", gameInfo.TheOtherPlayer());
-        //WWW sendToPhp = new WWW("http://localhost:8888/gameinfo.php", infoToPhp);
-        //while (!sendToPhp.isDone) { }
-        // WWWForm
-        //GameController.DecodeGameEvent(GameEvent.JsonToClass(sendToPhp.text));
-        // if trigger enemyCardInfo.GetComponent<CardInfo>().SetAttributes()
-        gameInfo.NextTurn();
-        YourTurn();
+        
+        while (true)
+        {
+            WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
+            infoToPhp.AddField("gameID", gameInfo.gameID);
+            infoToPhp.AddField("playerID", gameInfo.TheOtherPlayer());
+            WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
+            // what if multiple GameEvents
+            while (!sendToPhp.isDone) { }
+            GameEvent gameEvent = GameEvent.JsonToClass(sendToPhp.text);
+            if(gameEvent.result == "EndTurn")
+            {
+                NextTurn();
+                break;
+            }
+            GameController.DecodeGameEvent(gameEvent);
+        }
     }
 
     public static void CancelTacticHighlight()

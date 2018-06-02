@@ -30,6 +30,7 @@ public class Database {
     };
 
     private static List<string> loadType = new List<string> { "Standard Piece", "Piece", "Tactic", "Board", "Trap", "Contract", "Mission" };
+    private static List<string> randomType = new List<string> { "Standard Piece", "Piece", "Tactic", "Trap" };
 
     public Database()
     {
@@ -122,6 +123,17 @@ public class Database {
         }
     }
 
+    public static Sprite RandomImage()
+    {
+        string type = randomType[Random.Range(0, randomType.Count)];
+        List<string> directory = directories[type];
+        string name = directory[Random.Range(0, directory.Count)];
+        Sprite image = null;
+        if (type.EndsWith("Piece")) image = FindPieceAttributes(name).image;
+        else if (type == "Tactic") image = FindTacticAttributes(name).image;
+        else if (type == "Trap") image = FindTrapAttributes(name).image;
+        return image;
+    }
     public static string RandomTrap() { return trapList[Random.Range(0, trapList.Count)]; }
     public static string RandomMission() { return missionList[Random.Range(0, missionList.Count)]; }
 

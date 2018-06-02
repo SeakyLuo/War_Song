@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 [System.Serializable]
 public class GameEvent {
 
-    public Location eventLocation = new Location(-1, -1);
-    public Location targetLocation = new Location(-1, -1);
+    public Location eventLocation = Location.NoLocation;
+    public Location targetLocation = Location.NoLocation;
 	public string eventTriggerName = ""; // Who (Piece or tactic) triggers this event
     public string targetTriggerName = ""; // Target name
     public int eventPlayerID = -1;
@@ -13,7 +13,13 @@ public class GameEvent {
     public string result = ""; // Piece, Tactic, Trap, Freeze, Move, Kill, Flag
     public int amount = 0;
 
-    public GameEvent() { }
+    private static int height;
+    private static int width;
+
+    public GameEvent()
+    {
+        result = "EndTurn";
+    }
 
     public GameEvent(Location from, Location to, int playerID)
     {
@@ -113,7 +119,17 @@ public class GameEvent {
         eventPlayerID = gameEvent.eventPlayerID;
         targetPlayerID = gameEvent.targetPlayerID;
     }
+    public void FlipLocation()
+    {
+        if (eventLocation != Location.NoLocation) eventLocation = new Location(width - eventLocation.x, height - eventLocation.y);
+        if (targetLocation != Location.NoLocation) targetLocation = new Location(width - targetLocation.x, height - targetLocation.y);
+    }
 
+    public static void SetBoard(BoardAttributes boardAttributes)
+    {
+        height = boardAttributes.boardHeight - 1;
+        width = boardAttributes.boardWidth - 1;
+    }
     public static string ClassToJson(GameEvent gameEvent)
     {
         return JsonConvert.SerializeObject(gameEvent);

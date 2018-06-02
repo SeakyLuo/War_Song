@@ -93,11 +93,13 @@ public class UserInfo {
     }
     public void SetLastLineupSelected(int index = -1)
     {
+        if (index == lastLineupSelected) return;
         lastLineupSelected = index;
         Upload();
     }
     public void SetPreferredBoard(string boardName = "Standard Board")
     {
+        if (preferredBoard == boardName) return;
         preferredBoard = boardName;
         Upload();
     }

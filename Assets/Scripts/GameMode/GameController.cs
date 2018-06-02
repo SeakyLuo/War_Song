@@ -41,8 +41,8 @@ public class GameController : MonoBehaviour {
         {
             settingsPanel.SetActive(true);
             MovementController.PutDownPiece();
+            return;
         }
-        //Debug.Log(OnEnterGame.gameInfo.gameOver.ToString() + "   " +(!OnEnterGame.gameInfo.gameStarts).ToString() + "   " + (OnEnterGame.gameInfo.currentTurn == Login.playerID).ToString() + "   " + onEnterGame.askTriggerPanel.activeSelf.ToString());
         if (OnEnterGame.gameInfo.gameOver ||
             !OnEnterGame.gameInfo.gameStarts ||
             OnEnterGame.gameInfo.currentTurn == Login.playerID ||
@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour {
             if (Physics.Raycast(ray, out hit))
             {
                 Collider hitObj = hit.collider;
-                if (hitObj == MovementController.selected) MovementController.PutDownPiece(); // Put down
+                if (hitObj == MovementController.selected) MovementController.PutDownPiece(); //Click the same object is also considered a PutDown
                 else if (hitObj.name == "Piece" && hitObj.GetComponent<PieceInfo>().piece.IsAlly())
                 {
                     pieceInfo = hitObj.GetComponent<PieceInfo>();
@@ -365,6 +365,7 @@ public class GameController : MonoBehaviour {
 
     public static void DecodeGameEvent(GameEvent gameEvent)
     {
+        gameEvent.FlipLocation(); // because location is different from different views
         switch (gameEvent.result)
         {
             case "Move":

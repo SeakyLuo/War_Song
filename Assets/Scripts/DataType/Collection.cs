@@ -113,8 +113,7 @@ public class Collection
         else
         {
             int typeIndex1 = Database.types.IndexOf(collection1.type), typeIndex2 = Database.types.IndexOf(collection2.type);
-            if (typeIndex1 < typeIndex2) return true;
-            else if (typeIndex1 > typeIndex2) return false;
+            if (typeIndex1 != typeIndex2) return typeIndex1 < typeIndex2;
             int oreCost1 = Database.FindPieceAttributes(collection1.name).oreCost, oreCost2 = Database.FindPieceAttributes(collection2.name).oreCost;
             return oreCost1 < oreCost2 ||
                    (oreCost1 == oreCost2 && collection1.name.CompareTo(collection2.name) < 0) ||

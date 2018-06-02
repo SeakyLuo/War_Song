@@ -22,54 +22,61 @@ public class GameInfo
     public int currentTurn; //player ID
     public int firstPlayer; //player ID
     public int secondPlayer;
+    public Dictionary<int, MatchInfo> matchInfo;
     public Dictionary<int, Lineup> lineups;
     public Dictionary<int, int> ores;
     public Dictionary<int, Dictionary<string ,int>> actions;
     public int round = 1;
     public int time = 90;
     public int maxTime = 90;
+    public string mode;
     public int gameID;
     public bool gameStarts = false;
     public bool gameOver = false;
     public int victory = -1; // -1 if draw, otherwise playerID
 
-    public GameInfo(Lineup playerLineup, int playerID, Lineup enemyLineup, int enemyID)
+    public GameInfo(string Mode, MatchInfo player, MatchInfo enemy)
     {
-        SetOrder(playerID, enemyID);
-        lineups = new Dictionary<int, Lineup>()
+        mode = Mode;
+        matchInfo = new Dictionary<int, MatchInfo>
         {
-            { playerID, playerLineup },
-            { enemyID, enemyLineup }
+            { player.playerID, player },
+            { enemy.playerID, enemy }
         };
-        ores = new Dictionary<int, int>()
+        lineups = new Dictionary<int, Lineup>
         {
-            { playerID, 30 },
-            { enemyID, 30 }
+            { player.playerID, player.lineup },
+            { enemy.playerID, enemy.lineup }
+        };
+        ores = new Dictionary<int, int>
+        {
+            { player.playerID, 30 },
+            { enemy.playerID, 30 }
         };
         ResetActions();
-        SetGameID(1);
-        boardName = playerLineup.boardName;
-        activePieces = new Dictionary<int, List<Piece>>()
+        boardName = player.lineup.boardName;
+        activePieces = new Dictionary<int, List<Piece>>
         {
-            { playerID, new List<Piece>() },
-            { enemyID, new List<Piece>() },
+            { player.playerID, new List<Piece>() },
+            { enemy.playerID, new List<Piece>() },
         };
-        inactivePieces = new Dictionary<int, List<Piece>>()
+        inactivePieces = new Dictionary<int, List<Piece>>
         {
-            { playerID, new List<Piece>() },
-            { enemyID, new List<Piece>() },
+            { player.playerID, new List<Piece>() },
+            { enemy.playerID, new List<Piece>() },
         };
-        unusedTactics = new Dictionary<int, List<Tactic>>()
+        unusedTactics = new Dictionary<int, List<Tactic>>
         {
-            { playerID, playerLineup.tactics },
-            { enemyID, enemyLineup.tactics }
+            { player.playerID, player.lineup.tactics },
+            { enemy.playerID, enemy.lineup.tactics }
         };
-        usedTactics = new Dictionary<int, List<Tactic>>()
+        usedTactics = new Dictionary<int, List<Tactic>>
         {
-            { playerID, new List<Tactic>() },
-            { enemyID, new List<Tactic>() }
+            { player.playerID, new List<Tactic>() },
+            { enemy.playerID, new List<Tactic>() }
         };
         gameStarts = true;
+        gameID = firstPlayer;
     }
     public int TheOtherPlayer()
     {
@@ -83,7 +90,7 @@ public class GameInfo
         else currentTurn = firstPlayer;
         round++;
         time = maxTime;
-        ResetActions();
+        ResetActions(currentTurn);
     }
 
     public void AddPiece(Trigger trigger, bool reactivate = false, bool upload = true)
@@ -192,18 +199,16 @@ public class GameInfo
         return -1;
     }
 
-    public void SetOrder(int player1, int player2)
+    public void SetOrder(int playerID)
     {
-        if (Random.Range(1, 2) % 2 == 1)
+        firstPlayer = playerID;
+        foreach(var item in matchInfo)
         {
-            firstPlayer = player1;
-            secondPlayer = player2;
+            if (item.Key == playerID) continue;
+            secondPlayer = item.Key;
+            break;
         }
-        else
-        {
-            firstPlayer = player2;
-            secondPlayer = player1;
-        }
+        Login.user.SetGameID(firstPlayer);
         Upload();
     }
 
@@ -233,14 +238,6 @@ public class GameInfo
     public void Act(string action, int playerID, int deltaAmount = -1)
     {
         actions[playerID][action] += deltaAmount;
-    }
-
-    public void SetGameID(int value)
-    {
-        gameID = value;
-        //firstPlayer.gameID = gameID
-        //secondPlayer.gameID = gameID
-        Upload();
     }
 
     public void Move(Location from, Location to)
@@ -276,7 +273,6 @@ public class GameInfo
         inactivePieces[secondPlayer].Clear();
         round = 1;
     }
-
     public static string ClassToJson(GameInfo gameInfo)
     {
         return JsonConvert.SerializeObject(gameInfo);
@@ -297,7 +293,7 @@ public class GameInfo
     public static GameInfo Download()
     {
         WWWForm infoToPhp = new WWWForm();
-        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
+        infoToPhp.AddField("gameID", Login.user.gameID);
 
         WWW sendToPhp = new WWW("http://localhost:8888/download_gameinfo.php", infoToPhp);
 

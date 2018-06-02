@@ -14,6 +14,7 @@ public class OnEnterPlayerMatching : MonoBehaviour
     public GameObject launchWarText, settingsPanel, matchingPanel, cancelMatchingText;
     public Transform lineups;
     public Slider slider;
+    public Image randomCardImage;
 
     private static List<string> tips = new List<string> { "Hello", "Have fun"};
 
@@ -94,39 +95,44 @@ public class OnEnterPlayerMatching : MonoBehaviour
 
     public void Match()
     {
-        // Upload Lineup Info to the server and match according to the board.
         ChangeTips();
         CancelInteractable(true);
         matchingPanel.SetActive(true);
         StartCoroutine(ShowProgress());
         Login.user.SetLastLineupSelected(lineupSelected);
-        Lineup lineup = Login.user.lineups[Login.user.lastLineupSelected];
+        MatchInfo playerMatchInfo = new MatchInfo(Login.user, Login.user.lineups[Login.user.lastLineupSelected]);
 
-        //WWWForm infoToPhp = new WWWForm();
+        WWWForm infoToPhp = new WWWForm();
         // Match by mode, boardName, (rank [less important])
-        //infoToPhp.AddField("mode", Login.user.lastModeSelected);
-        //infoToPhp.AddField("boardName", Login.user.lineups[Login.user.lastLineupSelected].boardName);
-        // Return Enemy username, rank and lineup
-        //infoToPhp.AddField("playerName", Login.user.username);
-        //infoToPhp.AddField("rank", Login.user.rank);
-        //infoToPhp.AddField("lineup", JsonUtility.ToJson(lineup));
+        infoToPhp.AddField("mode", Login.user.lastModeSelected);
+        infoToPhp.AddField("boardName", Login.user.lineups[Login.user.lastLineupSelected].boardName);
+        infoToPhp.AddField("playerID", Login.playerID);
+        infoToPhp.AddField("matchInfo", playerMatchInfo.ToJson());
+        WWW sendToPhp;
+        while (true)
+        {
+            sendToPhp = new WWW("http://47.151.234.225/returnUserMatchInfo.php", infoToPhp);
+            while (!sendToPhp.isDone)
+            {
+                if (cancel)
+                {
+                    cancel = false;
+                    return;
+                }
+            }
+            if (sendToPhp.text != "") break;
+        }
+        CancelInteractable(false);
+        // Return Enemy MatchInfo
+        MatchInfo enemyMatchInfo = MatchInfo.ToClass(sendToPhp.text);
+        OnEnterGame.gameInfo = new GameInfo(Login.user.lastModeSelected, playerMatchInfo, enemyMatchInfo);
 
-        //infoToPhp.AddField("playerID", Login.playerID);
-
-        //WWW sendToPhp = new WWW("http://47.151.234.225/match.php", infoToPhp);
-
-        //while (!sendToPhp.isDone)
-        //{
-        //    if (cancel)
-        //    {
-        //        cancel = false;
-        //        return;
-        //    }
-        //}
-        //CancelInteractable(false);
-        //OnEnterGame.gameInfo = GameInfo.JsonToClass(sendToPhp.text);
+        WWWForm order = new WWWForm();
+        order.AddField("playerID", Login.playerID);
+        WWW getOrder = new WWW("http://47.151.234.225/returnMatchOrder.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
+        OnEnterGame.gameInfo.SetOrder(int.Parse(getOrder.text));
         StopAllCoroutines();
-
         matchingPanel.SetActive(false);
         LaunchWar();
     }
@@ -150,7 +156,7 @@ public class OnEnterPlayerMatching : MonoBehaviour
     public void CancelMatching()
     {
         cancel = true;
-        // cancel network matching
+        // Cancel network matching
         matchingPanel.SetActive(false);
         StopAllCoroutines();
     }
@@ -162,10 +168,15 @@ public class OnEnterPlayerMatching : MonoBehaviour
         float increment = 0.02f;
         while (true)
         {
+            if (slider.value == 1) flip = true;
+            else if (slider.value == 0)
+            {
+                flip = false;
+                randomCardImage.sprite = Database.RandomImage();
+            }
             if (flip) slider.value -= increment;
             else slider.value += increment;
-            if (slider.value == 1) flip = true;
-            else if (slider.value == 0) flip = false;
+            randomCardImage.fillAmount = slider.value;
             yield return new WaitForSeconds(increment);
         }
     }
