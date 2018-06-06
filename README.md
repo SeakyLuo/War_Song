@@ -4,7 +4,7 @@ Basic game rules (piece movement) please see the link below.
 
 https://en.wikipedia.org/wiki/Xiangqi
 
-The game itself will also tell you where you can place your piece. And we have tactics for players to use.
+Our game is a chess game with collectibles. If you don't know how to move your pieces, the game will also show you their possible movements. And we also have tactics for players to change their game situation. Some tactics have requirements. You can move your mouse over a tactic and if it is highlighted then you can use it and vice versa.
 
 This game only works with Windows and has the best performance with Resolution 1920×1080. It is somewhat compatible with 1280×720.
 
@@ -18,9 +18,9 @@ Usage:
 5. Click "Play" and enjoy!
 
 Note:
-1. You can either create your own account or choose our existing account with email 1@1.com and password 12345678.
-2. We haven't implemented all the piece abilities and tactic effects yet, so some cards will not work as expected.
-3. Our network hasn't had its full functionality yet, so you can't match other players as well but you can enter and eplore the game mode by clicking around. And the response will be slow when using contract in the Recruit. Additionally, the json of Unity has some problems, so you will lose some data after you exit game and login again.
-4. You can get coins as many as possible from the merchant on the left of Recruit (since we have not finish network part yet), and coins can be used as purchasing contracts to get cards. You need to drag your contract to the empty space to get your cards.
-5. There is a GuideBook in the settings panel, but it's not done yet. Please don't open it.
+1. You can either create your own account or choose our existing account with email 1@1.com and password 11111111.
+2. You can get coins as many as possible from the merchant on the left side of Recruit, and coins can be used for purchasing contracts to get cards. You need to drag your contract to the empty space to get your cards.
+3. Once you get cards, you can customize your Lineup to play against other players. To create your lineup, go to Allies in the main menu and hit the Create Lineup button on the right. Then select a chess board (by now we only have one) to go to the Lineup Builder interface. Then you will see your stardand lineup and you can drag the cards to their locations to finish your lineup. (You must have 10 tactics for a lineup to be available). If you don't know where to place your piece card, you can simply click on it and it will be added automatically.
+4. You can play against other people by clicking the War button in the main menu and then selecting a Lineup and clicking Launch War. However, I believe no one else will be playing this game at the same time, so if you want to test it out you can use another computer and create another account to play against yourself. We also have another account prepared for you if you don't want to register: Email: 1@1.edu Password: 11111111
+5. There is a GuideBook in the settings panel where you can learn more about the mechanisms of our game.
 6. Source code: Assets/Scripts/
