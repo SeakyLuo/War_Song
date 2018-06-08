@@ -12,4 +12,8 @@ public class PlaceAFlag : TacticTrigger
         return MovementController.Unoccupied();
     }
 
+    public override bool Activatable()
+    {
+        return true;
+    }
 }

@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 [System.Serializable]
 public class GameEvent {
 
-    public Location eventLocation = Location.NoLocation;
-    public Location targetLocation = Location.NoLocation;
+    public Location eventLocation = new Location();
+    public Location targetLocation = new Location();
 	public string eventTriggerName = ""; // Who (Piece or tactic) triggers this event
     public string targetTriggerName = ""; // Target name
     public int eventPlayerID = -1;
@@ -13,12 +13,14 @@ public class GameEvent {
     public string result = ""; // Piece, Tactic, Trap, Freeze, Move, Kill, Flag
     public int amount = 0;
 
-    private static int height;
     private static int width;
+    private static int height;
 
-    public GameEvent()
+    public GameEvent() { }
+
+    public GameEvent(string Result)
     {
-        result = "EndTurn";
+        result = Result;
     }
 
     public GameEvent(Location from, Location to, int playerID)
@@ -35,6 +37,7 @@ public class GameEvent {
         /// Activate Ability that doesn't require targets.
         result = Result;
         eventTriggerName = piece.GetName();
+        eventLocation = piece.location;
         eventPlayerID = piece.ownerID;
     }
 
@@ -71,19 +74,12 @@ public class GameEvent {
         eventPlayerID = playerID;
     }
 
-    public GameEvent(Location EventLocation, int EventPlayerID)
+    public GameEvent(string Result, Location EventLocation, int EventPlayerID)
     {
-        /// Flag
-        result = "Flag";
+        /// Flag or RemoveFlag
+        result = Result;
         eventLocation = EventLocation;
         eventPlayerID = EventPlayerID;
-    }
-
-    public GameEvent(Location EventLocation)
-    {
-        /// RemoveFlag
-        result = "RemoveFlag";
-        eventLocation = EventLocation;
     }
 
     public GameEvent(string trapName, int trapOwnerID, Piece piece)
@@ -121,14 +117,14 @@ public class GameEvent {
     }
     public void FlipLocation()
     {
-        if (eventLocation != Location.NoLocation) eventLocation = new Location(width - eventLocation.x, height - eventLocation.y);
-        if (targetLocation != Location.NoLocation) targetLocation = new Location(width - targetLocation.x, height - targetLocation.y);
+        if (!eventLocation.IsNull()) eventLocation = new Location(width - eventLocation.x, height - eventLocation.y);
+        if (!targetLocation.IsNull()) targetLocation = new Location(width - targetLocation.x, height - targetLocation.y);
     }
 
     public static void SetBoard(BoardAttributes boardAttributes)
     {
-        height = boardAttributes.boardHeight - 1;
         width = boardAttributes.boardWidth - 1;
+        height = boardAttributes.boardHeight - 1;
     }
     public static string ClassToJson(GameEvent gameEvent)
     {
@@ -138,22 +134,25 @@ public class GameEvent {
     {
         return JsonConvert.DeserializeObject<GameEvent>(json);
     }
-    public void Upload(GameEvent gameEvent)
+    public void Upload()
     {
         WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
-        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
-        infoToPhp.AddField("userJson", ClassToJson(gameEvent));
-
-        WWW sendToPhp = new WWW("http://localhost:8888/update_userinfo.php", infoToPhp);
+        infoToPhp.AddField("gameID", OnEnterGame.gameInfo.gameID);
+        infoToPhp.AddField("playerID", Login.playerID);
+        infoToPhp.AddField("GameEvent", ClassToJson(this));
+        Debug.Log(result);
+        WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
         while (!sendToPhp.isDone) { }
     }
-    public static GameEvent Download(GameEvent gameEvent)
+    public static GameEvent Download()
     {
         WWWForm infoToPhp = new WWWForm();
-        infoToPhp.AddField("email", PlayerPrefs.GetString("email"));
-        WWW sendToPhp = new WWW("http://localhost:8888/download_userinfo.php", infoToPhp);
-
+        infoToPhp.AddField("gameID", OnEnterGame.gameInfo.gameID);
+        infoToPhp.AddField("playerID", Login.playerID);
+        WWW sendToPhp = new WWW("http://47.151.234.225/deleteGameInfo.php", infoToPhp);
         while (!sendToPhp.isDone) { }
+        Debug.Log(sendToPhp.text);
+        if (sendToPhp.text == "" || sendToPhp.text.Contains("Warning")) return null;
         return JsonToClass(sendToPhp.text);  //sendToPhp.text is the userInfo json file
     }
 }

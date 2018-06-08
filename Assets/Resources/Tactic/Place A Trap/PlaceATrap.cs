@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class PlaceATrap : TacticTrigger {
     public override void Activate(Location location)
@@ -12,4 +11,8 @@ public class PlaceATrap : TacticTrigger {
         return MovementController.Unoccupied();
     }
 
+    public override bool Activatable()
+    {
+        return true;
+    }
 }

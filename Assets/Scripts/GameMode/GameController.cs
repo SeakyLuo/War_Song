@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour {
     [HideInInspector] public GameObject settingsPanel;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         onEnterGame = GameObject.Find("UIPanel").GetComponent<OnEnterGame>();
         boardSetup = onEnterGame.boardSetup;
         boardCanvas = onEnterGame.board.transform.Find("Canvas");
@@ -33,6 +33,8 @@ public class GameController : MonoBehaviour {
         };
         flags = new Dictionary<Location, GameObject>();
         freezeImages = new Dictionary<Location, GameObject>();
+        if (OnEnterGame.gameInfo.currentTurn == Login.playerID) onEnterGame.YourTurn();
+        else onEnterGame.EnemyTurn();
     }
 
     private void Update()
@@ -45,8 +47,13 @@ public class GameController : MonoBehaviour {
         }
         if (OnEnterGame.gameInfo.gameOver ||
             !OnEnterGame.gameInfo.gameStarts ||
-            OnEnterGame.gameInfo.currentTurn == Login.playerID ||
             onEnterGame.askTriggerPanel.activeSelf) return;
+        if (OnEnterGame.gameInfo.currentTurn != Login.playerID)
+        {
+            GameEvent gameEvent = GameEvent.Download();
+            if (gameEvent != null) DecodeGameEvent(gameEvent);
+            return;
+        }
         if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -155,7 +162,12 @@ public class GameController : MonoBehaviour {
     public static void RemoveTactic(Tactic tactic, bool useTactic = false)
     {
         onEnterGame.RemoveTactic(tactic);
-        if(!useTactic) onEnterGame.AddToHistory(new GameEvent("Discard", tactic));
+        if (!useTactic)
+        {
+            GameEvent gameEvent = new GameEvent("Discard", tactic);
+            gameEvent.Upload();
+            onEnterGame.AddToHistory(gameEvent);
+        }
     }
 
     public static void ChangePieceHealth(Location location, int deltaAmount, GameEvent gameEvent = null)
@@ -171,6 +183,7 @@ public class GameController : MonoBehaviour {
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
         if (gameEvent == null) gameEvent = new GameEvent("PieceHealth", before, after, deltaAmount);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
     public static void ChangePieceOreCost(Location location, int deltaAmount, GameEvent gameEvent = null)
@@ -185,6 +198,7 @@ public class GameController : MonoBehaviour {
         else OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()][OnEnterGame.gameInfo.activePieces[OnEnterGame.gameInfo.TheOtherPlayer()].IndexOf(before)] = after;
         OnEnterGame.gameInfo.Upload();
         if (gameEvent == null) gameEvent = new GameEvent("PieceCost", before, after, deltaAmount);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
     public static void ChangeTacticOreCost(string tacticName, int deltaAmount, GameEvent gameEvent = null)
@@ -196,6 +210,7 @@ public class GameController : MonoBehaviour {
         onEnterGame.ChangeTacticOreCost(index, deltaAmount);
         OnEnterGame.gameInfo.Upload();
         if (gameEvent == null) gameEvent = new GameEvent("TacticOre", tactic, deltaAmount);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
     public static void ChangeTacticGoldCost(string tacticName, int deltaAmount, GameEvent gameEvent = null)
@@ -207,24 +222,23 @@ public class GameController : MonoBehaviour {
         onEnterGame.ChangeTacticGoldCost(index, deltaAmount);
         OnEnterGame.gameInfo.Upload();
         if (gameEvent == null) gameEvent = new GameEvent("TacticGold", tactic, deltaAmount);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
     public static void Eliminate(Piece piece, bool revenge = true, GameEvent gameEvent = null)
     {
-        if (revenge)
+        if (revenge && OnEnterGame.gameInfo.triggers[piece.location].revenge)
         {
             OnEnterGame.gameInfo.triggers[piece.location].Revenge();
             onEnterGame.AddToHistory(new GameEvent(piece));
         }
-        gameEvent = new GameEvent(piece, "Kill");
+        if (gameEvent == null) gameEvent = new GameEvent(piece, "Kill");
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
         Destroy(boardSetup.pieces[piece.location]);
         boardSetup.pieces.Remove(piece.location);
         OnEnterGame.gameInfo.RemovePiece(piece);
-
-        if (gameEvent == null) gameEvent = new GameEvent(gameEvent.eventLocation, gameEvent.eventPlayerID);
-        onEnterGame.AddToHistory(gameEvent);
     }
 
     public static void Eliminate(Location location, Piece triggeredByPiece = null, bool revenge = true, GameEvent gameEvent = null)
@@ -243,6 +257,7 @@ public class GameController : MonoBehaviour {
             if (triggeredByPiece == null) gameEvent = new GameEvent(triggeredByPiece, "Kill");
             else gameEvent = new GameEvent(triggeredByPiece, "Kill");
         }
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
@@ -252,6 +267,7 @@ public class GameController : MonoBehaviour {
         onEnterGame.Defreeze(from.location);
 
         if (gameEvent == null) gameEvent = new GameEvent("Transform", from, into);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
@@ -266,6 +282,7 @@ public class GameController : MonoBehaviour {
         freezeImages.Add(location, freezeImage);
 
         if (gameEvent == null) gameEvent = new GameEvent("Freeze", OnEnterGame.gameInfo.board[location], round);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
@@ -285,7 +302,8 @@ public class GameController : MonoBehaviour {
         flags.Add(location, flag);
         OnEnterGame.gameInfo.Upload();
 
-        if (gameEvent == null) gameEvent = new GameEvent(location, ownerID);
+        if (gameEvent == null) gameEvent = new GameEvent("Flag", location, ownerID);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
@@ -296,7 +314,8 @@ public class GameController : MonoBehaviour {
         OnEnterGame.gameInfo.flags.Remove(location);
         OnEnterGame.gameInfo.Upload();
 
-        if (gameEvent == null) gameEvent = new GameEvent(location);
+        if (gameEvent == null) gameEvent = new GameEvent("RemoveFlag", location, Login.playerID);
+        gameEvent.Upload();
         onEnterGame.AddToHistory(gameEvent);
     }
 
@@ -368,11 +387,23 @@ public class GameController : MonoBehaviour {
         gameEvent.FlipLocation(); // because location is different from different views
         switch (gameEvent.result)
         {
+            case "EndTurn":
+                onEnterGame.NextTurn(false);
+                break;
+            case "Victory":
+                onEnterGame.Defeat(false);
+                break;
+            case "Defeat":
+                onEnterGame.Draw(false);
+                break;
+            case "Draw":
+                onEnterGame.Victory(false);
+                break;
             case "Move":
-                MovementController.Move(OnEnterGame.gameInfo.board[gameEvent.eventLocation], gameEvent.eventLocation, gameEvent.targetLocation);
+                MovementController.Move(OnEnterGame.gameInfo.board[gameEvent.eventLocation], gameEvent.eventLocation, gameEvent.targetLocation, false);
                 break;
             case "Kill":
-                Eliminate(OnEnterGame.gameInfo.board[gameEvent.targetLocation]);
+                Eliminate(OnEnterGame.gameInfo.board[gameEvent.eventLocation]);
                 break;
             case "Freeze":
                 FreezePiece(gameEvent.targetLocation, gameEvent.amount);

@@ -9,9 +9,6 @@ public class Settings : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (LogoutPanelActive() ||
-            CreditPanelActive() ||
-            GuideBookPanelActive()) return;
         GameObject close = mainSettingsPanel;
         if (optionsPanel.activeSelf) close = optionsPanel;
         else if (GuideBookPanelActive()) close = guidebookPanel;

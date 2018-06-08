@@ -35,7 +35,7 @@ public class GameInfo
     public bool gameOver = false;
     public int victory = -1; // -1 if draw, otherwise playerID
 
-    public GameInfo(string Mode, MatchInfo player, MatchInfo enemy)
+    public GameInfo(string Mode, MatchInfo player, MatchInfo enemy, int order)
     {
         mode = Mode;
         matchInfo = new Dictionary<int, MatchInfo>
@@ -53,7 +53,6 @@ public class GameInfo
             { player.playerID, 30 },
             { enemy.playerID, 30 }
         };
-        ResetActions();
         boardName = player.lineup.boardName;
         activePieces = new Dictionary<int, List<Piece>>
         {
@@ -76,7 +75,8 @@ public class GameInfo
             { enemy.playerID, new List<Tactic>() }
         };
         gameStarts = true;
-        gameID = firstPlayer;
+        SetOrder(order);
+        ResetActions();
     }
     public int TheOtherPlayer()
     {
@@ -129,7 +129,7 @@ public class GameInfo
             activePieces[TheOtherPlayer()].Remove(piece);
             inactivePieces[TheOtherPlayer()].Add(piece);
         }
-        castles[piece.location].Remove(piece);
+        castles[piece.GetCastle()].Remove(piece);
         if(upload) Upload();
     }
 
@@ -208,6 +208,8 @@ public class GameInfo
             secondPlayer = item.Key;
             break;
         }
+        gameID = playerID;
+        currentTurn = playerID;
         Login.user.SetGameID(firstPlayer);
         Upload();
     }

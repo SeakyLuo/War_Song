@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LineupBuilder : MonoBehaviour {
     // Recommend Tactics || Random Tactics
-    public static int tacticsLimit = 10, current_tactics = 0;
+    public static int current_tactics = 0;
     public static Lineup copy = new Lineup();
 
     public GameObject selectBoardPanel, copyReminder, fullReminder, sameTacticReminder;
@@ -71,7 +71,6 @@ public class LineupBuilder : MonoBehaviour {
     {
         if (lineupBoard == null) lineupBoard = board.transform.Find("LineupBoard(Clone)");
         Collection newCollection = new Collection(cardInfo.piece, 1, cardInfo.GetHealth());
-        if (newCollection.type == "General") lineup.general = newCollection.name;
         lineup.cardLocations[loc] = newCollection;
         lineupBoard.Find(loc.ToString()).Find("CardImage").GetComponent<Image>().sprite = cardInfo.image.sprite;
         collectionManager.AddCollection(boardInfo.cardLocations[loc]);
@@ -81,7 +80,7 @@ public class LineupBuilder : MonoBehaviour {
 
     public bool AddTactic(CardInfo cardInfo)
     {
-        if (current_tactics == tacticsLimit)
+        if (current_tactics == Lineup.tacticLimit)
         {
             StartCoroutine(FullReminder());
             return false;
@@ -211,7 +210,6 @@ public class LineupBuilder : MonoBehaviour {
     {
         lineup.cardLocations = boardInfo.cardLocations;
         lineup.boardName = boardInfo.attributes.Name;
-        lineup.complete = (lineup.tactics.Count == Lineup.tacticLimit);
         // Incomplete Reminder
         lineupsManager.AddLineup(lineup);
         // upload to the server

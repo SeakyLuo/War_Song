@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Networking;
-using UnityEngine.Networking.Match;
-using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -22,6 +19,9 @@ public class OnEnterPlayerMatching : MonoBehaviour
     private List<GameObject> xs;
     private bool cancel = false;
     private int lineupSelected = -1;
+    private bool matchStart = false;
+    private WWWForm infoToPhp;
+    private MatchInfo playerMatchInfo;
 
     private void Start()
     {
@@ -36,9 +36,9 @@ public class OnEnterPlayerMatching : MonoBehaviour
             if (i < lineupsCount)
             {
                 lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
-                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].general).image;
-                lineupObjects[i].GetComponent<Button>().interactable = Login.user.lineups[i].complete;
-                xs[i].SetActive(!Login.user.lineups[i].complete);
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].GetGeneral()).image;
+                lineupObjects[i].GetComponent<Button>().interactable = Login.user.lineups[i].IsComplete();
+                xs[i].SetActive(!Login.user.lineups[i].IsComplete());
             }
             else lineupObjects[i].SetActive(false);
         }
@@ -66,31 +66,24 @@ public class OnEnterPlayerMatching : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
             settingsPanel.SetActive(true);
-    }
-
-    public void Back()
-    {
-        SceneManager.LoadScene("Main");
-    }
-
-    public void EnterCollection()
-    {
-        SwitchScenes.switchSceneCaller = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene("Collection");
-    }
-
-    public void RankedMode()
-    {
-        Login.user.lastModeSelected = "Ranked Mode";
-        rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.pressedSprite;
-        casualMode.GetComponent<Image>().sprite = casualMode.spriteState.disabledSprite;
-    }
-
-    public void CasualMode()
-    {
-        Login.user.lastModeSelected = "Casual Mode";
-        rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.disabledSprite;
-        casualMode.GetComponent<Image>().sprite = casualMode.spriteState.pressedSprite;
+        if (!matchStart || cancel) return;
+        WWW sendToPhp = new WWW("http://47.151.234.225/returnUserMatchInfo.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
+        if (sendToPhp.text != "" && !sendToPhp.text.Contains("Warning"))
+        {
+            matchStart = false;
+            CancelInteractable(false);
+            // Return Enemy MatchInfo
+            MatchInfo enemyMatchInfo = MatchInfo.ToClass(sendToPhp.text);
+            WWWForm order = new WWWForm();
+            order.AddField("playerID", Login.playerID);
+            WWW getOrder = new WWW("http://47.151.234.225/returnMatchOrder.php", order);
+            while (!getOrder.isDone) { }
+            OnEnterGame.gameInfo = new GameInfo(Login.user.lastModeSelected, playerMatchInfo, enemyMatchInfo, int.Parse(getOrder.text));
+            StopAllCoroutines();
+            matchingPanel.SetActive(false);
+            LaunchWar();
+        }
     }
 
     public void Match()
@@ -100,63 +93,26 @@ public class OnEnterPlayerMatching : MonoBehaviour
         matchingPanel.SetActive(true);
         StartCoroutine(ShowProgress());
         Login.user.SetLastLineupSelected(lineupSelected);
-        MatchInfo playerMatchInfo = new MatchInfo(Login.user, Login.user.lineups[Login.user.lastLineupSelected]);
-
-        WWWForm infoToPhp = new WWWForm();
-        // Match by mode, boardName, (rank [less important])
+        playerMatchInfo = new MatchInfo(Login.user, Login.user.lineups[Login.user.lastLineupSelected]);
+        matchStart = true;
+        infoToPhp = new WWWForm();
         infoToPhp.AddField("mode", Login.user.lastModeSelected);
         infoToPhp.AddField("boardName", Login.user.lineups[Login.user.lastLineupSelected].boardName);
         infoToPhp.AddField("playerID", Login.playerID);
         infoToPhp.AddField("matchInfo", playerMatchInfo.ToJson());
-        WWW sendToPhp;
-        while (true)
-        {
-            sendToPhp = new WWW("http://47.151.234.225/returnUserMatchInfo.php", infoToPhp);
-            while (!sendToPhp.isDone)
-            {
-                if (cancel)
-                {
-                    cancel = false;
-                    return;
-                }
-            }
-            if (sendToPhp.text != "") break;
-        }
-        CancelInteractable(false);
-        // Return Enemy MatchInfo
-        MatchInfo enemyMatchInfo = MatchInfo.ToClass(sendToPhp.text);
-        OnEnterGame.gameInfo = new GameInfo(Login.user.lastModeSelected, playerMatchInfo, enemyMatchInfo);
-
-        WWWForm order = new WWWForm();
-        order.AddField("playerID", Login.playerID);
-        WWW getOrder = new WWW("http://47.151.234.225/returnMatchOrder.php", infoToPhp);
+        WWW sendToPhp = new WWW("http://47.151.234.225/uploadMatchUsers.php", infoToPhp);
         while (!sendToPhp.isDone) { }
-        OnEnterGame.gameInfo.SetOrder(int.Parse(getOrder.text));
-        StopAllCoroutines();
-        matchingPanel.SetActive(false);
-        LaunchWar();
     }
-
-    //public void Connect()
-    //{
-    //    SocketAsyncEventArgs connectArgs = new SocketAsyncEventArgs();
-    //    connectArgs.UserToken = this.clientSocket;   //关联用户的Socket对象
-    //    connectArgs.RemoteEndPoint = this.hostEndPoint;
-    //    connectArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnConnect);   //注册完成事件
-    //    clientSocket.ConnectAsync(connectArgs);
-    //    autoConnectEvent.WaitOne();   //等待连接结果
-
-    //    SocketError errorCode = connectArgs.SocketError;
-    //    if (errorCode != SocketError.Success)
-    //    {
-    //        throw new SocketException((int)errorCode);
-    //    }
-    //}
 
     public void CancelMatching()
     {
         cancel = true;
+        matchStart = false;
         // Cancel network matching
+        WWWForm deleteMatchInfo = new WWWForm();
+        deleteMatchInfo.AddField("playerID", Login.playerID);
+        WWW sendToPhp = new WWW("http://47.151.234.225/deleteMatchUsers.php", infoToPhp);
+        while (!sendToPhp.isDone) { }
         matchingPanel.SetActive(false);
         StopAllCoroutines();
     }
@@ -195,6 +151,31 @@ public class OnEnterPlayerMatching : MonoBehaviour
     private void LaunchWar()
     {
         SceneManager.LoadScene("GameMode");
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
+    public void EnterCollection()
+    {
+        SwitchScenes.switchSceneCaller = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene("Collection");
+    }
+
+    public void RankedMode()
+    {
+        Login.user.lastModeSelected = "Ranked Mode";
+        rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.pressedSprite;
+        casualMode.GetComponent<Image>().sprite = casualMode.spriteState.disabledSprite;
+    }
+
+    public void CasualMode()
+    {
+        Login.user.lastModeSelected = "Casual Mode";
+        rankedMode.GetComponent<Image>().sprite = rankedMode.spriteState.disabledSprite;
+        casualMode.GetComponent<Image>().sprite = casualMode.spriteState.pressedSprite;
     }
 
     public void SelectLineup(int number)

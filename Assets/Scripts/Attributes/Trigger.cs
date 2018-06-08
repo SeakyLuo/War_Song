@@ -7,6 +7,7 @@ public class Trigger: ScriptableObject {
     public int effectiveRound = 1;
     public int limitedUse = -1; // -1 if unlimited
     public string passive = ""; // Can only be Tactic or Piece or ""
+    public bool revenge = false;
     public bool activatable = false;
     public bool bloodThirsty = false;
     public bool afterMove = false;
@@ -20,14 +21,14 @@ public class Trigger: ScriptableObject {
     public delegate List<Location> ValidLocations(int x, int y, bool link = false);
     public ValidLocations validLocations;
     public delegate void AssignRevenge();
-    public AssignRevenge revenge;
+    public AssignRevenge activateRevenge;
 
     protected bool link = false;
 
     public virtual void StartOfGame() { }
     public virtual void Activate() { }  // Override this if NO targets required
     public virtual void Activate(Location location) { } // Override this if target Piece required
-    public virtual void Revenge() { if (revenge != null) revenge(); } // triggered when eliminated
+    public virtual void Revenge() { if (activateRevenge != null) activateRevenge(); } // triggered when eliminated
     public virtual void BloodThirsty() { } // triggered when kills someone
     public virtual List<Location> ValidLocs(bool link = false)
     {

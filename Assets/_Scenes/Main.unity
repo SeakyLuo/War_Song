@@ -304,10 +304,10 @@ RectTransform:
   - {fileID: 85296755}
   - {fileID: 671672178}
   - {fileID: 479201958}
-  - {fileID: 1717709615}
   - {fileID: 750393239}
   - {fileID: 1866505610}
   - {fileID: 185524018}
+  - {fileID: 1717709615}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -723,7 +723,7 @@ RectTransform:
   m_Children:
   - {fileID: 739238028}
   m_Father: {fileID: 53613888}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -4461,7 +4461,7 @@ Prefab:
     - target: {fileID: 224284930777132224, guid: 6b4b8898f9da8484fb41693e8722fc8c,
         type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 224284930777132224, guid: 6b4b8898f9da8484fb41693e8722fc8c,
         type: 2}
@@ -4513,11 +4513,6 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114382216576854294, guid: 6b4b8898f9da8484fb41693e8722fc8c,
-        type: 2}
-      propertyPath: parentCanvas
-      value: 
-      objectReference: {fileID: 53613887}
     - target: {fileID: 114382216576854294, guid: 6b4b8898f9da8484fb41693e8722fc8c,
         type: 2}
       propertyPath: canvas

@@ -89,7 +89,7 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
         else
         {
             string cardName = cardInfo.GetCardName();
-            Location location = Location.NoLocation;
+            Location location = new Location();
             foreach (Location loc in boardInfo.typeLocations[cardInfo.GetCardType()])
             {
                 Collection oldCollection = boardInfo.cardLocations[loc];
@@ -100,7 +100,7 @@ public class CollectionGestureHandler : MonoBehaviour, IPointerClickHandler, IBe
                     break;
                 }
             }
-            if (location == Location.NoLocation)
+            if (location.IsNull())
                 foreach (Location loc in boardInfo.typeLocations[cardInfo.GetCardType()])
                 {
                     Collection oldCollection = boardInfo.cardLocations[loc];

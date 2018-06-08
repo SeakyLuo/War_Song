@@ -7,13 +7,9 @@ using Newtonsoft.Json.Serialization;
 [Serializable]
 public class Location
 {
-    public int x;
-    public int y;
-    public Location()
-    {
-        x = 0;
-        y = 0;
-    }
+    public int x = -1;
+    public int y = -1;
+    public Location() { }
     public Location(int X, int Y)
     {
         x = X;
@@ -30,8 +26,6 @@ public class Location
         x = int.Parse(parts[0]);
         y = int.Parse(parts[1]);
     }
-    public readonly static Location zero = new Location(0, 0);
-    public readonly static Location NoLocation = new Location(-1, -1);
     public bool Between(Location a, Location b, string compare = "XY")
     {
         /// Compare can only be "XY" or "X" or "Y". a and b are exclusive.
@@ -40,6 +34,7 @@ public class Location
         if (compare == "Y") return x == a.x && x == b.x && a.y < y && y < b.y;
         else return false;
     }
+    public bool IsNull() { return x == -1 && y == -1; }
     public static bool CorrectFormat(string str)
     {
         return str[0] == '(' && str.EndsWith(")") && str.Contains(", ");
@@ -83,7 +78,8 @@ public class Location
     }
     public static bool operator !=(Location a, Location b)
     {
-        return !(a == b);
+        UnityEngine.Debug.Log(a + " " + b);
+        return a.x != b.x || a.y != b.y;
     }
     public static bool operator <(Location a, Location b)
     {
@@ -112,7 +108,6 @@ public class DictionaryAsArrayResolver : DefaultContractResolver
         {
             return base.CreateArrayContract(objectType);
         }
-
         return base.CreateContract(objectType);
     }
 }

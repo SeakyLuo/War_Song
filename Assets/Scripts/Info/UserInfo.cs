@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -81,10 +80,10 @@ public class UserInfo {
         lineups.Add(lineup);
         Upload();
     }
-    public void ModifyLineup(Lineup lineup, int index, bool upload = true)
+    public void ModifyLineup(Lineup lineup, int index)
     {
         lineups[index] = lineup;
-        if (upload) Upload();
+        Upload();
     }
     public void RemoveLineup(int index)
     {
@@ -117,7 +116,7 @@ public class UserInfo {
     public void ChangeMission(int number)
     {
         missions[number] = new Mission(Database.RandomMission());
-        //missionSwitched = true;
+        missionSwitched = true;
         //Upload();
     }
     public void Win()

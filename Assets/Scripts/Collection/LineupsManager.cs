@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class LineupsManager : MonoBehaviour {
@@ -27,7 +25,7 @@ public class LineupsManager : MonoBehaviour {
             if (i < lineupsCount)
             {                
                 lineupObjects[i].GetComponentInChildren<Text>().text = Login.user.lineups[i].lineupName;
-                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].general).image;
+                lineupObjects[i].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[i].GetGeneral()).image;
             }
             else lineupObjects[i].SetActive(false);
         }
@@ -55,7 +53,7 @@ public class LineupsManager : MonoBehaviour {
             }
             Login.user.AddLineup(lineup);
             lineupObjects[lineupsCount].SetActive(true);
-            lineupObjects[lineupsCount].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[lineupsCount].general).image;
+            lineupObjects[lineupsCount].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[lineupsCount].GetGeneral()).image;
             lineupObjects[lineupsCount++].GetComponentInChildren<Text>().text = lineup.lineupName;
             myLineups.text = "My Lineups\n" + lineupsCount.ToString() + "/9";
             if (lineupsCount == lineupsLimit) createLineupButton.SetActive(false);
@@ -65,7 +63,7 @@ public class LineupsManager : MonoBehaviour {
         else
         {
             Login.user.ModifyLineup(lineup, modifyLineup);
-            lineupObjects[modifyLineup].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[modifyLineup].general).image;
+            lineupObjects[modifyLineup].transform.Find("ImagePanel/Image").GetComponent<Image>().sprite = Database.FindPieceAttributes(Login.user.lineups[modifyLineup].GetGeneral()).image;
             lineupObjects[modifyLineup].GetComponentInChildren<Text>().text = lineup.lineupName;
             modifyLineup = -1;
         }

@@ -39,13 +39,13 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     private static string triggerMessage;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         lineup = Login.user.lineups[Login.user.lastLineupSelected];
         board = Instantiate(Resources.Load<GameObject>("Board/" + lineup.boardName + "/Board"));
         board.transform.SetSiblingIndex(1);
         boardSetup = board.GetComponent<BoardSetup>();
         boardSetup.Setup(lineup, Login.playerID);  // Set up Player Lineup
-        boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], 99999999);  // Set up Enemy Lineup
+        boardSetup.Setup(gameInfo.lineups[gameInfo.TheOtherPlayer()], gameInfo.TheOtherPlayer());  // Set up Enemy Lineup
         GameEvent.SetBoard(boardSetup.boardAttributes);
 
         modeName.text = gameInfo.mode;
@@ -64,7 +64,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         tacticObjs = new List<Transform>();
         tacticButtons = new List<Button>();
         tacticTriggers = new List<TacticTrigger>();
-        for (int i = 0; i < LineupBuilder.tacticsLimit; i++)
+        for (int i = 0; i < Lineup.tacticLimit; i++)
         {
             Transform tacticSlot = tacticBag.Find(String.Format("TacticSlot{0}", i));
             tacticButtons.Add(tacticSlot.GetComponent<Button>());
@@ -91,8 +91,6 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         //}
         StartCoroutine(GameStartAnimation());
         StartCoroutine(Timer());
-        if (gameInfo.currentTurn == Login.playerID) YourTurn();
-        else EnemyTurn();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -133,21 +131,23 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void Victory()
+    public void Victory(bool upload = true)
     {
         gameInfo.victory = Login.playerID;
         victoryImage.SetActive(true);
         Login.user.Win();
         GameOver();
+        if(upload) new GameEvent("GameOver").Upload();
     }
-    public void Defeat()
+    public void Defeat(bool upload = true)
     {
         gameInfo.victory = gameInfo.TheOtherPlayer();
         defeatImage.SetActive(true);
         Login.user.Lose();
         GameOver();
+        if (upload) new GameEvent("GameOver").Upload();
     }
-    public void Draw()
+    public void Draw(bool upload = true)
     {
         bool playerTrophy = gameInfo.FindUsedTactic("Winner's Trophy", Login.playerID) != -1,
              enemyTrophy = gameInfo.FindUsedTactic("Winner's Trophy", gameInfo.TheOtherPlayer()) != -1;
@@ -159,6 +159,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             drawImage.SetActive(true);
             Login.user.Draw();
             GameOver();
+            if (upload) new GameEvent("GameOver").Upload();
         }
     }
 
@@ -200,20 +201,10 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
             if (gameInfo.unusedTactics[Login.playerID].Contains(tactic)) continue;
             int index = Login.user.FindCollection(tactic.tacticName);
             if (Login.user.collection[index].count > 1) Login.user.ChangeCollectionCount(index, -1, false);
-            else
-            {
-                lineup.tactics.Remove(tactic);
-                lineup.complete = false;
-            }
+            else lineup.tactics.Remove(tactic);
         }
         Login.user.ModifyLineup(lineup, Login.user.lastLineupSelected);
         Login.user.SetGameID(-1);
-
-        WWWForm infoToPhp = new WWWForm();
-        infoToPhp.AddField("gameID", gameInfo.gameID);
-        infoToPhp.AddField("GameEvent", "GameOver");
-        WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
-        while (!sendToPhp.isDone) { }
     }
 
     public void Concede()
@@ -257,14 +248,14 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         }
         SetTacticInteractable();
     }
-    private IEnumerator ShowYourTurn(float time = 1.5f)
+    private IEnumerator ShowYourTurn(float time = 2f)
     {
         yourTurnImage.SetActive(true);
         yield return new WaitForSeconds(time);
         yourTurnImage.SetActive(false);
     }
 
-    public void NextTurn()
+    public void NextTurn(bool upload = true)
     {
         foreach (KeyValuePair<Location, GameObject> pair in boardSetup.pieces)
         {
@@ -278,12 +269,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         }
 
         // Send EndTurn GameEvent
-        WWWForm infoToPhp = new WWWForm();
-        infoToPhp.AddField("gameID", gameInfo.gameID);
-        infoToPhp.AddField("playerID", gameInfo.currentTurn);
-        infoToPhp.AddField("GameEvent", GameEvent.ClassToJson(new GameEvent()));
-        WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
-        while (!sendToPhp.isDone) { }
+        if(upload) new GameEvent("EndTurn").Upload();
         gameInfo.NextTurn();
 
         roundCount.text = gameInfo.round.ToString();
@@ -303,23 +289,6 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
         SetTacticInteractable(false);
         endTurnButton.interactable = false;
         endTurnText.text = "Enemy Turn";
-        
-        while (true)
-        {
-            WWWForm infoToPhp = new WWWForm(); //create WWWform to send to php script
-            infoToPhp.AddField("gameID", gameInfo.gameID);
-            infoToPhp.AddField("playerID", gameInfo.TheOtherPlayer());
-            WWW sendToPhp = new WWW("http://47.151.234.225/uploadToGameInfo.php", infoToPhp);
-            // what if multiple GameEvents
-            while (!sendToPhp.isDone) { }
-            GameEvent gameEvent = GameEvent.JsonToClass(sendToPhp.text);
-            if(gameEvent.result == "EndTurn")
-            {
-                NextTurn();
-                break;
-            }
-            GameController.DecodeGameEvent(gameEvent);
-        }
     }
 
     public static void CancelTacticHighlight()
@@ -355,7 +324,7 @@ public class OnEnterGame : MonoBehaviour, IPointerClickHandler
     public void AddTactic(Tactic tactic)
     {
         int count = gameInfo.unusedTactics[Login.playerID].Count;
-        if (count == LineupBuilder.tacticsLimit) StartCoroutine(ShowFullTacticBag());
+        if (count == Lineup.tacticLimit) StartCoroutine(ShowFullTacticBag());
         else
         {
             gameInfo.AddTactic(tactic);

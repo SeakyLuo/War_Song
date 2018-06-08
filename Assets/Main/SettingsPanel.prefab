@@ -2240,7 +2240,7 @@ MonoBehaviour:
   logoutPanel: {fileID: 1064685874381280}
   creditsPanel: {fileID: 1310785742778772}
   guidebookPanel: {fileID: 1189826239162320}
-  parentCanvas: {fileID: 0}
+  canvas: {fileID: 0}
 --- !u!114 &114393687753495784
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2790,8 +2790,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 3b64283eb5e0bfd4cb62ad33bb65b8f2, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4287,7 +4287,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1440, y: 810}
+  m_SizeDelta: {x: 1400, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224352441588134914
 RectTransform:

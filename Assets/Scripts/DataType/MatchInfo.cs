@@ -7,6 +7,16 @@ public class MatchInfo {
     public int rank;
     public Lineup lineup;
 
+    public MatchInfo() { }
+
+    public MatchInfo(MatchInfo matchInfo)
+    {
+        playerID = matchInfo.playerID;
+        playerName = matchInfo.playerName;
+        rank = matchInfo.rank;
+        lineup = matchInfo.lineup;
+    }
+
     public MatchInfo(UserInfo player, Lineup PlayerLineup)
     {
         playerID = player.playerID;
@@ -17,11 +27,15 @@ public class MatchInfo {
 
     public string ToJson()
     {
-        return JsonConvert.SerializeObject(this);
+        JsonSerializerSettings settings = new JsonSerializerSettings();
+        settings.ContractResolver = new DictionaryAsArrayResolver();
+        return JsonConvert.SerializeObject(this, settings);
     }
 
     public static MatchInfo ToClass(string json)
     {
-        return JsonConvert.DeserializeObject<MatchInfo>(json);
+        JsonSerializerSettings settings = new JsonSerializerSettings();
+        settings.ContractResolver = new DictionaryAsArrayResolver();
+        return JsonConvert.DeserializeObject<MatchInfo>(json, settings);
     }
 }

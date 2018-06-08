@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using System.Linq;
 
 public class Database {
     public static List<string> types = new List<string> { "General", "Advisor", "Elephant", "Horse", "Chariot", "Cannon", "Soldier", "Tactic" };
@@ -45,7 +44,7 @@ public class Database {
 
     private void FindAttributes()
     {
-        WriteDirectories();
+        //WriteDirectories();
         ReadDirectories();
         foreach (string type in loadType)
         {
@@ -175,5 +174,12 @@ public class Database {
     {
         if (FindType(name) == "Tactic") return Resources.Load<TacticTrigger>("Tactic/" + name + "/Trigger");
         return Resources.Load<TacticTrigger>("Trap/" + name + "/Trigger");
+    }
+
+    public static void WriteFile(string content, string filename = "WriteFile")
+    {
+        StreamWriter file = new StreamWriter(@"C:\Users\Seaky\Desktop\" + filename + ".txt");
+        file.WriteLine(content);
+        file.Close();
     }
 }

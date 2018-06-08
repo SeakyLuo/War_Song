@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 [System.Serializable]
 public class Lineup
 {
+    public static int tacticLimit = 10;
     public Dictionary<Location, Collection> cardLocations;
     public List<Tactic> tactics;
     public string boardName;
     public string lineupName;
-    public string general;
-    public bool complete;
-    public static int tacticLimit = 10;
 
     public Lineup()
     {
@@ -35,8 +32,6 @@ public class Lineup
         tactics = Tactics;
         boardName = BoardName;
         lineupName = LineupName;
-        general = General;
-        if (tactics.Count == tacticLimit) complete = true;
     }
 
     public void Clear()
@@ -45,12 +40,20 @@ public class Lineup
         tactics = new List<Tactic>();
         boardName = "Standard Board";
         lineupName = "Custom Lineup";
-        general = "Standard General";
-        complete = false;
     }
 
     public bool IsEmpty()
     {
         return cardLocations.Count == 0 && tactics.Count == 0;
+    }
+
+    public bool IsComplete()
+    {
+        return tactics.Count == tacticLimit;
+    }
+
+    public string GetGeneral()
+    {
+        return cardLocations[Database.boards[boardName].agloc].name;
     }
 }
