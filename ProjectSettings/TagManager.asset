@@ -6,13 +6,13 @@ TagManager:
   tags:
   - Board
   - Piece
-  - Enemy
-  - Ally
   - Tab
   - Tactic
   - Lineup
   - Card
   - Contract
+  - Ally
+  - Enemy
   layers:
   - Default
   - TransparentFX
