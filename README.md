@@ -13,7 +13,7 @@ Mac and Linux are not supported.
 Usage:
 1. Download the zip file called "Builds.rar"
 2. Unpack it.
-3. Open "build.exe".
+3. Open "War Song.exe".
 4. Select your resolution (Strongly recommend 1920*1080 by unchecking Windowed)
 5. Click "Play" and enjoy!
 
@@ -25,3 +25,4 @@ Note:
 5. There is a GuideBook in the settings panel where you can learn more about the mechanisms of our game.
 6. However, since our game is complicated, some functions of our game are not implemented fully. The GuideBook is actually a image and after a match is found, you are actually unable to interact with your opponent.
 7. Source code: Assets/Scripts/
+8. Our database is down. You can't save your progress after you exit the game. You can't find a match either, but you can still press "Launch War" to see the game interface.
